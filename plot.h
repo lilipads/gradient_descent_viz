@@ -48,7 +48,7 @@ class Plot : public QObject
 public:
     explicit Plot(Q3DSurface *surface);
     ~Plot();
-    SurfaceFunction func;
+    std::unique_ptr<SurfaceFunction> func;
 
 public Q_SLOTS:
     void toggleAnimation();

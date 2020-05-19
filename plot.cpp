@@ -45,7 +45,8 @@ const float sampleMin = -8.0f;
 const float sampleMax = 8.0f;
 
 Plot::Plot(Q3DSurface *surface)
-    : m_graph(surface),
+    : func(new SurfaceFunction),
+      m_graph(surface),
       m_point(new QCustom3DItem),
       m_surfaceProxy(new QSurfaceDataProxy()),
       m_surfaceSeries(new QSurface3DSeries(m_surfaceProxy.get()))
@@ -95,7 +96,7 @@ void Plot::initializeSurface()
         int index = 0;
         for (int j = 0; j < sampleCountX; j++) {
             float x = qMin(sampleMax, (j * stepX + sampleMin));
-            float y = func.f(x, z);
+            float y = func->f(x, z);
             (*newRow)[index++].setPosition(QVector3D(x, y, z));
         }
         *dataArray << newRow;
@@ -113,7 +114,6 @@ void Plot::initializeSurface()
     gr.setColorAt(0.5, Qt::yellow);
     gr.setColorAt(0.2, Qt::red);
     gr.setColorAt(0.0, Qt::darkRed);
-
     m_surfaceSeries->setBaseGradient(gr);
     m_surfaceSeries->setColorStyle(Q3DTheme::ColorStyleRangeGradient);
 
@@ -123,8 +123,8 @@ void Plot::initializeSurface()
 
 void Plot::triggerAnimation()
 {
-    Point p = func.gradientStep();
-    m_point->setPosition(QVector3D(p.x, func.f(p.x, p.z), p.z));
+    Point p = func->gradientStep();
+    m_point->setPosition(QVector3D(p.x, func->f(p.x, p.z), p.z));
 }
 
 void Plot::toggleAnimation()
