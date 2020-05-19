@@ -39,9 +39,6 @@
 
 using namespace QtDataVisualization;
 
-static const float verticalRange = 8.0f;
-static const float horizontalRange = verticalRange;
-
 const int sampleCountX = 50;
 const int sampleCountZ = 50;
 const float sampleMin = -8.0f;
@@ -111,7 +108,14 @@ void Plot::initializeSurface()
     m_surfaceSeries->setFlatShadingEnabled(true);
     m_surfaceSeries->setBaseColor( QColor( 100, 0, 0, 255 ));
     //gradient
+    QLinearGradient gr;
+    gr.setColorAt(1.0, Qt::darkGreen);
+    gr.setColorAt(0.5, Qt::yellow);
+    gr.setColorAt(0.2, Qt::red);
+    gr.setColorAt(0.0, Qt::darkRed);
 
+    m_surfaceSeries->setBaseGradient(gr);
+    m_surfaceSeries->setColorStyle(Q3DTheme::ColorStyleRangeGradient);
 
     m_graph->addSeries(m_surfaceSeries.get());
 }
