@@ -49,52 +49,13 @@ const float sampleMax = 8.0f;
 
 Plot::Plot(Q3DSurface *surface)
     : m_graph(surface),
-      m_sun(new QCustom3DItem),
+      m_point(new QCustom3DItem),
       m_surfaceProxy(new QSurfaceDataProxy()),
       m_surfaceSeries(new QSurface3DSeries(m_surfaceProxy.get()))
 {
-    m_graph->setShadowQuality(QAbstract3DGraph::ShadowQualityNone);
-    m_graph->scene()->activeCamera()->setCameraPreset(Q3DCamera::CameraPresetFront);
-
-    // For 'sun' we use a custom large sphere
-    m_sun->setScaling(QVector3D(0.01f, 0.01f, 0.01f));
-    m_sun->setMeshFile(QStringLiteral(":/mesh/largesphere.obj"));
-    QImage sunColor = QImage(2, 2, QImage::Format_RGB32);
-    sunColor.fill(QColor(0xff, 0xbb, 0x00));
-    m_sun->setTextureImage(sunColor);
-    m_sun->setPosition(QVector3D(0, 4, 4));
-
-    m_graph->addCustomItem(m_sun.get());
-
-
-    m_graph->setAxisX(new QValue3DAxis);
-    m_graph->setAxisY(new QValue3DAxis);
-    m_graph->setAxisZ(new QValue3DAxis);
-
-    fillSurface();
-
-    m_surfaceSeries->setDrawMode(QSurface3DSeries::DrawSurfaceAndWireframe);
-    m_surfaceSeries->setFlatShadingEnabled(true);
-    m_surfaceSeries->setBaseColor( QColor( 100, 0, 0, 255 ));
-
-    m_graph->axisX()->setLabelFormat("%.2f");
-    m_graph->axisZ()->setLabelFormat("%.2f");
-    m_graph->axisX()->setRange(sampleMin, sampleMax);
-    m_graph->axisY()->setRange(0.0f, 2.0f);
-    m_graph->axisZ()->setRange(sampleMin, sampleMax);
-    m_graph->axisX()->setLabelAutoRotation(30);
-    m_graph->axisY()->setLabelAutoRotation(90);
-    m_graph->axisZ()->setLabelAutoRotation(30);
-
-    m_graph->addSeries(m_surfaceSeries.get());
-
-
-    // Configure the axes according to the data
-    m_graph->axisX()->setRange(-horizontalRange, horizontalRange);
-    m_graph->axisY()->setRange(-verticalRange, verticalRange);
-    m_graph->axisZ()->setRange(-horizontalRange, horizontalRange);
-    m_graph->axisX()->setSegmentCount(int(horizontalRange));
-    m_graph->axisZ()->setSegmentCount(int(horizontalRange));
+    initializeGraph();
+    initializePoint();
+    initializeSurface();
 
     QObject::connect(&m_rotationTimer, &QTimer::timeout, this,
                      &Plot::triggerAnimation);
@@ -102,12 +63,27 @@ Plot::Plot(Q3DSurface *surface)
     toggleAnimation();
 }
 
-Plot::~Plot()
-{
-//    delete m_graph;
+Plot::~Plot() {}
+
+void Plot::initializeGraph(){
+    m_graph->setShadowQuality(QAbstract3DGraph::ShadowQualityNone);
+    m_graph->scene()->activeCamera()->setCameraPreset(Q3DCamera::CameraPresetFront);
+    m_graph->setAxisX(new QValue3DAxis);
+    m_graph->setAxisY(new QValue3DAxis);
+    m_graph->setAxisZ(new QValue3DAxis);
 }
 
-void Plot::fillSurface()
+void Plot::initializePoint(){
+    m_point->setScaling(QVector3D(0.01f, 0.01f, 0.01f));
+    m_point->setMeshFile(QStringLiteral(":/mesh/largesphere.obj"));
+    QImage pointColor = QImage(2, 2, QImage::Format_RGB32);
+    pointColor.fill(QColor(0xff, 0xbb, 0x00));
+    m_point->setTextureImage(pointColor);
+    m_point->setPosition(QVector3D(0, 4, 4));
+    m_graph->addCustomItem(m_point.get());
+}
+
+void Plot::initializeSurface()
 {
     float stepX = (sampleMax - sampleMin) / float(sampleCountX - 1);
     float stepZ = (sampleMax - sampleMin) / float(sampleCountZ - 1);
@@ -129,13 +105,22 @@ void Plot::fillSurface()
     }
 
     m_surfaceProxy->resetArray(dataArray);
+
+    // surface look
+    m_surfaceSeries->setDrawMode(QSurface3DSeries::DrawSurfaceAndWireframe);
+    m_surfaceSeries->setFlatShadingEnabled(true);
+    m_surfaceSeries->setBaseColor( QColor( 100, 0, 0, 255 ));
+    //gradient
+
+
+    m_graph->addSeries(m_surfaceSeries.get());
 }
 
 
 void Plot::triggerAnimation()
 {
     Point p = func.gradientStep();
-    m_sun->setPosition(QVector3D(p.x, func.f(p.x, p.z), p.z));
+    m_point->setPosition(QVector3D(p.x, func.f(p.x, p.z), p.z));
 }
 
 void Plot::toggleAnimation()

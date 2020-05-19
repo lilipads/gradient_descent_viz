@@ -57,10 +57,12 @@ public Q_SLOTS:
 private:
     std::unique_ptr<Q3DSurface> m_graph;
     QTimer m_rotationTimer;
-    std::unique_ptr<QCustom3DItem> m_sun;
+    std::unique_ptr<QCustom3DItem> m_point;
     std::unique_ptr<QSurfaceDataProxy> m_surfaceProxy;
     std::unique_ptr<QSurface3DSeries> m_surfaceSeries;
-    void fillSurface();
+    void initializeSurface();
+    void initializeGraph();
+    void initializePoint();
 };
 
 #endif
