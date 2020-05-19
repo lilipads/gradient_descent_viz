@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <QtDataVisualization/QCustom3DItem>
+#include <QColor>
 
 struct Point {
     float x;
@@ -17,6 +18,7 @@ public:
     virtual ~GradientDescent() {}
 
     std::unique_ptr<QtDataVisualization::QCustom3DItem> ball;
+    QColor ball_color;
 
     float f(float x, float z);
     float gradX();
@@ -35,11 +37,13 @@ protected:
 
 class VanillaGradientDescent : public GradientDescent {
 public:
+    VanillaGradientDescent(){ ball_color = Qt::cyan; }
     Point gradientStep();
 };
 
 class Momentum : public GradientDescent {
 public:
+    Momentum(){ ball_color = Qt::magenta; }
     Point gradientStep();
     void setMomemtum(float m) {momentum = m;}
 private:

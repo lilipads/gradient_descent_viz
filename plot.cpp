@@ -77,7 +77,7 @@ void Plot::initializeBall(GradientDescent* descent){
     descent->ball->setScaling(QVector3D(0.01f, 0.01f, 0.01f));
     descent->ball->setMeshFile(QStringLiteral(":/mesh/largesphere.obj"));
     QImage pointColor = QImage(2, 2, QImage::Format_RGB32);
-    pointColor.fill(QColor(0xff, 0xbb, 0x00));
+    pointColor.fill(descent->ball_color);
     descent->ball->setTextureImage(pointColor);
     m_graph->addCustomItem(descent->ball.get());
 
