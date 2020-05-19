@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>mesh/narrowarrow.obj</file>
+        <file>mesh/largesphere.obj</file>
+    </qresource>
+</RCC>
