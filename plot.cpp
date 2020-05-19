@@ -49,7 +49,9 @@ const float sampleMax = 8.0f;
 
 Plot::Plot(Q3DSurface *surface)
     : m_graph(surface),
-      m_sun(new QCustom3DItem)
+      m_sun(new QCustom3DItem),
+      m_surfaceProxy(new QSurfaceDataProxy()),
+      m_surfaceSeries(new QSurface3DSeries(m_surfaceProxy.get()))
 {
     m_graph->setShadowQuality(QAbstract3DGraph::ShadowQualityNone);
     m_graph->scene()->activeCamera()->setCameraPreset(Q3DCamera::CameraPresetFront);
@@ -62,15 +64,13 @@ Plot::Plot(Q3DSurface *surface)
     m_sun->setTextureImage(sunColor);
     m_sun->setPosition(QVector3D(0, 4, 4));
 
-    m_graph->addCustomItem(m_sun);
+    m_graph->addCustomItem(m_sun.get());
 
 
     m_graph->setAxisX(new QValue3DAxis);
     m_graph->setAxisY(new QValue3DAxis);
     m_graph->setAxisZ(new QValue3DAxis);
 
-    m_surfaceProxy = new QSurfaceDataProxy();
-    m_surfaceSeries = new QSurface3DSeries(m_surfaceProxy);
     fillSurface();
 
     m_surfaceSeries->setDrawMode(QSurface3DSeries::DrawSurfaceAndWireframe);
@@ -86,9 +86,7 @@ Plot::Plot(Q3DSurface *surface)
     m_graph->axisY()->setLabelAutoRotation(90);
     m_graph->axisZ()->setLabelAutoRotation(30);
 
-    m_graph->addSeries(m_surfaceSeries);
-
-
+    m_graph->addSeries(m_surfaceSeries.get());
 
 
     // Configure the axes according to the data
