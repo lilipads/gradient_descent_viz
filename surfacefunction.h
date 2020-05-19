@@ -4,6 +4,7 @@
 struct Point{
     float x;
     float z;
+    Point() : x(0.), z(0.) {}
     Point(float _x, float _z) : x(_x), z(_z) {}
 };
 
@@ -17,9 +18,10 @@ public:
     Point getPosition(){ return p; }
     Point gradientStep();
     void setLearningRate(float lr){ learning_rate = lr; }
+    void reset();
 
 private:
-    Point p = Point(4., 0.); // current position
+    Point p; // current position
     void setCurrentPosition(float x, float z) {p.x = x; p.z = z;}
     float learning_rate = 0.001;
 };

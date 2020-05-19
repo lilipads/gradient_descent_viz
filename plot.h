@@ -27,8 +27,8 @@
 **
 ****************************************************************************/
 
-#ifndef SCATTERDATAMODIFIER_H
-#define SCATTERDATAMODIFIER_H
+#ifndef PLOT_H
+#define PLOT_H
 
 #include <QtDataVisualization/Q3DSurface>
 #include <QtDataVisualization/QSurfaceDataProxy>
@@ -53,6 +53,7 @@ public:
 public Q_SLOTS:
     void toggleAnimation();
     void triggerAnimation();
+    void restartAnimation();
     void setLearningRate(double lr){ func->setLearningRate(lr); }
 
 private:
@@ -66,4 +67,4 @@ private:
     void initializePoint();
 };
 
-#endif
+#endif // PLOT_H

@@ -1,6 +1,8 @@
 #include "surfacefunction.h"
 
-SurfaceFunction::SurfaceFunction(){}
+SurfaceFunction::SurfaceFunction(){
+    reset();
+}
 
 float SurfaceFunction::f(float x, float z){
     return x * x + z * z;
@@ -23,4 +25,8 @@ Point SurfaceFunction::gradientStep(){
     p.x -= learning_rate * gradX();
     p.z -= learning_rate * gradZ();
     return p;
+}
+
+void SurfaceFunction::reset(){
+    p = Point(4., 0.);
 }

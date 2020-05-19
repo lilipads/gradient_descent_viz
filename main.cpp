@@ -74,13 +74,21 @@ int main(int argc, char **argv)
     QObject::connect(toggleAnimationButton, &QPushButton::clicked, plot,
                      &Plot::toggleAnimation);
 
+    // restart animation button
+    QPushButton *restartAnimationButton = new QPushButton(widget);
+    restartAnimationButton->setText(QStringLiteral("Restart animation"));
+    vLayout->addWidget(restartAnimationButton, 1, Qt::AlignTop);
+    QObject::connect(restartAnimationButton, &QPushButton::clicked, plot,
+                     &Plot::restartAnimation);
+
     // learning rate spin box
     QDoubleSpinBox *learningRateBox = new QDoubleSpinBox(widget);
     learningRateBox->setDecimals(4);
     learningRateBox->setRange(0.0001, 1.0);
     learningRateBox->setValue(0.0001);
     learningRateBox->setSingleStep(0.0001);
-    vLayout->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
+    plot->setLearningRate(0.0001);
+    vLayout->addWidget(new QLabel(QStringLiteral("Learning Rate:")), 1, Qt::AlignTop);
     vLayout->addWidget(learningRateBox, 1, Qt::AlignTop);
     QObject::connect(learningRateBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), plot,
                      &Plot::setLearningRate);

@@ -77,8 +77,9 @@ void Plot::initializePoint(){
     QImage pointColor = QImage(2, 2, QImage::Format_RGB32);
     pointColor.fill(QColor(0xff, 0xbb, 0x00));
     m_point->setTextureImage(pointColor);
-    m_point->setPosition(QVector3D(0, 4, 4));
     m_graph->addCustomItem(m_point.get());
+
+    restartAnimation();
 }
 
 void Plot::initializeSurface()
@@ -121,16 +122,20 @@ void Plot::initializeSurface()
 }
 
 
-void Plot::triggerAnimation()
-{
+void Plot::triggerAnimation() {
     Point p = func->gradientStep();
     m_point->setPosition(QVector3D(p.x, func->f(p.x, p.z), p.z));
 }
 
-void Plot::toggleAnimation()
-{
+void Plot::toggleAnimation() {
     if (m_rotationTimer.isActive())
         m_rotationTimer.stop();
     else
         m_rotationTimer.start(15);
+}
+
+void Plot::restartAnimation() {
+    func->reset();
+    Point p = func->getPosition();
+    m_point->setPosition(QVector3D(p.x, func->f(p.x, p.z), p.z));
 }
