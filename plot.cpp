@@ -34,7 +34,6 @@
 #include <QtDataVisualization/q3dcamera.h>
 #include <QtDataVisualization/qscatter3dseries.h>
 #include <QtDataVisualization/q3dtheme.h>
-#include <QtDataVisualization/QCustom3DItem>
 #include <QtCore/qmath.h>
 
 using namespace QtDataVisualization;
@@ -45,17 +44,20 @@ const float sampleMin = -8.0f;
 const float sampleMax = 8.0f;
 
 Plot::Plot(Q3DSurface *surface)
-    : func(new VanillaGradientDescent),
+    : gradient_descent(new VanillaGradientDescent),
+      momemtum(new Momentum),
       m_graph(surface),
-      m_point(new QCustom3DItem),
       m_surfaceProxy(new QSurfaceDataProxy()),
       m_surfaceSeries(new QSurface3DSeries(m_surfaceProxy.get()))
 {
     initializeGraph();
-    initializePoint();
+    active_descents.push_back(gradient_descent.get());
+    active_descents.push_back(momemtum.get());
+    for (auto& descent : active_descents) initializeBall(descent);
+
     initializeSurface();
 
-    QObject::connect(&m_rotationTimer, &QTimer::timeout, this,
+    QObject::connect(&m_timer, &QTimer::timeout, this,
                      &Plot::triggerAnimation);
 
     toggleAnimation();
@@ -71,13 +73,13 @@ void Plot::initializeGraph(){
     m_graph->setAxisZ(new QValue3DAxis);
 }
 
-void Plot::initializePoint(){
-    m_point->setScaling(QVector3D(0.01f, 0.01f, 0.01f));
-    m_point->setMeshFile(QStringLiteral(":/mesh/largesphere.obj"));
+void Plot::initializeBall(GradientDescent* descent){
+    descent->ball->setScaling(QVector3D(0.01f, 0.01f, 0.01f));
+    descent->ball->setMeshFile(QStringLiteral(":/mesh/largesphere.obj"));
     QImage pointColor = QImage(2, 2, QImage::Format_RGB32);
     pointColor.fill(QColor(0xff, 0xbb, 0x00));
-    m_point->setTextureImage(pointColor);
-    m_graph->addCustomItem(m_point.get());
+    descent->ball->setTextureImage(pointColor);
+    m_graph->addCustomItem(descent->ball.get());
 
     restartAnimation();
 }
@@ -97,7 +99,7 @@ void Plot::initializeSurface()
         int index = 0;
         for (int j = 0; j < sampleCountX; j++) {
             float x = qMin(sampleMax, (j * stepX + sampleMin));
-            float y = func->f(x, z);
+            float y = gradient_descent->f(x, z);
             (*newRow)[index++].setPosition(QVector3D(x, y, z));
         }
         *dataArray << newRow;
@@ -123,19 +125,23 @@ void Plot::initializeSurface()
 
 
 void Plot::triggerAnimation() {
-    Point p = func->gradientStep();
-    m_point->setPosition(QVector3D(p.x, func->f(p.x, p.z), p.z));
+    for (auto& descent : active_descents){
+        Point p = descent->gradientStep();
+        descent->ball->setPosition(QVector3D(p.x, gradient_descent->f(p.x, p.z), p.z));
+    }
 }
 
 void Plot::toggleAnimation() {
-    if (m_rotationTimer.isActive())
-        m_rotationTimer.stop();
+    if (m_timer.isActive())
+        m_timer.stop();
     else
-        m_rotationTimer.start(15);
+        m_timer.start(15);
 }
 
 void Plot::restartAnimation() {
-    func->reset();
-    Point p = func->getPosition();
-    m_point->setPosition(QVector3D(p.x, func->f(p.x, p.z), p.z));
+    for (auto& descent : active_descents){
+        descent->resetPosition();
+        Point p = descent->getPosition();
+        descent->ball->setPosition(QVector3D(p.x, gradient_descent->f(p.x, p.z), p.z));
+    }
 }

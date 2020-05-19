@@ -39,6 +39,7 @@
 #include <QtCore/QTimer>
 #include <gradientdescent.h>
 #include <memory>
+#include <vector>
 
 using namespace QtDataVisualization;
 
@@ -48,23 +49,24 @@ class Plot : public QObject
 public:
     explicit Plot(Q3DSurface *surface);
     ~Plot();
-    std::unique_ptr<VanillaGradientDescent> func;
+    std::unique_ptr<VanillaGradientDescent> gradient_descent;
+    std::unique_ptr<Momentum> momemtum;
 
 public Q_SLOTS:
     void toggleAnimation();
     void triggerAnimation();
     void restartAnimation();
-    void setLearningRate(double lr){ func->setLearningRate(lr); }
+    void setLearningRate(double lr){ gradient_descent->setLearningRate(lr); }
 
 private:
     std::unique_ptr<Q3DSurface> m_graph;
-    QTimer m_rotationTimer;
-    std::unique_ptr<QCustom3DItem> m_point;
+    std::vector<GradientDescent*> active_descents;
+    QTimer m_timer;
     std::unique_ptr<QSurfaceDataProxy> m_surfaceProxy;
     std::unique_ptr<QSurface3DSeries> m_surfaceSeries;
     void initializeSurface();
     void initializeGraph();
-    void initializePoint();
+    void initializeBall(GradientDescent* gd);
 };
 
 #endif // PLOT_H

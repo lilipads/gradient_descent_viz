@@ -1,7 +1,9 @@
 #include "gradientdescent.h"
 
-GradientDescent::GradientDescent(){
-    reset();
+GradientDescent::GradientDescent()
+    : ball(new QtDataVisualization::QCustom3DItem)
+{
+    resetPosition();
 }
 
 float GradientDescent::f(float x, float z){
@@ -20,12 +22,20 @@ float GradientDescent::gradZ(){
     return (f(p.x, p.z + epsilon) - f(p.x, p.z - epsilon)) / (2 * epsilon);
 }
 
-void GradientDescent::reset(){
+void GradientDescent::resetPosition(){
     p = Point(4., 0.);
 }
 
 Point VanillaGradientDescent::gradientStep(){
     p.x -= learning_rate * gradX();
     p.z -= learning_rate * gradZ();
+    return p;
+}
+
+Point Momentum::gradientStep(){
+    delta_x = momentum * delta_x - learning_rate * gradX();
+    delta_z = momentum * delta_z - learning_rate * gradZ();
+    p.x += delta_x;
+    p.z += delta_z;
     return p;
 }
