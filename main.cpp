@@ -65,33 +65,25 @@ int main(int argc, char **argv)
     hLayout->addLayout(vLayout);
 
     widget->setWindowTitle(QStringLiteral("Gradient Descent Visualization"));
-
-    QPushButton *toggleAnimationButton = new QPushButton(widget);
-    toggleAnimationButton->setText(QStringLiteral("Toggle animation"));
-
-    vLayout->addWidget(toggleAnimationButton);
-
     Plot *plot = new Plot(graph);
 
+    // toggle animation button
+    QPushButton *toggleAnimationButton = new QPushButton(widget);
+    toggleAnimationButton->setText(QStringLiteral("Toggle animation"));
+    vLayout->addWidget(toggleAnimationButton);
     QObject::connect(toggleAnimationButton, &QPushButton::clicked, plot,
                      &Plot::toggleAnimation);
 
+    // learning rate spin box
     QDoubleSpinBox *learningRateBox = new QDoubleSpinBox(widget);
     learningRateBox->setDecimals(4);
     learningRateBox->setRange(0.0001, 1.0);
     learningRateBox->setValue(0.0001);
     learningRateBox->setSingleStep(0.0001);
-    vLayout->addWidget(learningRateBox);
-//    QObject::connect(learningRateBox, &QDoubleSpinBox::valueChanged, *plot->func,
-//                     &SurfaceFunction::setLearningRate);
-
-//    QSlider *learningRateSlider = new QSlider(Qt::Horizontal, widget);
-//    learningRateSlider->setTickInterval(1);
-//    learningRateSlider->setMinimum(1);
-//    learningRateSlider->setValue(16);
-//    learningRateSlider->setMaximum(32);
-//    QObject::connect(fieldLinesSlider, &QSlider::valueChanged, modifier,
-//                     &ScatterDataModifier::setFieldLines);
+    vLayout->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
+    vLayout->addWidget(learningRateBox, 1, Qt::AlignTop);
+    QObject::connect(learningRateBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), plot,
+                     &Plot::setLearningRate);
 
     widget->show();
     return app.exec();

@@ -53,6 +53,7 @@ public:
 public Q_SLOTS:
     void toggleAnimation();
     void triggerAnimation();
+    void setLearningRate(double lr){ func->setLearningRate(lr); }
 
 private:
     std::unique_ptr<Q3DSurface> m_graph;
