@@ -45,7 +45,7 @@ const float sampleMin = -8.0f;
 const float sampleMax = 8.0f;
 
 Plot::Plot(Q3DSurface *surface)
-    : func(new SurfaceFunction),
+    : func(new VanillaGradientDescent),
       m_graph(surface),
       m_point(new QCustom3DItem),
       m_surfaceProxy(new QSurfaceDataProxy()),

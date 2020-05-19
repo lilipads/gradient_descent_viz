@@ -37,7 +37,7 @@
 #include <QtDataVisualization/q3dscatter.h>
 #include <QtDataVisualization/qscatterdataproxy.h>
 #include <QtCore/QTimer>
-#include <surfacefunction.h>
+#include <gradientdescent.h>
 #include <memory>
 
 using namespace QtDataVisualization;
@@ -48,7 +48,7 @@ class Plot : public QObject
 public:
     explicit Plot(Q3DSurface *surface);
     ~Plot();
-    std::unique_ptr<SurfaceFunction> func;
+    std::unique_ptr<VanillaGradientDescent> func;
 
 public Q_SLOTS:
     void toggleAnimation();

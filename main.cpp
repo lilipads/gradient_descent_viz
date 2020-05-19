@@ -77,7 +77,7 @@ int main(int argc, char **argv)
     // restart animation button
     QPushButton *restartAnimationButton = new QPushButton(widget);
     restartAnimationButton->setText(QStringLiteral("Restart animation"));
-    vLayout->addWidget(restartAnimationButton, 1, Qt::AlignTop);
+    vLayout->addWidget(restartAnimationButton);
     QObject::connect(restartAnimationButton, &QPushButton::clicked, plot,
                      &Plot::restartAnimation);
 
@@ -85,10 +85,10 @@ int main(int argc, char **argv)
     QDoubleSpinBox *learningRateBox = new QDoubleSpinBox(widget);
     learningRateBox->setDecimals(4);
     learningRateBox->setRange(0.0001, 1.0);
-    learningRateBox->setValue(0.0001);
-    learningRateBox->setSingleStep(0.0001);
-    plot->setLearningRate(0.0001);
-    vLayout->addWidget(new QLabel(QStringLiteral("Learning Rate:")), 1, Qt::AlignTop);
+    learningRateBox->setValue(0.01);
+    learningRateBox->setSingleStep(0.001);
+    plot->setLearningRate(0.01);
+    vLayout->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
     vLayout->addWidget(learningRateBox, 1, Qt::AlignTop);
     QObject::connect(learningRateBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), plot,
                      &Plot::setLearningRate);
