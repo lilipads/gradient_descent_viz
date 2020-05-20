@@ -19,6 +19,7 @@ public:
 
     std::unique_ptr<QtDataVisualization::QCustom3DItem> ball;
     QColor ball_color;
+    bool is_active = true;
 
     float f(float x, float z);
     float gradX();

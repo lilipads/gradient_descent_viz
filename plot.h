@@ -60,7 +60,7 @@ public Q_SLOTS:
 
 private:
     std::unique_ptr<Q3DSurface> m_graph;
-    std::vector<GradientDescent*> active_descents;
+    std::vector<GradientDescent*> all_descents;
     QTimer m_timer;
     std::unique_ptr<QSurfaceDataProxy> m_surfaceProxy;
     std::unique_ptr<QSurface3DSeries> m_surfaceSeries;

@@ -51,9 +51,9 @@ Plot::Plot(Q3DSurface *surface)
       m_surfaceSeries(new QSurface3DSeries(m_surfaceProxy.get()))
 {
     initializeGraph();
-    active_descents.push_back(gradient_descent.get());
-    active_descents.push_back(momemtum.get());
-    for (auto& descent : active_descents) initializeBall(descent);
+    all_descents.push_back(gradient_descent.get());
+    all_descents.push_back(momemtum.get());
+    for (auto& descent : all_descents) initializeBall(descent);
 
     initializeSurface();
 
@@ -125,23 +125,32 @@ void Plot::initializeSurface()
 
 
 void Plot::triggerAnimation() {
-    for (auto& descent : active_descents){
-        Point p = descent->gradientStep();
-        descent->ball->setPosition(QVector3D(p.x, gradient_descent->f(p.x, p.z), p.z));
+    for (auto& descent : all_descents){
+        if (descent->is_active){
+            Point p = descent->gradientStep();
+            descent->ball->setPosition(QVector3D(p.x, gradient_descent->f(p.x, p.z), p.z));
+        }
     }
 }
 
 void Plot::toggleAnimation() {
-    if (m_timer.isActive())
-        m_timer.stop();
-    else
-        m_timer.start(15);
+    m_timer.isActive() ? m_timer.stop() : m_timer.start(15);
 }
 
+//void Plot::showOrHideAnimation(bool show){
+//    if (show){
+
+//    } else{
+
+//    }
+//}
+
 void Plot::restartAnimation() {
-    for (auto& descent : active_descents){
-        descent->resetPosition();
-        Point p = descent->getPosition();
-        descent->ball->setPosition(QVector3D(p.x, gradient_descent->f(p.x, p.z), p.z));
+    for (auto& descent : all_descents){
+        if (descent->is_active){
+            descent->resetPosition();
+            Point p = descent->getPosition();
+            descent->ball->setPosition(QVector3D(p.x, gradient_descent->f(p.x, p.z), p.z));
+        }
     }
 }

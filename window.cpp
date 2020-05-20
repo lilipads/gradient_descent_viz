@@ -29,35 +29,6 @@ Window::Window(QWidget *parent)
 //    vLayout->addWidget(createLearningRateBox(), 1, Qt::AlignTop);
 }
 
-/*
-QGroupBox *Window::createSecondExclusiveGroup()
-{
-    QGroupBox *groupBox = new QGroupBox(tr("E&xclusive Radio Buttons"));
-    groupBox->setCheckable(true);
-    groupBox->setChecked(false);
-//! [4]
-
-//! [5]
-    QRadioButton *radio1 = new QRadioButton(tr("Rad&io button 1"));
-    QRadioButton *radio2 = new QRadioButton(tr("Radi&o button 2"));
-    QRadioButton *radio3 = new QRadioButton(tr("Radio &button 3"));
-    radio1->setChecked(true);
-    QCheckBox *checkBox = new QCheckBox(tr("Ind&ependent checkbox"));
-    checkBox->setChecked(true);
-//! [5]
-
-//! [6]
-    QVBoxLayout *vbox = new QVBoxLayout;
-    vbox->addWidget(radio1);
-    vbox->addWidget(radio2);
-    vbox->addWidget(radio3);
-    vbox->addWidget(checkBox);
-    vbox->addStretch(1);
-    groupBox->setLayout(vbox);
-
-    return groupBox;
-}
-*/
 
 QPushButton *Window::createToggleAnimationButton(){
     // toggle animation button
@@ -104,8 +75,9 @@ QDoubleSpinBox *Window::createLearningRateBox(){
     learningRateBox->setValue(0.01);
     learningRateBox->setSingleStep(0.001);
     plot->setLearningRate(0.01);
-    QObject::connect(learningRateBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), plot,
-                     &Plot::setLearningRate);
+    QObject::connect(learningRateBox,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     plot, &Plot::setLearningRate);
     return learningRateBox;
 }
 
