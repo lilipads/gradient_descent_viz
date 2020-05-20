@@ -69,6 +69,11 @@ QGroupBox *Window::createGradientDescentGroup(){
 
     GradientDescent* descent = plot->gradient_descent.get();
 
+    QObject::connect(groupBox, &QGroupBox::clicked,
+        [=](){
+            descent->ball->setVisible(!descent->ball->isVisible());
+        });
+
     QVBoxLayout *vbox = new QVBoxLayout;
     vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
     vbox->addWidget(createLearningRateBox(descent));
@@ -86,8 +91,8 @@ QGroupBox *Window::createMomentumGroup(){
     Momentum* descent = plot->momemtum.get();
 
     QObject::connect(groupBox, &QGroupBox::clicked,
-        [=](const bool &is_visible){
-            descent->ball->setVisible(is_visible);
+        [=](){
+            descent->ball->setVisible(!descent->ball->isVisible());
         });
 
     QVBoxLayout *vbox = new QVBoxLayout;
@@ -122,7 +127,7 @@ QDoubleSpinBox *Window::createMomentumBox(Momentum* descent){
     // learning rate spin box
     QDoubleSpinBox *learningRateBox = new QDoubleSpinBox(this);
     learningRateBox->setDecimals(1);
-    learningRateBox->setRange(0.1, 1.0);
+    learningRateBox->setRange(0.1, 2.0);
     learningRateBox->setValue(descent->momentum);
     learningRateBox->setSingleStep(0.1);
     QObject::connect(learningRateBox,

@@ -24,7 +24,7 @@ public:
     float gradX();
     float gradZ();
     Point getPosition(){ return p; }
-    float learning_rate = 0.01;
+    float learning_rate = 0.001;
     void resetPosition();
 
     virtual Point gradientStep() = 0;
