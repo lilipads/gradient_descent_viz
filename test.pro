@@ -18,11 +18,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     gradientdescent.cpp \
     main.cpp \
-    plot.cpp
+    plot.cpp \
+    window.cpp
 
 HEADERS += \
     gradientdescent.h \
-    plot.h
+    plot.h \
+    window.h
 
 RESOURCES += rotations.qrc
 
