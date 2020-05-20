@@ -42,6 +42,7 @@ const int sampleCountX = 50;
 const int sampleCountZ = 50;
 const float sampleMin = -8.0f;
 const float sampleMax = 8.0f;
+const float ballYOffset = 4.0f;
 
 Plot::Plot(Q3DSurface *surface)
     : gradient_descent(new VanillaGradientDescent),
@@ -124,10 +125,16 @@ void Plot::initializeSurface()
 }
 
 
+void Plot::setBallPosition(QCustom3DItem* ball, Point p){
+    ball->setPosition(QVector3D(p.x,
+                                gradient_descent->f(p.x, p.z) + ballYOffset,
+                                p.z));
+}
+
 void Plot::triggerAnimation() {
     for (auto& descent : all_descents){
         Point p = descent->gradientStep();
-        descent->ball->setPosition(QVector3D(p.x, gradient_descent->f(p.x, p.z), p.z));
+        setBallPosition(descent->ball.get(), p);
     }
 }
 
@@ -135,18 +142,11 @@ void Plot::toggleAnimation() {
     m_timer.isActive() ? m_timer.stop() : m_timer.start(15);
 }
 
-//void Plot::showOrHideAnimation(bool show){
-//    if (show){
-
-//    } else{
-
-//    }
-//}
 
 void Plot::restartAnimation() {
     for (auto& descent : all_descents){
         descent->resetPosition();
         Point p = descent->getPosition();
-        descent->ball->setPosition(QVector3D(p.x, gradient_descent->f(p.x, p.z), p.z));
+        setBallPosition(descent->ball.get(), p);
     }
 }

@@ -27,18 +27,26 @@ public:
     float learning_rate = 0.001;
     void resetPosition();
 
-    virtual Point gradientStep() = 0;
+    Point gradientStep();
 
 protected:
     Point p; // current position
-    void setCurrentPosition(float x, float z) {p.x = x; p.z = z;}
+    bool is_converged = false;
 
+    void setCurrentPosition(float x, float z) {p.x = x; p.z = z;}
+    virtual Point getGradientDelta() = 0;
+
+private:
+    const float kConvergenceEpsilon = 1e-3;
+    void checkConvergence();
 };
 
 class VanillaGradientDescent : public GradientDescent {
 public:
     VanillaGradientDescent(){ ball_color = Qt::cyan; }
-    Point gradientStep();
+
+protected:
+     Point getGradientDelta();
 };
 
 class Momentum : public GradientDescent {
@@ -46,7 +54,8 @@ public:
     Momentum(){ ball_color = Qt::magenta; }
     float momentum = 0.8;
 
-    Point gradientStep();
+protected:
+    Point getGradientDelta();
 
 private:
     float delta_x = 0.;

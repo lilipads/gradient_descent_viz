@@ -66,6 +66,7 @@ private:
     void initializeSurface();
     void initializeGraph();
     void initializeBall(GradientDescent* descent);
+    void setBallPosition(QCustom3DItem* ball, Point p);
 };
 
 #endif // PLOT_H
