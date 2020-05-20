@@ -114,8 +114,8 @@ void Plot::initializeSurface()
     //gradient
     QLinearGradient gr;
     gr.setColorAt(1.0, Qt::darkGreen);
-    gr.setColorAt(0.5, Qt::yellow);
-    gr.setColorAt(0.2, Qt::red);
+    gr.setColorAt(0.4, Qt::yellow);
+    gr.setColorAt(0.1, Qt::red);
     gr.setColorAt(0.0, Qt::darkRed);
     m_surfaceSeries->setBaseGradient(gr);
     m_surfaceSeries->setColorStyle(Q3DTheme::ColorStyleRangeGradient);
@@ -126,10 +126,8 @@ void Plot::initializeSurface()
 
 void Plot::triggerAnimation() {
     for (auto& descent : all_descents){
-        if (descent->is_active){
-            Point p = descent->gradientStep();
-            descent->ball->setPosition(QVector3D(p.x, gradient_descent->f(p.x, p.z), p.z));
-        }
+        Point p = descent->gradientStep();
+        descent->ball->setPosition(QVector3D(p.x, gradient_descent->f(p.x, p.z), p.z));
     }
 }
 
@@ -147,10 +145,8 @@ void Plot::toggleAnimation() {
 
 void Plot::restartAnimation() {
     for (auto& descent : all_descents){
-        if (descent->is_active){
-            descent->resetPosition();
-            Point p = descent->getPosition();
-            descent->ball->setPosition(QVector3D(p.x, gradient_descent->f(p.x, p.z), p.z));
-        }
+        descent->resetPosition();
+        Point p = descent->getPosition();
+        descent->ball->setPosition(QVector3D(p.x, gradient_descent->f(p.x, p.z), p.z));
     }
 }

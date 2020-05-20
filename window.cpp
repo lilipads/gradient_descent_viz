@@ -35,11 +35,19 @@ QPushButton *Window::createToggleAnimationButton(){
     // toggle animation button
     QPushButton *toggleAnimationButton = new QPushButton(this);
 
-    toggleAnimationButton->setText(QStringLiteral("Toggle animation"));
-//    toggleAnimationButton->setCheckable(true);
-//    toggleAnimationButton->setChecked((true));
+    toggleAnimationButton->setCheckable(true);
+    toggleAnimationButton->setChecked(true);
+
+    toggleAnimationButton->setText(QStringLiteral("Pause"));
     QObject::connect(toggleAnimationButton, &QPushButton::clicked, plot,
                      &Plot::toggleAnimation);
+    QObject::connect(toggleAnimationButton, &QPushButton::clicked,
+        [=](){
+            if (toggleAnimationButton->text() == QStringLiteral("Play"))
+                toggleAnimationButton->setText(QStringLiteral("Pause"));
+            else
+                toggleAnimationButton->setText(QStringLiteral("Play"));
+        });
     return toggleAnimationButton;
 }
 
@@ -76,6 +84,11 @@ QGroupBox *Window::createMomentumGroup(){
     groupBox->setChecked(true);
 
     Momentum* descent = plot->momemtum.get();
+
+    QObject::connect(groupBox, &QGroupBox::clicked,
+        [=](const bool &is_visible){
+            descent->ball->setVisible(is_visible);
+        });
 
     QVBoxLayout *vbox = new QVBoxLayout;
     vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
