@@ -1,5 +1,7 @@
 #include "gradientdescent.h"
 
+#include <math.h>
+
 GradientDescent::GradientDescent()
     : ball(new QtDataVisualization::QCustom3DItem),
       delta(0., 0.)
@@ -49,7 +51,21 @@ Point VanillaGradientDescent::getGradientDelta(){
 }
 
 Point Momentum::getGradientDelta(){
+    /* https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Momentum */
+
     delta.x = momentum * delta.x - learning_rate * gradX();
     delta.z = momentum * delta.z - learning_rate * gradZ();
+    return delta;
+}
+
+
+Point AdaGrad::getGradientDelta(){
+    /* https://en.wikipedia.org/wiki/Stochastic_gradient_descent#AdaGrad */
+
+    Point grad(gradX(), gradZ());
+    grad_sum_of_squared.x += pow(grad.x, 2);
+    grad_sum_of_squared.z += pow(grad.z, 2);
+    delta.x = -learning_rate * grad.x / (sqrt(grad_sum_of_squared.x) + 1e-8);
+    delta.z = -learning_rate * grad.z / (sqrt(grad_sum_of_squared.z) + 1e-8);
     return delta;
 }

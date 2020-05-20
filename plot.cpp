@@ -47,13 +47,17 @@ const float ballYOffset = 5.5f;
 Plot::Plot(Q3DSurface *surface)
     : gradient_descent(new VanillaGradientDescent),
       momemtum(new Momentum),
+      ada_grad(new AdaGrad),
       m_graph(surface),
       m_surfaceProxy(new QSurfaceDataProxy()),
       m_surfaceSeries(new QSurface3DSeries(m_surfaceProxy.get()))
 {
     initializeGraph();
+
     all_descents.push_back(gradient_descent.get());
     all_descents.push_back(momemtum.get());
+    all_descents.push_back(ada_grad.get());
+
     for (auto& descent : all_descents) initializeBall(descent);
 
     initializeSurface();
@@ -110,7 +114,7 @@ void Plot::initializeSurface()
 
     // surface look
     m_surfaceSeries->setDrawMode(QSurface3DSeries::DrawSurfaceAndWireframe);
-    m_surfaceSeries->setFlatShadingEnabled(true);
+    m_surfaceSeries->setFlatShadingEnabled(false);
     m_surfaceSeries->setBaseColor( QColor( 100, 0, 0, 255 ));
     //gradient
     QLinearGradient gr;

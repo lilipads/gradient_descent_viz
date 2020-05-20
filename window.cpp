@@ -26,8 +26,8 @@ Window::Window(QWidget *parent)
     vLayout->addWidget(createToggleAnimationButton());
     vLayout->addWidget(createRestartAnimationButton());
     vLayout->addWidget(createGradientDescentGroup());
-    vLayout->addWidget(createMomentumGroup(), 1, Qt::AlignTop);
-//    vLayout->addWidget(createLearningRateBox(), 1, Qt::AlignTop);
+    vLayout->addWidget(createMomentumGroup());
+    vLayout->addWidget(createAdaGradGroup(), 1, Qt::AlignTop);
 }
 
 
@@ -39,8 +39,6 @@ QPushButton *Window::createToggleAnimationButton(){
     toggleAnimationButton->setChecked(true);
 
     toggleAnimationButton->setText(QStringLiteral("Pause"));
-    QObject::connect(toggleAnimationButton, &QPushButton::clicked, plot,
-                     &Plot::toggleAnimation);
     QObject::connect(toggleAnimationButton, &QPushButton::clicked,
         [=](){
             if (toggleAnimationButton->text() == QStringLiteral("Play"))
@@ -48,6 +46,8 @@ QPushButton *Window::createToggleAnimationButton(){
             else
                 toggleAnimationButton->setText(QStringLiteral("Play"));
         });
+    QObject::connect(toggleAnimationButton, &QPushButton::clicked, plot,
+                     &Plot::toggleAnimation);
     return toggleAnimationButton;
 }
 
@@ -62,48 +62,57 @@ QPushButton *Window::createRestartAnimationButton(){
 }
 
 
-QGroupBox *Window::createGradientDescentGroup(){
-    QGroupBox *groupBox = new QGroupBox(tr("&Gradient Descent"));
+QGroupBox *Window::createDescentGroup(GradientDescent* descent,
+                                      QVBoxLayout* vbox){
+    QGroupBox *groupBox = new QGroupBox(tr(descent->name));
     groupBox->setCheckable(true);
     groupBox->setChecked(true);
-
-    GradientDescent* descent = plot->gradient_descent.get();
 
     QObject::connect(groupBox, &QGroupBox::clicked,
         [=](){
             descent->ball->setVisible(!descent->ball->isVisible());
         });
+
+    groupBox->setLayout(vbox);
+    return groupBox;
+}
+
+
+QGroupBox *Window::createGradientDescentGroup(){
+    GradientDescent* descent = plot->gradient_descent.get();
 
     QVBoxLayout *vbox = new QVBoxLayout;
     vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
     vbox->addWidget(createLearningRateBox(descent));
-    vbox->addStretch(1);
-    groupBox->setLayout(vbox);
 
-    return groupBox;
+    vbox->addStretch(1);
+    return createDescentGroup(descent, vbox);
 }
 
+
 QGroupBox *Window::createMomentumGroup(){
-    QGroupBox *groupBox = new QGroupBox(tr("&Momemtum"));
-    groupBox->setCheckable(true);
-    groupBox->setChecked(true);
-
     Momentum* descent = plot->momemtum.get();
-
-    QObject::connect(groupBox, &QGroupBox::clicked,
-        [=](){
-            descent->ball->setVisible(!descent->ball->isVisible());
-        });
 
     QVBoxLayout *vbox = new QVBoxLayout;
     vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
     vbox->addWidget(createLearningRateBox(descent));
     vbox->addWidget(new QLabel(QStringLiteral("Momentum:")));
     vbox->addWidget(createMomentumBox(descent));
-    vbox->addStretch(1);
-    groupBox->setLayout(vbox);
 
-    return groupBox;
+    vbox->addStretch(1);
+    return createDescentGroup(descent, vbox);
+}
+
+
+QGroupBox *Window::createAdaGradGroup(){
+    GradientDescent* descent = plot->ada_grad.get();
+
+    QVBoxLayout *vbox = new QVBoxLayout;
+    vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
+    vbox->addWidget(createLearningRateBox(descent));
+
+    vbox->addStretch(1);
+    return createDescentGroup(descent, vbox);
 }
 
 

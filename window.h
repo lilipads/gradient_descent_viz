@@ -26,8 +26,11 @@ public:
     Window(QWidget *parent = nullptr);
 
 private:
+    QGroupBox* createDescentGroup(GradientDescent* descent,
+        QVBoxLayout* vbox);
     QGroupBox* createGradientDescentGroup();
-    QGroupBox *createMomentumGroup();
+    QGroupBox* createMomentumGroup();
+    QGroupBox* createAdaGradGroup();
     QPushButton* createToggleAnimationButton();
     QPushButton* createRestartAnimationButton();
     QDoubleSpinBox* createLearningRateBox(GradientDescent* descent);

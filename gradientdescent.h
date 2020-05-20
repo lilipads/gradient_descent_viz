@@ -19,6 +19,7 @@ public:
 
     std::unique_ptr<QtDataVisualization::QCustom3DItem> ball;
     QColor ball_color;
+    const char* name;
 
     float f(float x, float z);
     float gradX();
@@ -45,7 +46,10 @@ private:
 
 class VanillaGradientDescent : public GradientDescent {
 public:
-    VanillaGradientDescent(){ ball_color = Qt::cyan; }
+    VanillaGradientDescent() {
+        ball_color = Qt::cyan;
+        name = "&Gradient Descent";
+    }
 
 protected:
      Point getGradientDelta();
@@ -53,12 +57,30 @@ protected:
 
 class Momentum : public GradientDescent {
 public:
-    Momentum(){ ball_color = Qt::magenta; }
+    Momentum() {
+        ball_color = Qt::magenta;
+        name = "&Momentum";
+    }
+
     float momentum = 0.8;
 
 protected:
     Point getGradientDelta();
 
+};
+
+class AdaGrad : public GradientDescent {
+public:
+    AdaGrad() : grad_sum_of_squared(0., 0.){
+        ball_color = Qt::darkYellow;
+        name = "&AdaGrad";
+    }
+
+protected:
+    Point getGradientDelta();
+
+private:
+    Point grad_sum_of_squared;
 };
 
 #endif // GRADIENTDESCENT_H

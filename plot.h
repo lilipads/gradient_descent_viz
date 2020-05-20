@@ -51,6 +51,7 @@ public:
     ~Plot();
     std::unique_ptr<VanillaGradientDescent> gradient_descent;
     std::unique_ptr<Momentum> momemtum;
+    std::unique_ptr<AdaGrad> ada_grad;
 
 public Q_SLOTS:
     void toggleAnimation();
