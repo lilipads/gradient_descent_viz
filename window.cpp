@@ -25,7 +25,8 @@ Window::Window(QWidget *parent)
 
     vLayout->addWidget(createToggleAnimationButton());
     vLayout->addWidget(createRestartAnimationButton());
-    vLayout->addWidget(createGradientDescentGroup(), 1, Qt::AlignTop);
+    vLayout->addWidget(createGradientDescentGroup());
+    vLayout->addWidget(createMomentumGroup(), 1, Qt::AlignTop);
 //    vLayout->addWidget(createLearningRateBox(), 1, Qt::AlignTop);
 }
 
@@ -69,18 +70,52 @@ QGroupBox *Window::createGradientDescentGroup(){
     return groupBox;
 }
 
+QGroupBox *Window::createMomentumGroup(){
+    QGroupBox *groupBox = new QGroupBox(tr("&Momemtum"));
+    groupBox->setCheckable(true);
+    groupBox->setChecked(true);
+
+    Momentum* descent = plot->momemtum.get();
+
+    QVBoxLayout *vbox = new QVBoxLayout;
+    vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
+    vbox->addWidget(createLearningRateBox(descent));
+    vbox->addWidget(new QLabel(QStringLiteral("Momentum:")));
+    vbox->addWidget(createMomentumBox(descent));
+    vbox->addStretch(1);
+    groupBox->setLayout(vbox);
+
+    return groupBox;
+}
+
+
 QDoubleSpinBox *Window::createLearningRateBox(GradientDescent* descent){
     // learning rate spin box
     QDoubleSpinBox *learningRateBox = new QDoubleSpinBox(this);
     learningRateBox->setDecimals(4);
     learningRateBox->setRange(0.0001, 1.0);
-    learningRateBox->setValue(0.01);
+    learningRateBox->setValue(descent->learning_rate);
     learningRateBox->setSingleStep(0.001);
-    descent->learning_rate = 0.01;
     QObject::connect(learningRateBox,
         QOverload<double>::of(&QDoubleSpinBox::valueChanged),
         [=]( const double &newValue ) {
             descent->learning_rate = newValue;
+        });
+    return learningRateBox;
+}
+
+
+QDoubleSpinBox *Window::createMomentumBox(Momentum* descent){
+    // learning rate spin box
+    QDoubleSpinBox *learningRateBox = new QDoubleSpinBox(this);
+    learningRateBox->setDecimals(1);
+    learningRateBox->setRange(0.1, 1.0);
+    learningRateBox->setValue(descent->momentum);
+    learningRateBox->setSingleStep(0.1);
+    QObject::connect(learningRateBox,
+        QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+        [=]( const double &newValue ) {
+            descent->momentum = newValue;
         });
     return learningRateBox;
 }

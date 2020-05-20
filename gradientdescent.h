@@ -45,12 +45,13 @@ public:
 class Momentum : public GradientDescent {
 public:
     Momentum(){ ball_color = Qt::magenta; }
+    float momentum = 0.8;
+
     Point gradientStep();
-    void setMomemtum(float m) {momentum = m;}
+
 private:
     float delta_x = 0.;
     float delta_z = 0.;
-    float momentum = 0.8;
 };
 
 #endif // GRADIENTDESCENT_H
