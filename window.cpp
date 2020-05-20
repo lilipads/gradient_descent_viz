@@ -1,5 +1,6 @@
-#include "window.h"
+#include <QtWidgets>
 
+#include "window.h"
 
 Window::Window(QWidget *parent)
  : QWidget(parent)
@@ -24,15 +25,47 @@ Window::Window(QWidget *parent)
 
     vLayout->addWidget(createToggleAnimationButton());
     vLayout->addWidget(createRestartAnimationButton());
-    vLayout->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
-    vLayout->addWidget(createLearningRateBox(), 1, Qt::AlignTop);
+    vLayout->addWidget(createGradientDescentGroup(), 1, Qt::AlignTop);
+//    vLayout->addWidget(createLearningRateBox(), 1, Qt::AlignTop);
 }
 
+/*
+QGroupBox *Window::createSecondExclusiveGroup()
+{
+    QGroupBox *groupBox = new QGroupBox(tr("E&xclusive Radio Buttons"));
+    groupBox->setCheckable(true);
+    groupBox->setChecked(false);
+//! [4]
+
+//! [5]
+    QRadioButton *radio1 = new QRadioButton(tr("Rad&io button 1"));
+    QRadioButton *radio2 = new QRadioButton(tr("Radi&o button 2"));
+    QRadioButton *radio3 = new QRadioButton(tr("Radio &button 3"));
+    radio1->setChecked(true);
+    QCheckBox *checkBox = new QCheckBox(tr("Ind&ependent checkbox"));
+    checkBox->setChecked(true);
+//! [5]
+
+//! [6]
+    QVBoxLayout *vbox = new QVBoxLayout;
+    vbox->addWidget(radio1);
+    vbox->addWidget(radio2);
+    vbox->addWidget(radio3);
+    vbox->addWidget(checkBox);
+    vbox->addStretch(1);
+    groupBox->setLayout(vbox);
+
+    return groupBox;
+}
+*/
 
 QPushButton *Window::createToggleAnimationButton(){
     // toggle animation button
     QPushButton *toggleAnimationButton = new QPushButton(this);
+
     toggleAnimationButton->setText(QStringLiteral("Toggle animation"));
+//    toggleAnimationButton->setCheckable(true);
+//    toggleAnimationButton->setChecked((true));
     QObject::connect(toggleAnimationButton, &QPushButton::clicked, plot,
                      &Plot::toggleAnimation);
     return toggleAnimationButton;
@@ -48,6 +81,20 @@ QPushButton *Window::createRestartAnimationButton(){
     return restartAnimationButton;
 }
 
+
+QGroupBox *Window::createGradientDescentGroup(){
+    QGroupBox *groupBox = new QGroupBox(tr("&Gradient Descent"));
+    groupBox->setCheckable(true);
+    groupBox->setChecked(true);
+
+    QVBoxLayout *vbox = new QVBoxLayout;
+    vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
+    vbox->addWidget(createLearningRateBox());
+    vbox->addStretch(1);
+    groupBox->setLayout(vbox);
+
+    return groupBox;
+}
 
 QDoubleSpinBox *Window::createLearningRateBox(){
     // learning rate spin box
