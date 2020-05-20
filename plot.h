@@ -56,7 +56,6 @@ public Q_SLOTS:
     void toggleAnimation();
     void triggerAnimation();
     void restartAnimation();
-    void setLearningRate(double lr){ gradient_descent->setLearningRate(lr); }
 
 private:
     std::unique_ptr<Q3DSurface> m_graph;
@@ -66,7 +65,7 @@ private:
     std::unique_ptr<QSurface3DSeries> m_surfaceSeries;
     void initializeSurface();
     void initializeGraph();
-    void initializeBall(GradientDescent* gd);
+    void initializeBall(GradientDescent* descent);
 };
 
 #endif // PLOT_H

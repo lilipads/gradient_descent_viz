@@ -58,26 +58,30 @@ QGroupBox *Window::createGradientDescentGroup(){
     groupBox->setCheckable(true);
     groupBox->setChecked(true);
 
+    GradientDescent* descent = plot->gradient_descent.get();
+
     QVBoxLayout *vbox = new QVBoxLayout;
     vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
-    vbox->addWidget(createLearningRateBox());
+    vbox->addWidget(createLearningRateBox(descent));
     vbox->addStretch(1);
     groupBox->setLayout(vbox);
 
     return groupBox;
 }
 
-QDoubleSpinBox *Window::createLearningRateBox(){
+QDoubleSpinBox *Window::createLearningRateBox(GradientDescent* descent){
     // learning rate spin box
     QDoubleSpinBox *learningRateBox = new QDoubleSpinBox(this);
     learningRateBox->setDecimals(4);
     learningRateBox->setRange(0.0001, 1.0);
     learningRateBox->setValue(0.01);
     learningRateBox->setSingleStep(0.001);
-    plot->setLearningRate(0.01);
+    descent->learning_rate = 0.01;
     QObject::connect(learningRateBox,
-                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
-                     plot, &Plot::setLearningRate);
+        QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+        [=]( const double &newValue ) {
+            descent->learning_rate = newValue;
+        });
     return learningRateBox;
 }
 

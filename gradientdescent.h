@@ -25,7 +25,7 @@ public:
     float gradX();
     float gradZ();
     Point getPosition(){ return p; }
-    void setLearningRate(float lr){ learning_rate = lr; }
+    float learning_rate = 0.01;
     void resetPosition();
 
     virtual Point gradientStep() = 0;
@@ -33,7 +33,7 @@ public:
 protected:
     Point p; // current position
     void setCurrentPosition(float x, float z) {p.x = x; p.z = z;}
-    float learning_rate = 0.01;
+
 };
 
 class VanillaGradientDescent : public GradientDescent {

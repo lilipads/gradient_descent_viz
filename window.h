@@ -29,7 +29,7 @@ private:
     QGroupBox* createGradientDescentGroup();
     QPushButton* createToggleAnimationButton();
     QPushButton* createRestartAnimationButton();
-    QDoubleSpinBox* createLearningRateBox();
+    QDoubleSpinBox* createLearningRateBox(GradientDescent* descent);
     Plot *plot;
 };
 
