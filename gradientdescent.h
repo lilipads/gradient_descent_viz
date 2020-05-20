@@ -31,13 +31,15 @@ public:
 
 protected:
     Point p; // current position
+    Point delta;
     bool is_converged = false;
 
     void setCurrentPosition(float x, float z) {p.x = x; p.z = z;}
     virtual Point getGradientDelta() = 0;
 
 private:
-    const float kConvergenceEpsilon = 1e-3;
+    const float kFiniteDiffEpsilon = 1e-5;
+    const float kConvergenceEpsilon = 1e-5;
     void checkConvergence();
 };
 
@@ -57,9 +59,6 @@ public:
 protected:
     Point getGradientDelta();
 
-private:
-    float delta_x = 0.;
-    float delta_z = 0.;
 };
 
 #endif // GRADIENTDESCENT_H

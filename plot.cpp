@@ -42,7 +42,7 @@ const int sampleCountX = 50;
 const int sampleCountZ = 50;
 const float sampleMin = -8.0f;
 const float sampleMax = 8.0f;
-const float ballYOffset = 4.0f;
+const float ballYOffset = 5.5f;
 
 Plot::Plot(Q3DSurface *surface)
     : gradient_descent(new VanillaGradientDescent),

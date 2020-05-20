@@ -1,7 +1,8 @@
 #include "gradientdescent.h"
 
 GradientDescent::GradientDescent()
-    : ball(new QtDataVisualization::QCustom3DItem)
+    : ball(new QtDataVisualization::QCustom3DItem),
+      delta(0., 0.)
 {
     resetPosition();
 }
@@ -12,14 +13,14 @@ float GradientDescent::f(float x, float z){
 
 float GradientDescent::gradX(){
     // use finite difference method
-    const float epsilon = 1e-5;
-    return (f(p.x + epsilon, p.z) - f(p.x - epsilon, p.z)) / (2 * epsilon);
+    return (f(p.x + kFiniteDiffEpsilon, p.z) -
+            f(p.x - kFiniteDiffEpsilon, p.z)) / (2 * kFiniteDiffEpsilon);
 }
 
 float GradientDescent::gradZ(){
     // use finite difference method
-    const float epsilon = 1e-5;
-    return (f(p.x, p.z + epsilon) - f(p.x, p.z - epsilon)) / (2 * epsilon);
+    return (f(p.x, p.z + kFiniteDiffEpsilon) -
+            f(p.x, p.z - kFiniteDiffEpsilon)) / (2 * kFiniteDiffEpsilon);
 }
 
 void GradientDescent::resetPosition(){
@@ -48,8 +49,7 @@ Point VanillaGradientDescent::getGradientDelta(){
 }
 
 Point Momentum::getGradientDelta(){
-    delta_x = momentum * delta_x - learning_rate * gradX();
-    delta_z = momentum * delta_z - learning_rate * gradZ();
-    Point delta(delta_x, delta_z);
+    delta.x = momentum * delta.x - learning_rate * gradX();
+    delta.z = momentum * delta.z - learning_rate * gradZ();
     return delta;
 }
