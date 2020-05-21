@@ -39,15 +39,16 @@ QPushButton *Window::createToggleAnimationButton(){
 
     toggleAnimationButton->setCheckable(true);
     toggleAnimationButton->setChecked(true);
-
     toggleAnimationButton->setText(QStringLiteral("Pause"));
-    QObject::connect(toggleAnimationButton, &QPushButton::clicked,
-        [=](){
-            if (toggleAnimationButton->text() == QStringLiteral("Play"))
+
+    QObject::connect(toggleAnimationButton, &QPushButton::toggled,
+        [=](bool is_checked){
+            if (is_checked)
                 toggleAnimationButton->setText(QStringLiteral("Pause"));
             else
                 toggleAnimationButton->setText(QStringLiteral("Play"));
         });
+
     QObject::connect(toggleAnimationButton, &QPushButton::clicked, plot,
                      &Plot::toggleAnimation);
     return toggleAnimationButton;
