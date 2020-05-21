@@ -1,9 +1,9 @@
 #include <QtWidgets>
 #include <math.h>
+#include <string>
 
 #include "window.h"
 
-#include <QtWidgets/QMessageBox>
 
 Window::Window(QWidget *parent)
  : QWidget(parent)
@@ -92,6 +92,9 @@ QGroupBox *Window::createDescentGroup(GradientDescent* descent,
         [=](){
             descent->ball->setVisible(!descent->ball->isVisible());
         });
+
+    groupBox->setStyleSheet(QString("QGroupBox::title {font: 10pt; background: %1}"
+                                    ).arg(descent->ball_color.name()));
 
     groupBox->setLayout(vbox);
     return groupBox;

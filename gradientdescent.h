@@ -92,7 +92,7 @@ private:
 class RMSProp : public GradientDescent {
 public:
     RMSProp() : decayed_grad_sum_of_squared(0., 0.){
-        ball_color = Qt::black;
+        ball_color = Qt::green;
         name = "&RMSProp";
     }
 
