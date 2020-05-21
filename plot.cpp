@@ -23,6 +23,9 @@ Plot::Plot(Q3DSurface *surface)
       m_surfaceProxy(new QSurfaceDataProxy()),
       m_surfaceSeries(new QSurface3DSeries(m_surfaceProxy.get()))
 {
+    stepX = (sampleMax - sampleMin) / float(sampleCountX - 1);
+    stepZ = (sampleMax - sampleMin) / float(sampleCountZ - 1);
+
     initializeGraph();
 
     all_descents.push_back(gradient_descent.get());
@@ -62,11 +65,7 @@ void Plot::initializeBall(GradientDescent* descent){
     restartAnimation();
 }
 
-void Plot::initializeSurface()
-{
-    float stepX = (sampleMax - sampleMin) / float(sampleCountX - 1);
-    float stepZ = (sampleMax - sampleMin) / float(sampleCountZ - 1);
-
+void Plot::initializeSurface() {
     QSurfaceDataArray *dataArray = new QSurfaceDataArray;
     dataArray->reserve(sampleCountZ);
     for (int i = 0 ; i < sampleCountZ ; i++) {
@@ -103,9 +102,20 @@ void Plot::initializeSurface()
 
 
 void Plot::setBallPosition(QCustom3DItem* ball, Point p){
-    ball->setPosition(QVector3D(p.x,
-                                gradient_descent->f(p.x, p.z) + ballYOffset,
-                                p.z));
+    const float cutoff = 15;
+    float y = gradient_descent->f(p.x, p.z);
+    // hack: if the graph has a hole that's too deep, we can't see the ball
+    // hardcode to lift the ball up
+    if (gradient_descent->f(p.x + stepX, p.z) - y > cutoff ||
+        gradient_descent->f(p.x, p.z + stepZ) - y > cutoff){
+        y = std::max(gradient_descent->f(p.x + stepX, p.z),
+                gradient_descent->f(p.x, p.z + stepZ) - y) - cutoff - 10;
+    }
+    else{
+        // to make the ball look like it's above the surface
+        y += ballYOffset;
+    }
+    ball->setPosition(QVector3D(p.x, y, p.z));
 }
 
 void Plot::triggerAnimation() {

@@ -37,6 +37,9 @@ private:
     QTimer m_timer;
     std::unique_ptr<QSurfaceDataProxy> m_surfaceProxy;
     std::unique_ptr<QSurface3DSeries> m_surfaceSeries;
+
+    float stepX;
+    float stepZ;
     void initializeSurface();
     void initializeGraph();
     void initializeBall(GradientDescent* descent);

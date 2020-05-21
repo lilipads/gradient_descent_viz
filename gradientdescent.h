@@ -74,6 +74,7 @@ public:
     AdaGrad() : grad_sum_of_squared(0., 0.){
         ball_color = Qt::white;
         name = "&AdaGrad";
+        learning_rate = 1.;
     }
 
 protected:
