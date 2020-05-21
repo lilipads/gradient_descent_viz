@@ -4,7 +4,8 @@
 
 GradientDescent::GradientDescent()
     : ball(new QtDataVisualization::QCustom3DItem),
-      delta(0., 0.)
+      delta(0., 0.),
+      starting_p(4., 7.)
 {
     resetPosition();
 }
@@ -28,9 +29,10 @@ float GradientDescent::gradZ(){
 }
 
 void GradientDescent::resetPosition(){
-    p = Point(4., 7.);
+    p = starting_p;
     is_converged = false;
 }
+
 
 Point GradientDescent::gradientStep(){
     if (is_converged) return p;

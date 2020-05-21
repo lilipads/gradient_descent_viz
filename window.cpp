@@ -3,6 +3,8 @@
 
 #include "window.h"
 
+#include <QtWidgets/QMessageBox>
+
 Window::Window(QWidget *parent)
  : QWidget(parent)
 {

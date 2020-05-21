@@ -27,12 +27,13 @@ public:
     Point getPosition(){ return p; }
     float learning_rate = 0.01;
     void resetPosition();
-
+    void setStartingPosition(float x, float z) {starting_p.x = x; starting_p.z = z;}
     Point gradientStep();
 
 protected:
     Point p; // current position
-    Point delta;
+    Point starting_p; // starting position
+    Point delta; // movement in each direction after a gradient step
     bool is_converged = false;
 
     void setCurrentPosition(float x, float z) {p.x = x; p.z = z;}

@@ -31,11 +31,13 @@ public Q_SLOTS:
     void triggerAnimation();
     void restartAnimation();
     void setCameraZoom(float zoom);
+    void restartFromNewPosition(QPoint q_pos);
 
 private:
-    std::unique_ptr<Q3DSurface> m_graph;
+
     std::vector<GradientDescent*> all_descents;
     QTimer m_timer;
+    std::unique_ptr<Q3DSurface> m_graph;
     std::unique_ptr<QSurfaceDataProxy> m_surfaceProxy;
     std::unique_ptr<QSurface3DSeries> m_surfaceSeries;
 

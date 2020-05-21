@@ -41,6 +41,11 @@ Plot::Plot(Q3DSurface *surface)
     QObject::connect(&m_timer, &QTimer::timeout, this,
                      &Plot::triggerAnimation);
 
+    // restart animation from selected position
+    QObject::connect(m_surfaceSeries.get(),
+                     &QSurface3DSeries::selectedPointChanged,
+                     this, &Plot::restartFromNewPosition);
+
     toggleAnimation();
 }
 
@@ -48,6 +53,7 @@ Plot::~Plot() {}
 
 void Plot::initializeGraph(){
     m_graph->setShadowQuality(QAbstract3DGraph::ShadowQualityNone);
+    m_graph->activeTheme()->setType(Q3DTheme::Theme(2));
     m_graph->scene()->activeCamera()->setCameraPreset(Q3DCamera::CameraPresetFront);
     m_graph->setAxisX(new QValue3DAxis);
     m_graph->setAxisY(new QValue3DAxis);
@@ -136,6 +142,18 @@ void Plot::restartAnimation() {
         Point p = descent->getPosition();
         setBallPosition(descent->ball.get(), p);
     }
+}
+
+
+void Plot::restartFromNewPosition(QPoint q_pos){
+    if (q_pos == QSurface3DSeries::invalidSelectionPosition())
+        return;
+    // convert the 2d Qt internal point for to the 3d point on the series
+    QVector3D p = m_surfaceProxy->itemAt(q_pos)->position();
+    for (auto descent : all_descents){
+        descent->setStartingPosition(p.x(), p.z());
+    }
+    restartAnimation();
 }
 
 
