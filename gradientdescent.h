@@ -6,8 +6,8 @@
 #include <QColor>
 
 struct Point {
-    float x;
-    float z;
+    float x = 0.;
+    float z = 0.;
     Point() : x(0.), z(0.) {}
     Point(float _x, float _z) : x(_x), z(_z) {}
 };
@@ -25,7 +25,7 @@ public:
     float gradX();
     float gradZ();
     Point getPosition(){ return p; }
-    float learning_rate = 0.001;
+    float learning_rate = 0.01;
     void resetPosition();
 
     Point gradientStep();
@@ -72,7 +72,7 @@ protected:
 class AdaGrad : public GradientDescent {
 public:
     AdaGrad() : grad_sum_of_squared(0., 0.){
-        ball_color = Qt::darkYellow;
+        ball_color = Qt::white;
         name = "&AdaGrad";
     }
 
@@ -86,7 +86,7 @@ private:
 class RMSProp : public GradientDescent {
 public:
     RMSProp() : decayed_grad_sum_of_squared(0., 0.){
-        ball_color = Qt::darkGray;
+        ball_color = Qt::black;
         name = "&RMSProp";
     }
 
@@ -105,7 +105,7 @@ public:
     Adam() : decayed_grad_sum(0., 0.),
         decayed_grad_sum_of_squared(0., 0.)
     {
-        ball_color = Qt::darkBlue;
+        ball_color = Qt::blue;
         name = "&Adam";
     }
 

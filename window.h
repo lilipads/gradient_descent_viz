@@ -8,6 +8,7 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QSpinBox>
 #include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QMessageBox>
 #include <QtGui/QScreen>
@@ -35,7 +36,7 @@ private:
     QGroupBox* createAdamGroup();
     QPushButton* createToggleAnimationButton();
     QPushButton* createRestartAnimationButton();
-    QDoubleSpinBox* createLearningRateBox(GradientDescent* descent);
+    QLayout* createLearningRateBox(GradientDescent* descent);
     QDoubleSpinBox* createMomentumBox(Momentum* descent);
     QDoubleSpinBox* createDecayBox(float& val);
     Plot *plot;

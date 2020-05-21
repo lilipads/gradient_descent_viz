@@ -10,7 +10,9 @@ GradientDescent::GradientDescent()
 }
 
 float GradientDescent::f(float x, float z){
-    return x * x + z * z;
+//    return x * x + z * z;
+    z *= 1.4;
+    return -2 * exp(-((x - 1) * (x - 1) + z * z) / .2) -30. * exp(-((x + 1) * (x + 1) + z * z) / .2) + x * x + z * z;
 }
 
 float GradientDescent::gradX(){
@@ -26,7 +28,7 @@ float GradientDescent::gradZ(){
 }
 
 void GradientDescent::resetPosition(){
-    p = Point(4., 0.);
+    p = Point(4., 7.);
     is_converged = false;
 }
 

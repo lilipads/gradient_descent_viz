@@ -1,4 +1,5 @@
 #include <QtWidgets>
+#include <math.h>
 
 #include "window.h"
 
@@ -46,7 +47,7 @@ QPushButton *Window::createToggleAnimationButton(){
             if (is_checked)
                 toggleAnimationButton->setText(QStringLiteral("Pause"));
             else
-                toggleAnimationButton->setText(QStringLiteral("Play"));
+                toggleAnimationButton->setText(QStringLiteral("Paused"));
         });
 
     QObject::connect(toggleAnimationButton, &QPushButton::clicked, plot,
@@ -86,7 +87,7 @@ QGroupBox *Window::createGradientDescentGroup(){
 
     QVBoxLayout *vbox = new QVBoxLayout;
     vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
-    vbox->addWidget(createLearningRateBox(descent));
+    vbox->addLayout(createLearningRateBox(descent));
 
     vbox->addStretch(1);
     return createDescentGroup(descent, vbox);
@@ -98,7 +99,7 @@ QGroupBox *Window::createMomentumGroup(){
 
     QVBoxLayout *vbox = new QVBoxLayout;
     vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
-    vbox->addWidget(createLearningRateBox(descent));
+    vbox->addLayout(createLearningRateBox(descent));
 
     vbox->addWidget(new QLabel(QStringLiteral("Momentum:")));
     vbox->addWidget(createMomentumBox(descent));
@@ -113,7 +114,7 @@ QGroupBox *Window::createAdaGradGroup(){
 
     QVBoxLayout *vbox = new QVBoxLayout;
     vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
-    vbox->addWidget(createLearningRateBox(descent));
+    vbox->addLayout(createLearningRateBox(descent));
 
     vbox->addStretch(1);
     return createDescentGroup(descent, vbox);
@@ -125,7 +126,7 @@ QGroupBox *Window::createRMSPropGroup(){
 
     QVBoxLayout *vbox = new QVBoxLayout;
     vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
-    vbox->addWidget(createLearningRateBox(descent));
+    vbox->addLayout(createLearningRateBox(descent));
 
     vbox->addWidget(new QLabel(QStringLiteral("Decay Rate:")));
     vbox->addWidget(createDecayBox(descent->decay_rate));
@@ -140,7 +141,7 @@ QGroupBox *Window::createAdamGroup(){
 
     QVBoxLayout *vbox = new QVBoxLayout;
     vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
-    vbox->addWidget(createLearningRateBox(descent));
+    vbox->addLayout(createLearningRateBox(descent));
 
     vbox->addWidget(new QLabel(QStringLiteral("Beta1 (1st order decay):")));
     vbox->addWidget(createDecayBox(descent->beta1));
@@ -153,19 +154,23 @@ QGroupBox *Window::createAdamGroup(){
 }
 
 
-QDoubleSpinBox *Window::createLearningRateBox(GradientDescent* descent){
+QLayout *Window::createLearningRateBox(GradientDescent* descent){
     // learning rate spin box
-    QDoubleSpinBox *learningRateBox = new QDoubleSpinBox(this);
-    learningRateBox->setDecimals(4);
-    learningRateBox->setRange(0.0001, 1.0);
-    learningRateBox->setValue(descent->learning_rate);
-    learningRateBox->setSingleStep(0.001);
+    QHBoxLayout *hbox = new QHBoxLayout;
+    hbox->addWidget(new QLabel(QStringLiteral("1e")));
+
+    QSpinBox *learningRateBox = new QSpinBox(this);
+    learningRateBox->setRange(-10, 10);
+    learningRateBox->setValue(int(log(descent->learning_rate) / log(10)));
     QObject::connect(learningRateBox,
-        QOverload<double>::of(&QDoubleSpinBox::valueChanged),
-        [=]( const double &newValue ) {
-            descent->learning_rate = newValue;
+        QOverload<int>::of(&QSpinBox::valueChanged),
+        [=](const int &newValue) {
+            descent->learning_rate = pow(10, newValue);
         });
-    return learningRateBox;
+
+    hbox->addWidget(learningRateBox, 1, Qt::AlignLeft);
+
+    return hbox;
 }
 
 
