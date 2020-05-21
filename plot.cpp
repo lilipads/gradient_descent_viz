@@ -54,7 +54,7 @@ Plot::~Plot() {}
 void Plot::initializeGraph(){
     m_graph->setShadowQuality(QAbstract3DGraph::ShadowQualityNone);
     m_graph->activeTheme()->setType(Q3DTheme::Theme(2));
-    m_graph->scene()->activeCamera()->setCameraPreset(Q3DCamera::CameraPresetFront);
+    m_graph->scene()->activeCamera()->setCameraPreset(Q3DCamera::CameraPresetFrontHigh);
     m_graph->setAxisX(new QValue3DAxis);
     m_graph->setAxisY(new QValue3DAxis);
     m_graph->setAxisZ(new QValue3DAxis);
@@ -126,6 +126,7 @@ void Plot::setBallPosition(QCustom3DItem* ball, Point p){
 
 void Plot::triggerAnimation() {
     for (auto& descent : all_descents){
+        if (descent->isConverged()) continue;
         Point p = descent->gradientStep();
         setBallPosition(descent->ball.get(), p);
     }

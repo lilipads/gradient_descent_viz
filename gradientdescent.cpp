@@ -4,8 +4,8 @@
 
 GradientDescent::GradientDescent()
     : ball(new QtDataVisualization::QCustom3DItem),
-      delta(0., 0.),
-      starting_p(4., 7.)
+      starting_p(4., 7.),
+      delta(0., 0.)
 {
     resetPosition();
 }

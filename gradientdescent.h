@@ -20,15 +20,19 @@ public:
     std::unique_ptr<QtDataVisualization::QCustom3DItem> ball;
     QColor ball_color;
     const char* name;
+    float learning_rate = 0.01;
 
+    // simple getters and setters
+    Point getPosition() {return p;}
+    void setStartingPosition(float x, float z) {starting_p.x = x; starting_p.z = z;}
+    bool isConverged() {return is_converged;};
+
+    // core methods
     float f(float x, float z);
     float gradX();
     float gradZ();
-    Point getPosition(){ return p; }
-    float learning_rate = 0.01;
-    void resetPosition();
-    void setStartingPosition(float x, float z) {starting_p.x = x; starting_p.z = z;}
     Point gradientStep();
+    void resetPosition();
 
 protected:
     Point p; // current position

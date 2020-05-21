@@ -73,8 +73,9 @@ QPushButton *Window::createRestartAnimationButton(){
 
 QSlider *Window::createZoomSlider(){
     QSlider *zoomSlider = new QSlider(Qt::Horizontal, this);
-    zoomSlider->setValue(300);
     zoomSlider->setRange(100, 1000);
+    zoomSlider->setValue(120);
+    plot->setCameraZoom(120);
     QObject::connect(zoomSlider, &QSlider::valueChanged, plot,
                      &Plot::setCameraZoom);
     return zoomSlider;
