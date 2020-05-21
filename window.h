@@ -41,7 +41,7 @@ private:
 
     QLayout* createLearningRateBox(GradientDescent* descent);
     QDoubleSpinBox* createMomentumBox(Momentum* descent);
-    QDoubleSpinBox* createDecayBox(float& val);
+    QDoubleSpinBox* createDecayBox(double& val);
     Plot *plot;
 };
 

@@ -11,7 +11,7 @@ const int sampleCountX = 50;
 const int sampleCountZ = 50;
 const float sampleMin = -8.0f;
 const float sampleMax = 8.0f;
-const float ballYOffset = 5.5f;
+const float ballYOffset = 10.f;
 
 Plot::Plot(Q3DSurface *surface)
     : gradient_descent(new VanillaGradientDescent),
@@ -97,7 +97,7 @@ void Plot::initializeSurface() {
     //gradient
     QLinearGradient gr;
     gr.setColorAt(1.0, Qt::darkGreen);
-    gr.setColorAt(0.4, Qt::yellow);
+    gr.setColorAt(0.3, Qt::yellow);
     gr.setColorAt(0.1, Qt::red);
     gr.setColorAt(0.0, Qt::darkRed);
     m_surfaceSeries->setBaseGradient(gr);

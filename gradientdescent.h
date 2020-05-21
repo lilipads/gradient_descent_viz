@@ -6,10 +6,10 @@
 #include <QColor>
 
 struct Point {
-    float x = 0.;
-    float z = 0.;
+    double x = 0.;
+    double z = 0.;
     Point() : x(0.), z(0.) {}
-    Point(float _x, float _z) : x(_x), z(_z) {}
+    Point(double _x, double _z) : x(_x), z(_z) {}
 };
 
 class GradientDescent {
@@ -20,17 +20,17 @@ public:
     std::unique_ptr<QtDataVisualization::QCustom3DItem> ball;
     QColor ball_color;
     const char* name;
-    float learning_rate = 0.01;
+    double learning_rate = 0.01;
 
     // simple getters and setters
     Point getPosition() {return p;}
-    void setStartingPosition(float x, float z) {starting_p.x = x; starting_p.z = z;}
+    void setStartingPosition(double x, double z) {starting_p.x = x; starting_p.z = z;}
     bool isConverged() {return is_converged;};
 
     // core methods
-    float f(float x, float z);
-    float gradX();
-    float gradZ();
+    double f(double x, double z);
+    double gradX();
+    double gradZ();
     Point gradientStep();
     void resetPosition();
 
@@ -40,13 +40,8 @@ protected:
     Point delta; // movement in each direction after a gradient step
     bool is_converged = false;
 
-    void setCurrentPosition(float x, float z) {p.x = x; p.z = z;}
-    virtual Point getGradientDelta() = 0;
-
-private:
-    const float kFiniteDiffEpsilon = 1e-5;
-    const float kConvergenceEpsilon = 1e-5;
-    void checkConvergence();
+    void setCurrentPosition(double x, double z) {p.x = x; p.z = z;}
+    virtual Point getGradientDelta(Point grad) = 0;
 };
 
 class VanillaGradientDescent : public GradientDescent {
@@ -57,7 +52,7 @@ public:
     }
 
 protected:
-     Point getGradientDelta();
+     Point getGradientDelta(Point grad);
 };
 
 class Momentum : public GradientDescent {
@@ -67,10 +62,10 @@ public:
         name = "&Momentum";
     }
 
-    float momentum = 0.8;
+    double momentum = 0.8;
 
 protected:
-    Point getGradientDelta();
+    Point getGradientDelta(Point grad);
 
 };
 
@@ -83,7 +78,7 @@ public:
     }
 
 protected:
-    Point getGradientDelta();
+    Point getGradientDelta(Point grad);
 
 private:
     Point grad_sum_of_squared;
@@ -96,14 +91,13 @@ public:
         name = "&RMSProp";
     }
 
-    float decay_rate = 0.99;
+    double decay_rate = 0.99;
 
 protected:
-    Point getGradientDelta();
+    Point getGradientDelta(Point grad);
 
 private:
     Point decayed_grad_sum_of_squared;
-    const float kEpsilon = 1e-8;
 };
 
 class Adam : public GradientDescent {
@@ -115,16 +109,15 @@ public:
         name = "&Adam";
     }
 
-    float beta1 = 0.9;
-    float beta2 = 0.999;
+    double beta1 = 0.9;
+    double beta2 = 0.999;
 
 protected:
-    Point getGradientDelta();
+    Point getGradientDelta(Point grad);
 
 private:
     Point decayed_grad_sum;
     Point decayed_grad_sum_of_squared;
-    const float kEpsilon = 1e-8;
 };
 
 #endif // GRADIENTDESCENT_H

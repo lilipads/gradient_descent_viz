@@ -93,7 +93,7 @@ QGroupBox *Window::createDescentGroup(GradientDescent* descent,
             descent->ball->setVisible(!descent->ball->isVisible());
         });
 
-    groupBox->setStyleSheet(QString("QGroupBox::title {font: 10pt; background: %1}"
+    groupBox->setStyleSheet(QString("QGroupBox::title {font: 10pt; border-radius: 5px; background: %1;}"
                                     ).arg(descent->ball_color.name()));
 
     groupBox->setLayout(vbox);
@@ -207,7 +207,7 @@ QDoubleSpinBox *Window::createMomentumBox(Momentum* descent){
     return momentumBox;
 }
 
-QDoubleSpinBox *Window::createDecayBox(float& val){
+QDoubleSpinBox *Window::createDecayBox(double& val){
     // learning rate spin box
     QDoubleSpinBox *decayRateBox = new QDoubleSpinBox(this);
     decayRateBox->setDecimals(3);
