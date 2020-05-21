@@ -30,6 +30,7 @@ public Q_SLOTS:
     void toggleAnimation();
     void triggerAnimation();
     void restartAnimation();
+    void setCameraZoom(float zoom);
 
 private:
     std::unique_ptr<Q3DSurface> m_graph;

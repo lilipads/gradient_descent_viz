@@ -10,7 +10,7 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QDoubleSpinBox>
-#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QSlider>
 #include <QtGui/QScreen>
 
 #include "plot.h"
@@ -34,8 +34,11 @@ private:
     QGroupBox* createAdaGradGroup();
     QGroupBox* createRMSPropGroup();
     QGroupBox* createAdamGroup();
+
     QPushButton* createToggleAnimationButton();
     QPushButton* createRestartAnimationButton();
+    QSlider* createZoomSlider();
+
     QLayout* createLearningRateBox(GradientDescent* descent);
     QDoubleSpinBox* createMomentumBox(Momentum* descent);
     QDoubleSpinBox* createDecayBox(float& val);

@@ -137,3 +137,8 @@ void Plot::restartAnimation() {
         setBallPosition(descent->ball.get(), p);
     }
 }
+
+
+void Plot::setCameraZoom(float zoom){
+    m_graph->scene()->activeCamera()->setZoomLevel(zoom);
+}

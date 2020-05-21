@@ -26,6 +26,10 @@ Window::Window(QWidget *parent)
 
     vLayout->addWidget(createToggleAnimationButton());
     vLayout->addWidget(createRestartAnimationButton());
+    vLayout->addWidget(new QLabel(QStringLiteral("zoom:")));
+    vLayout->addWidget(createZoomSlider());
+
+    // set gradient parameters
     vLayout->addWidget(createGradientDescentGroup());
     vLayout->addWidget(createMomentumGroup());
     vLayout->addWidget(createAdaGradGroup());
@@ -63,6 +67,15 @@ QPushButton *Window::createRestartAnimationButton(){
     QObject::connect(restartAnimationButton, &QPushButton::clicked, plot,
                      &Plot::restartAnimation);
     return restartAnimationButton;
+}
+
+QSlider *Window::createZoomSlider(){
+    QSlider *zoomSlider = new QSlider(Qt::Horizontal, this);
+    zoomSlider->setValue(300);
+    zoomSlider->setRange(100, 1000);
+    QObject::connect(zoomSlider, &QSlider::valueChanged, plot,
+                     &Plot::setCameraZoom);
+    return zoomSlider;
 }
 
 
