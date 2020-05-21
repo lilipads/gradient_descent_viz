@@ -31,10 +31,13 @@ private:
     QGroupBox* createGradientDescentGroup();
     QGroupBox* createMomentumGroup();
     QGroupBox* createAdaGradGroup();
+    QGroupBox* createRMSPropGroup();
+    QGroupBox* createAdamGroup();
     QPushButton* createToggleAnimationButton();
     QPushButton* createRestartAnimationButton();
     QDoubleSpinBox* createLearningRateBox(GradientDescent* descent);
     QDoubleSpinBox* createMomentumBox(Momentum* descent);
+    QDoubleSpinBox* createDecayBox(float& val);
     Plot *plot;
 };
 

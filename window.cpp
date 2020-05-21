@@ -27,7 +27,9 @@ Window::Window(QWidget *parent)
     vLayout->addWidget(createRestartAnimationButton());
     vLayout->addWidget(createGradientDescentGroup());
     vLayout->addWidget(createMomentumGroup());
-    vLayout->addWidget(createAdaGradGroup(), 1, Qt::AlignTop);
+    vLayout->addWidget(createAdaGradGroup());
+    vLayout->addWidget(createRMSPropGroup());
+    vLayout->addWidget(createAdamGroup(), 1, Qt::AlignTop);
 }
 
 
@@ -79,7 +81,7 @@ QGroupBox *Window::createDescentGroup(GradientDescent* descent,
 
 
 QGroupBox *Window::createGradientDescentGroup(){
-    GradientDescent* descent = plot->gradient_descent.get();
+    VanillaGradientDescent* descent = plot->gradient_descent.get();
 
     QVBoxLayout *vbox = new QVBoxLayout;
     vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
@@ -96,6 +98,7 @@ QGroupBox *Window::createMomentumGroup(){
     QVBoxLayout *vbox = new QVBoxLayout;
     vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
     vbox->addWidget(createLearningRateBox(descent));
+
     vbox->addWidget(new QLabel(QStringLiteral("Momentum:")));
     vbox->addWidget(createMomentumBox(descent));
 
@@ -105,11 +108,44 @@ QGroupBox *Window::createMomentumGroup(){
 
 
 QGroupBox *Window::createAdaGradGroup(){
-    GradientDescent* descent = plot->ada_grad.get();
+    AdaGrad* descent = plot->ada_grad.get();
 
     QVBoxLayout *vbox = new QVBoxLayout;
     vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
     vbox->addWidget(createLearningRateBox(descent));
+
+    vbox->addStretch(1);
+    return createDescentGroup(descent, vbox);
+}
+
+
+QGroupBox *Window::createRMSPropGroup(){
+    RMSProp* descent = plot->rms_prop.get();
+
+    QVBoxLayout *vbox = new QVBoxLayout;
+    vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
+    vbox->addWidget(createLearningRateBox(descent));
+
+    vbox->addWidget(new QLabel(QStringLiteral("Decay Rate:")));
+    vbox->addWidget(createDecayBox(descent->decay_rate));
+
+    vbox->addStretch(1);
+    return createDescentGroup(descent, vbox);
+}
+
+
+QGroupBox *Window::createAdamGroup(){
+    Adam* descent = plot->adam.get();
+
+    QVBoxLayout *vbox = new QVBoxLayout;
+    vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
+    vbox->addWidget(createLearningRateBox(descent));
+
+    vbox->addWidget(new QLabel(QStringLiteral("Beta1 (1st order decay):")));
+    vbox->addWidget(createDecayBox(descent->beta1));
+
+    vbox->addWidget(new QLabel(QStringLiteral("Beta2 (2nd order decay):")));
+    vbox->addWidget(createDecayBox(descent->beta2));
 
     vbox->addStretch(1);
     return createDescentGroup(descent, vbox);
@@ -133,18 +169,30 @@ QDoubleSpinBox *Window::createLearningRateBox(GradientDescent* descent){
 
 
 QDoubleSpinBox *Window::createMomentumBox(Momentum* descent){
-    // learning rate spin box
-    QDoubleSpinBox *learningRateBox = new QDoubleSpinBox(this);
-    learningRateBox->setDecimals(1);
-    learningRateBox->setRange(0.1, 2.0);
-    learningRateBox->setValue(descent->momentum);
-    learningRateBox->setSingleStep(0.1);
-    QObject::connect(learningRateBox,
+    QDoubleSpinBox *momentumBox = new QDoubleSpinBox(this);
+    momentumBox->setDecimals(1);
+    momentumBox->setRange(0.1, 2.0);
+    momentumBox->setValue(descent->momentum);
+    momentumBox->setSingleStep(0.1);
+    QObject::connect(momentumBox,
         QOverload<double>::of(&QDoubleSpinBox::valueChanged),
         [=]( const double &newValue ) {
             descent->momentum = newValue;
         });
-    return learningRateBox;
+    return momentumBox;
+}
+
+QDoubleSpinBox *Window::createDecayBox(float& val){
+    // learning rate spin box
+    QDoubleSpinBox *decayRateBox = new QDoubleSpinBox(this);
+    decayRateBox->setDecimals(3);
+    decayRateBox->setRange(0.0, 1.0);
+    decayRateBox->setValue(val);
+    decayRateBox->setSingleStep(0.1);
+    QObject::connect(decayRateBox,
+        QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+        [&](const double &newValue ) {val = newValue;});
+    return decayRateBox;
 }
 
 

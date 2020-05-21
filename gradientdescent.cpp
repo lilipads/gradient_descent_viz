@@ -69,3 +69,36 @@ Point AdaGrad::getGradientDelta(){
     delta.z = -learning_rate * grad.z / (sqrt(grad_sum_of_squared.z) + 1e-8);
     return delta;
 }
+
+Point RMSProp::getGradientDelta(){
+    /* https://en.wikipedia.org/wiki/Stochastic_gradient_descent#RMSProp */
+
+    Point grad(gradX(), gradZ());
+    decayed_grad_sum_of_squared.x *= decay_rate;
+    decayed_grad_sum_of_squared.x += (1 - decay_rate) * pow(grad.x, 2);
+    decayed_grad_sum_of_squared.z *= decay_rate;
+    decayed_grad_sum_of_squared.z += (1 - decay_rate) * pow(grad.z, 2);
+    delta.x = -learning_rate * grad.x / (sqrt(decayed_grad_sum_of_squared.x) + kEpsilon);
+    delta.z = -learning_rate * grad.z / (sqrt(decayed_grad_sum_of_squared.z) + kEpsilon);
+    return delta;
+}
+
+Point Adam::getGradientDelta(){
+    /* https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Adam */
+
+    Point grad(gradX(), gradZ());
+    // first moment (momentum)
+    decayed_grad_sum.x *= beta1;
+    decayed_grad_sum.x += (1 - beta1) * grad.x;
+    decayed_grad_sum.z *= beta1;
+    decayed_grad_sum.z += (1 - beta1) * grad.z;
+    // second moment (rmsprop)
+    decayed_grad_sum_of_squared.x *= beta2;
+    decayed_grad_sum_of_squared.x += (1 - beta2) * pow(grad.x, 2);
+    decayed_grad_sum_of_squared.z *= beta2;
+    decayed_grad_sum_of_squared.z += (1 - beta2) * pow(grad.z, 2);
+
+    delta.x = -learning_rate * decayed_grad_sum.x / (sqrt(decayed_grad_sum_of_squared.x) + kEpsilon);
+    delta.z = -learning_rate * decayed_grad_sum.z / (sqrt(decayed_grad_sum_of_squared.z) + kEpsilon);
+    return delta;
+}

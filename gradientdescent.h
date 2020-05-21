@@ -83,4 +83,42 @@ private:
     Point grad_sum_of_squared;
 };
 
+class RMSProp : public GradientDescent {
+public:
+    RMSProp() : decayed_grad_sum_of_squared(0., 0.){
+        ball_color = Qt::darkGray;
+        name = "&RMSProp";
+    }
+
+    float decay_rate = 0.99;
+
+protected:
+    Point getGradientDelta();
+
+private:
+    Point decayed_grad_sum_of_squared;
+    const float kEpsilon = 1e-8;
+};
+
+class Adam : public GradientDescent {
+public:
+    Adam() : decayed_grad_sum(0., 0.),
+        decayed_grad_sum_of_squared(0., 0.)
+    {
+        ball_color = Qt::darkBlue;
+        name = "&Adam";
+    }
+
+    float beta1 = 0.9;
+    float beta2 = 0.999;
+
+protected:
+    Point getGradientDelta();
+
+private:
+    Point decayed_grad_sum;
+    Point decayed_grad_sum_of_squared;
+    const float kEpsilon = 1e-8;
+};
+
 #endif // GRADIENTDESCENT_H
