@@ -11,6 +11,7 @@
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QSlider>
+#include <QtWidgets/QComboBox>
 #include <QtGui/QScreen>
 
 #include "plot.h"
@@ -27,6 +28,12 @@ public:
     Window(QWidget *parent = nullptr);
 
 private:
+    QGroupBox* createControlGroup();
+    QPushButton* createToggleAnimationButton();
+    QPushButton* createRestartAnimationButton();
+    QSlider* createZoomSlider();
+    QComboBox* createPlaybackSpeedBox();
+
     QGroupBox* createDescentGroup(GradientDescent* descent,
         QVBoxLayout* vbox);
     QGroupBox* createGradientDescentGroup();
@@ -34,10 +41,6 @@ private:
     QGroupBox* createAdaGradGroup();
     QGroupBox* createRMSPropGroup();
     QGroupBox* createAdamGroup();
-
-    QPushButton* createToggleAnimationButton();
-    QPushButton* createRestartAnimationButton();
-    QSlider* createZoomSlider();
 
     QLayout* createLearningRateBox(GradientDescent* descent);
     QDoubleSpinBox* createMomentumBox(Momentum* descent);

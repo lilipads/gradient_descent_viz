@@ -9,6 +9,8 @@ const double kConvergenceEpsilon = 1e-2;
 
 GradientDescent::GradientDescent()
     : ball(new QtDataVisualization::QCustom3DItem),
+      arrowX(new QtDataVisualization::QCustom3DItem),
+      arrowZ(new QtDataVisualization::QCustom3DItem),
       starting_p(4., 7.),
       delta(0., 0.)
 {

@@ -30,6 +30,7 @@ public Q_SLOTS:
     void toggleAnimation();
     void triggerAnimation();
     void restartAnimation();
+    void setAnimationSpeed(int index);
     void setCameraZoom(float zoom);
     void restartFromNewPosition(QPoint q_pos);
 
@@ -43,10 +44,16 @@ private:
 
     float stepX;
     float stepZ;
+    int timer_counter = 0;
+    int animation_slowdown = 1; // slow down factor
+    int animation_speedup = 1;  // speed up factor
+
     void initializeSurface();
     void initializeGraph();
     void initializeBall(GradientDescent* descent);
     void setBallPosition(QCustom3DItem* ball, Point p);
+    void setArrowGeometry(GradientDescent* descent, Point grad);
+    void initializeArrow(GradientDescent* descent);
 };
 
 #endif // PLOT_H

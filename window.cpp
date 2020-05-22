@@ -26,17 +26,30 @@ Window::Window(QWidget *parent)
 
     plot = new Plot(graph);
 
-    vLayout->addWidget(createToggleAnimationButton());
-    vLayout->addWidget(createRestartAnimationButton());
-    vLayout->addWidget(new QLabel(QStringLiteral("zoom:")));
-    vLayout->addWidget(createZoomSlider());
+    vLayout->addWidget(createControlGroup());
 
-    // set gradient parameters
+    // widgets to tune gradient parameters
     vLayout->addWidget(createGradientDescentGroup());
     vLayout->addWidget(createMomentumGroup());
     vLayout->addWidget(createAdaGradGroup());
     vLayout->addWidget(createRMSPropGroup());
     vLayout->addWidget(createAdamGroup(), 1, Qt::AlignTop);
+}
+
+
+QGroupBox *Window::createControlGroup(){
+    QGroupBox *groupBox = new QGroupBox();
+    QGridLayout *controlGrid= new QGridLayout;
+    groupBox->setLayout(controlGrid);
+
+    controlGrid->addWidget(createToggleAnimationButton(),0, 0);
+    controlGrid->addWidget(createRestartAnimationButton(), 0, 1);
+    controlGrid->addWidget(new QLabel(QStringLiteral("Zoom:")), 1, 0);
+    controlGrid->addWidget(createZoomSlider(), 2, 0);
+    controlGrid->addWidget(new QLabel(QStringLiteral("Playback speed:")), 1, 1);
+    controlGrid->addWidget(createPlaybackSpeedBox(), 2, 1);
+
+    return groupBox;
 }
 
 
@@ -46,12 +59,12 @@ QPushButton *Window::createToggleAnimationButton(){
 
     toggleAnimationButton->setCheckable(true);
     toggleAnimationButton->setChecked(true);
-    toggleAnimationButton->setText(QStringLiteral("Pause"));
+    toggleAnimationButton->setText(QStringLiteral("Pause "));
 
     QObject::connect(toggleAnimationButton, &QPushButton::toggled,
         [=](bool is_checked){
             if (is_checked)
-                toggleAnimationButton->setText(QStringLiteral("Pause"));
+                toggleAnimationButton->setText(QStringLiteral("Pause "));
             else
                 toggleAnimationButton->setText(QStringLiteral("Paused"));
         });
@@ -72,13 +85,28 @@ QPushButton *Window::createRestartAnimationButton(){
 }
 
 QSlider *Window::createZoomSlider(){
-    QSlider *zoomSlider = new QSlider(Qt::Horizontal, this);
-    zoomSlider->setRange(100, 1000);
-    zoomSlider->setValue(120);
+    QSlider *slider = new QSlider(Qt::Horizontal, this);
+    slider->setRange(100, 1000);
+    slider->setValue(120);
     plot->setCameraZoom(120);
-    QObject::connect(zoomSlider, &QSlider::valueChanged, plot,
+    QObject::connect(slider, &QSlider::valueChanged, plot,
                      &Plot::setCameraZoom);
-    return zoomSlider;
+    return slider;
+}
+
+
+QComboBox *Window::createPlaybackSpeedBox(){
+    QComboBox *box = new QComboBox(this);
+    box->addItem("0.1x");
+    box->addItem("0.2x");
+    box->addItem("1x");
+    box->addItem("5x");
+    box->addItem("10x");
+    box->setCurrentIndex(2);
+
+    QObject::connect(box, SIGNAL(currentIndexChanged(int)),
+                     plot, SLOT(setAnimationSpeed(int)));
+    return box;
 }
 
 

@@ -17,10 +17,14 @@ public:
     GradientDescent();
     virtual ~GradientDescent() {}
 
-    std::unique_ptr<QtDataVisualization::QCustom3DItem> ball;
-    QColor ball_color;
     const char* name;
     double learning_rate = 0.01;
+    // visual elements
+    std::unique_ptr<QtDataVisualization::QCustom3DItem> ball;
+    QColor ball_color;
+    std::unique_ptr<QtDataVisualization::QCustom3DItem> arrowX;
+    std::unique_ptr<QtDataVisualization::QCustom3DItem> arrowZ;
+
 
     // simple getters and setters
     Point getPosition() {return p;}
