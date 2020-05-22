@@ -13,6 +13,8 @@ const float sampleMin = -8.0f;
 const float sampleMax = 8.0f;
 const float kBallYOffset = 10.f;
 const float kArrowOffset = 0.4;
+const float kCameraMoveStepSize = 0.1f;
+const float kCameraZoomStepSize = 10.f;
 
 Plot::Plot(Q3DSurface *surface)
     : gradient_descent(new VanillaGradientDescent),
@@ -212,6 +214,24 @@ void Plot::restartFromNewPosition(QPoint q_pos){
 
 void Plot::setCameraZoom(float zoom){
     m_graph->scene()->activeCamera()->setZoomLevel(zoom);
+}
+
+void Plot::cameraZoomIn(){
+    Q3DCamera* camera = m_graph->scene()->activeCamera();
+    camera->setZoomLevel(camera->zoomLevel() + kCameraZoomStepSize);
+}
+
+void Plot::cameraZoomOut(){
+    Q3DCamera* camera = m_graph->scene()->activeCamera();
+    camera->setZoomLevel(camera->zoomLevel() - kCameraZoomStepSize);
+}
+
+
+void Plot::moveCamera(int x_direction, int z_direction){
+    QVector3D target = m_graph->scene()->activeCamera()->target();
+    target.setX(target.x() + x_direction * kCameraMoveStepSize);
+    target.setZ(target.z() + z_direction * kCameraMoveStepSize);
+    m_graph->scene()->activeCamera()->setTarget(target);
 }
 
 void Plot::setAnimationSpeed(int index){

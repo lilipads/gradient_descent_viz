@@ -28,6 +28,10 @@ public:
     Window(QWidget *parent = nullptr);
 
 private:
+    Plot *plot;
+
+    void setupKeyboardShortcuts();
+
     QGroupBox* createControlGroup();
     QPushButton* createToggleAnimationButton();
     QPushButton* createRestartAnimationButton();
@@ -45,7 +49,7 @@ private:
     QLayout* createLearningRateBox(GradientDescent* descent);
     QDoubleSpinBox* createMomentumBox(Momentum* descent);
     QDoubleSpinBox* createDecayBox(double& val);
-    Plot *plot;
+
 };
 
 #endif

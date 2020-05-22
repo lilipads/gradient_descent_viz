@@ -34,6 +34,24 @@ Window::Window(QWidget *parent)
     vLayout->addWidget(createAdaGradGroup());
     vLayout->addWidget(createRMSPropGroup());
     vLayout->addWidget(createAdamGroup(), 1, Qt::AlignTop);
+
+    setupKeyboardShortcuts();
+}
+
+
+void Window::setupKeyboardShortcuts(){
+    QShortcut* left = new QShortcut(Qt::Key_Left, this);
+    QObject::connect(left, &QShortcut::activated, [=](){plot->moveCamera(-1, 0);});
+    QShortcut* right = new QShortcut(Qt::Key_Right, this);
+    QObject::connect(right, &QShortcut::activated, [=](){plot->moveCamera(1, 0);});
+    QShortcut* up = new QShortcut(Qt::Key_Up, this);
+    QObject::connect(up, &QShortcut::activated, [=](){plot->moveCamera(0, 1);});
+    QShortcut* down = new QShortcut(Qt::Key_Down, this);
+    QObject::connect(down, &QShortcut::activated, [=](){plot->moveCamera(0, -1);});
+    QShortcut* zoomin = new QShortcut(Qt::CTRL + Qt::Key_Equal, this);
+    QObject::connect(zoomin, &QShortcut::activated, plot, &Plot::cameraZoomIn);
+    QShortcut* zoomout = new QShortcut(Qt::CTRL + Qt::Key_Minus, this);
+    QObject::connect(zoomout, &QShortcut::activated, plot, &Plot::cameraZoomOut);
 }
 
 
@@ -247,5 +265,3 @@ QDoubleSpinBox *Window::createDecayBox(double& val){
         [&](const double &newValue ) {val = newValue;});
     return decayRateBox;
 }
-
-

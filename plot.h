@@ -33,6 +33,9 @@ public Q_SLOTS:
     void setAnimationSpeed(int index);
     void setCameraZoom(float zoom);
     void restartFromNewPosition(QPoint q_pos);
+    void moveCamera(int x_direction, int z_direction);
+    void cameraZoomIn();
+    void cameraZoomOut();
 
 private:
 
