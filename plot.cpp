@@ -1,4 +1,5 @@
 #include "plot.h"
+#include "animation.h"
 
 #include <QtDataVisualization/qvalue3daxis.h>
 #include <QtDataVisualization/q3dscene.h>
@@ -11,8 +12,6 @@ const int sampleCountX = 50;
 const int sampleCountZ = 50;
 const float sampleMin = -8.0f;
 const float sampleMax = 8.0f;
-const float kBallYOffset = 10.f;
-const float kArrowOffset = 0.4;
 const float kCameraMoveStepSize = 0.1f;
 const float kCameraZoomStepSize = 10.f;
 
@@ -37,7 +36,8 @@ Plot::Plot(Q3DSurface *surface)
     all_descents.push_back(rms_prop.get());
     all_descents.push_back(adam.get());
 
-    for (auto& descent : all_descents) initializeBall(descent);
+    for (auto& descent : all_descents)
+        m_graph->addCustomItem(descent->ball.get());
     initializeArrow(gradient_descent.get());
 
     initializeSurface();
@@ -51,6 +51,9 @@ Plot::Plot(Q3DSurface *surface)
                      this, &Plot::restartFromNewPosition);
 
     toggleAnimation();
+    restartAnimation();
+
+    detailed_descent = gradient_descent.get();
 }
 
 Plot::~Plot() {}
@@ -62,17 +65,6 @@ void Plot::initializeGraph(){
     m_graph->setAxisX(new QValue3DAxis);
     m_graph->setAxisY(new QValue3DAxis);
     m_graph->setAxisZ(new QValue3DAxis);
-}
-
-void Plot::initializeBall(GradientDescent* descent){
-    descent->ball->setScaling(QVector3D(0.01f, 0.01f, 0.01f));
-    descent->ball->setMeshFile(QStringLiteral(":/mesh/largesphere.obj"));
-    QImage pointColor = QImage(2, 2, QImage::Format_RGB32);
-    pointColor.fill(descent->ball_color);
-    descent->ball->setTextureImage(pointColor);
-    m_graph->addCustomItem(descent->ball.get());
-
-    restartAnimation();
 }
 
 
@@ -133,38 +125,8 @@ void Plot::initializeSurface() {
 }
 
 
-void Plot::setBallPosition(QCustom3DItem* ball, Point p){
-    const float cutoff = 15;
-    float y = gradient_descent->f(p.x, p.z);
-    // hack: if the graph has a hole that's too deep, we can't see the ball
-    // hardcode to lift the ball up
-    if (gradient_descent->f(p.x + stepX, p.z) - y > cutoff ||
-        gradient_descent->f(p.x, p.z + stepZ) - y > cutoff){
-        y = std::max(gradient_descent->f(p.x + stepX, p.z),
-                gradient_descent->f(p.x, p.z + stepZ) - y) - cutoff - 10;
-    }
-    else{
-        // to make the ball look like it's above the surface
-        y += kBallYOffset;
-    }
-    ball->setPosition(QVector3D(p.x, y, p.z));
-}
-
-
-void Plot::setArrowGeometry(GradientDescent* descent, Point grad){
-    // scale
-    descent->arrowX->setScaling(QVector3D(0.1f, 0.1f * grad.x, 0.1f));
-    descent->arrowZ->setScaling(QVector3D(0.1f, 0.1f * grad.z, 0.1f));
-    // translate
-    QVector3D ball_position = descent->ball->position();
-    descent->arrowX->setPosition(
-                QVector3D(ball_position.x() - grad.x * kArrowOffset,
-                          ball_position.y(),
-                          ball_position.z()));
-    descent->arrowZ->setPosition(
-                QVector3D(ball_position.x(),
-                          ball_position.y(),
-                          ball_position.z() - grad.z * kArrowOffset));
+void Plot::toggleAnimation() {
+    m_timer.isActive() ? m_timer.stop() : m_timer.start(15);
 }
 
 
@@ -174,28 +136,19 @@ void Plot::triggerAnimation() {
             if (descent->isConverged()) continue;
             Point p;
             for (int i = 0; i < animation_speedup; i++)
-                p = descent->gradientStep();
-            setBallPosition(descent->ball.get(), p);
+                p = descent->takeGradientStep();
+            AnimationHelper::setBallPosition(descent->ball.get(), p);
             Point grad(descent->gradX(), descent->gradZ());
-            setArrowGeometry(descent, grad);
+            AnimationHelper::setArrowGeometry(descent, grad);
         }
     }
     timer_counter = (timer_counter + 1) % animation_slowdown;
 }
 
 
-void Plot::toggleAnimation() {
-    m_timer.isActive() ? m_timer.stop() : m_timer.start(15);
-}
-
-
 void Plot::restartAnimation() {
     for (auto& descent : all_descents){
         descent->resetPosition();
-        Point p = descent->getPosition();
-        setBallPosition(descent->ball.get(), p);
-        Point grad(descent->gradX(), descent->gradZ());
-        setArrowGeometry(descent, grad);
     }
 }
 

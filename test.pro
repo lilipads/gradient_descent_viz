@@ -16,13 +16,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    animation.cpp \
     gradientdescent.cpp \
+    item.cpp \
     main.cpp \
     plot.cpp \
     window.cpp
 
 HEADERS += \
+    animation.h \
     gradientdescent.h \
+    item.h \
     plot.h \
     window.h
 

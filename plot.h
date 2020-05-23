@@ -44,6 +44,8 @@ private:
     std::unique_ptr<Q3DSurface> m_graph;
     std::unique_ptr<QSurfaceDataProxy> m_surfaceProxy;
     std::unique_ptr<QSurface3DSeries> m_surfaceSeries;
+    bool detailedView = true;
+    GradientDescent* detailed_descent;
 
     float stepX;
     float stepZ;
@@ -53,9 +55,6 @@ private:
 
     void initializeSurface();
     void initializeGraph();
-    void initializeBall(GradientDescent* descent);
-    void setBallPosition(QCustom3DItem* ball, Point p);
-    void setArrowGeometry(GradientDescent* descent, Point grad);
     void initializeArrow(GradientDescent* descent);
 };
 

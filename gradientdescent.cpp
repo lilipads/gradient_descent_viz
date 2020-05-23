@@ -8,8 +8,7 @@ const double kConvergenceEpsilon = 1e-2;
 
 
 GradientDescent::GradientDescent()
-    : ball(new QtDataVisualization::QCustom3DItem),
-      arrowX(new QtDataVisualization::QCustom3DItem),
+    : arrowX(new QtDataVisualization::QCustom3DItem),
       arrowZ(new QtDataVisualization::QCustom3DItem),
       starting_p(4., 7.),
       delta(0., 0.)
@@ -41,7 +40,7 @@ void GradientDescent::resetPosition(){
 }
 
 
-Point GradientDescent::gradientStep(){
+Point GradientDescent::takeGradientStep(){
     Point grad(gradX(), gradZ());
     if (abs(grad.x) < kConvergenceEpsilon &&
          abs(grad.z) < kConvergenceEpsilon){

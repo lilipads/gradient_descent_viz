@@ -2,8 +2,11 @@
 #define GRADIENTDESCENT_H
 
 #include <memory>
+
 #include <QtDataVisualization/QCustom3DItem>
 #include <QColor>
+
+#include "item.h"
 
 struct Point {
     double x = 0.;
@@ -19,9 +22,10 @@ public:
 
     const char* name;
     double learning_rate = 0.01;
+
     // visual elements
-    std::unique_ptr<QtDataVisualization::QCustom3DItem> ball;
     QColor ball_color;
+    std::unique_ptr<Ball> ball;
     std::unique_ptr<QtDataVisualization::QCustom3DItem> arrowX;
     std::unique_ptr<QtDataVisualization::QCustom3DItem> arrowZ;
 
@@ -32,10 +36,10 @@ public:
     bool isConverged() {return is_converged;};
 
     // core methods
-    double f(double x, double z);
+    static double f(double x, double z);
     double gradX();
     double gradZ();
-    Point gradientStep();
+    Point takeGradientStep();
     void resetPosition();
 
 protected:
@@ -53,6 +57,7 @@ public:
     VanillaGradientDescent() {
         ball_color = Qt::cyan;
         name = "&Gradient Descent";
+        ball = std::unique_ptr<Ball>(new Ball(ball_color));
     }
 
 protected:
@@ -64,6 +69,7 @@ public:
     Momentum() {
         ball_color = Qt::magenta;
         name = "&Momentum";
+        ball = std::unique_ptr<Ball>(new Ball(ball_color));
     }
 
     double momentum = 0.8;
@@ -78,6 +84,7 @@ public:
     AdaGrad() : grad_sum_of_squared(0., 0.){
         ball_color = Qt::white;
         name = "&AdaGrad";
+        ball = std::unique_ptr<Ball>(new Ball(ball_color));
         learning_rate = 1.;
     }
 
@@ -93,6 +100,7 @@ public:
     RMSProp() : decayed_grad_sum_of_squared(0., 0.){
         ball_color = Qt::green;
         name = "&RMSProp";
+        ball = std::unique_ptr<Ball>(new Ball(ball_color));
     }
 
     double decay_rate = 0.99;
@@ -111,6 +119,7 @@ public:
     {
         ball_color = Qt::blue;
         name = "&Adam";
+        ball = std::unique_ptr<Ball>(new Ball(ball_color));
     }
 
     double beta1 = 0.9;
