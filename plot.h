@@ -1,16 +1,17 @@
 #ifndef PLOT_H
 #define PLOT_H
 
+#include <memory>
+#include <vector>
+
 #include <QtDataVisualization/Q3DSurface>
 #include <QtDataVisualization/QSurfaceDataProxy>
 #include <QtDataVisualization/QHeightMapSurfaceDataProxy>
 #include <QtDataVisualization/QSurface3DSeries>
-#include <QtDataVisualization/q3dscatter.h>
-#include <QtDataVisualization/qscatterdataproxy.h>
 #include <QtCore/QTimer>
-#include <gradientdescent.h>
-#include <memory>
-#include <vector>
+
+#include "gradientdescent.h"
+#include "animation.h"
 
 using namespace QtDataVisualization;
 
@@ -45,7 +46,7 @@ private:
     std::unique_ptr<QSurfaceDataProxy> m_surfaceProxy;
     std::unique_ptr<QSurface3DSeries> m_surfaceSeries;
     bool detailedView = true;
-    GradientDescent* detailed_descent;
+    GradientDescentAnimation* detailed_descent;
 
     float stepX;
     float stepZ;

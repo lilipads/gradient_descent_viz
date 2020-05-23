@@ -42,6 +42,14 @@ void Animation::triggerAnimation(){
 }
 
 
+void Animation::prepareDetailedAnimation(){
+    QColor color = descent->ball_color;
+    color.setAlpha(100);
+    temporary_ball = std::unique_ptr<Ball>(new Ball(color));
+    m_graph->addCustomItem(temporary_ball.get());
+}
+
+
 void GradientDescentAnimation::animateStep(){
     switch(state){
     case 0:
@@ -61,7 +69,7 @@ void GradientDescentAnimation::animateStep(){
     // TODO: draw the composite gradient arrow
     case 2:{
         Point p = descent->takeGradientStep();
-        AnimationHelper::setBallPosition(temporary_ball, p);
+        AnimationHelper::setBallPosition(temporary_ball.get(), p);
         break;
     }
     }

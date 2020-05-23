@@ -5,6 +5,7 @@
 
 #include <QtCore/QTimer>
 #include <QtDataVisualization/QCustom3DItem>
+#include <QtDataVisualization/Q3DSurface>
 
 #include "gradientdescent.h"
 
@@ -27,17 +28,21 @@ void setArrowGeometry(GradientDescent* descent, Point grad);
 class Animation
 {
 public:
-    Animation(QTimer* _timer, GradientDescent* _descent)
-        : timer(_timer), descent(_descent){}
+    Animation(Q3DSurface* _graph, QTimer* _timer, GradientDescent* _descent)
+        : m_graph(_graph), timer(_timer), descent(_descent){}
 
     void triggerAnimation();
+    void prepareDetailedAnimation();
 
 protected:
     int num_states;
     int state = 0;
+
+    Q3DSurface* m_graph;
     QTimer* timer;
     GradientDescent* descent;
-    QCustom3DItem* temporary_ball;
+    std::unique_ptr<QCustom3DItem> temporary_ball;
+
 
     virtual void animateStep() = 0;
 };
@@ -47,8 +52,8 @@ class GradientDescentAnimation : public Animation
 {
 public:
     GradientDescentAnimation(
-            QTimer* _timer, GradientDescent* _descent)
-        : Animation(_timer, _descent)
+            Q3DSurface* _graph, QTimer* _timer, GradientDescent* _descent)
+        : Animation(_graph, _timer, _descent)
     {
         num_states = 3;
     };

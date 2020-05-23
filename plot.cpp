@@ -1,5 +1,4 @@
 #include "plot.h"
-#include "animation.h"
 
 #include <QtDataVisualization/qvalue3daxis.h>
 #include <QtDataVisualization/q3dscene.h>
@@ -53,7 +52,9 @@ Plot::Plot(Q3DSurface *surface)
     toggleAnimation();
     restartAnimation();
 
-    detailed_descent = gradient_descent.get();
+    detailed_descent = new GradientDescentAnimation(
+                m_graph.get(), &m_timer, gradient_descent.get());
+    detailed_descent->prepareDetailedAnimation();
 }
 
 Plot::~Plot() {}
@@ -132,15 +133,17 @@ void Plot::toggleAnimation() {
 
 void Plot::triggerAnimation() {
     if (timer_counter == 0){
-        for (auto& descent : all_descents){
-            if (descent->isConverged()) continue;
-            Point p;
-            for (int i = 0; i < animation_speedup; i++)
-                p = descent->takeGradientStep();
-            AnimationHelper::setBallPosition(descent->ball.get(), p);
-            Point grad(descent->gradX(), descent->gradZ());
-            AnimationHelper::setArrowGeometry(descent, grad);
-        }
+        detailed_descent->triggerAnimation();
+//        for (auto& descent : all_descents){
+//            // TODO: move this to animation class
+//            if (descent->isConverged()) continue;
+//            Point p;
+//            for (int i = 0; i < animation_speedup; i++)
+//                p = descent->takeGradientStep();
+//            AnimationHelper::setBallPosition(descent->ball.get(), p);
+//            Point grad(descent->gradX(), descent->gradZ());
+//            AnimationHelper::setArrowGeometry(descent, grad);
+//        }
     }
     timer_counter = (timer_counter + 1) % animation_slowdown;
 }
