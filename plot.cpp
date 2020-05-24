@@ -179,8 +179,14 @@ void Plot::cameraZoomOut(){
 
 void Plot::moveCamera(int x_direction, int z_direction){
     QVector3D target = m_graph->scene()->activeCamera()->target();
-    target.setX(target.x() + x_direction * kCameraMoveStepSize);
-    target.setZ(target.z() + z_direction * kCameraMoveStepSize);
+    float x_rotation = m_graph->scene()->activeCamera()->xRotation();
+    x_rotation = qDegreesToRadians(x_rotation);
+    target.setX(target.x()
+                + x_direction * qCos(x_rotation) * kCameraMoveStepSize
+                + z_direction * qSin(x_rotation) * kCameraMoveStepSize);
+    target.setZ(target.z()
+                - x_direction * qSin(x_rotation) * kCameraMoveStepSize
+                + z_direction * qCos(x_rotation) * kCameraMoveStepSize);
     m_graph->scene()->activeCamera()->setTarget(target);
 }
 
