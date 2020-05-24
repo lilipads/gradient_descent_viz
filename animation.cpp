@@ -42,7 +42,7 @@ void GradientDescentAnimation::animateStep(){
         descent->arrowX->setVisible(false);
         descent->arrowZ->setVisible(false);
         total_arrow->setVisible(false);
-        Point p = descent->getPosition();
+        Point p = descent->position();
         AnimationHelper::setBallPosition(descent->ball.get(), p);
         break;
     }

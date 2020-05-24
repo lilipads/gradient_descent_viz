@@ -31,14 +31,14 @@ public:
 
 
     // simple getters and setters
-    Point getPosition() {return p;}
+    Point position() {return p;}
     void setStartingPosition(double x, double z) {starting_p.x = x; starting_p.z = z;}
     bool isConverged() {return is_converged;};
+    double gradX() {return grad.x;};
+    double gradZ() {return grad.z;};
 
     // core methods
-    static double f(double x, double z);
-    double gradX();
-    double gradZ();
+    static double f(double x, double z); 
     Point takeGradientStep();
     void resetPosition();
 
@@ -46,9 +46,11 @@ protected:
     Point p; // current position
     Point starting_p; // starting position
     Point delta; // movement in each direction after a gradient step
+    Point grad; // gradient at the current position
     bool is_converged = false;
 
-    void setCurrentPosition(double x, double z) {p.x = x; p.z = z;}
+    void setPosition(double x, double z);
+    void calculateGradient();
     virtual Point getGradientDelta(Point grad) = 0;
 };
 

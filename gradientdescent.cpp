@@ -22,28 +22,30 @@ double GradientDescent::f(double x, double z){
     return -2 * exp(-((x - 1) * (x - 1) + z * z) / .2) -6. * exp(-((x + 1) * (x + 1) + z * z) / .2) + x * x + z * z;
 }
 
-double GradientDescent::gradX(){
+void GradientDescent::calculateGradient(){
     // use finite difference method
-    return (f(p.x + kFiniteDiffEpsilon, p.z) -
+    grad.x = (f(p.x + kFiniteDiffEpsilon, p.z) -
             f(p.x - kFiniteDiffEpsilon, p.z)) / (2 * kFiniteDiffEpsilon);
-}
 
-double GradientDescent::gradZ(){
-    // use finite difference method
-    return (f(p.x, p.z + kFiniteDiffEpsilon) -
+    grad.z = (f(p.x, p.z + kFiniteDiffEpsilon) -
             f(p.x, p.z - kFiniteDiffEpsilon)) / (2 * kFiniteDiffEpsilon);
 }
 
 void GradientDescent::resetPosition(){
-    p = starting_p;
+    setPosition(starting_p.x, starting_p.z);
     is_converged = false;
 }
 
 
+void GradientDescent::setPosition(double x, double z){
+   p.x = x;
+   p.z = z;
+   calculateGradient();
+}
+
 Point GradientDescent::takeGradientStep(){
-    Point grad(gradX(), gradZ());
-    if (abs(grad.x) < kConvergenceEpsilon &&
-         abs(grad.z) < kConvergenceEpsilon){
+    if (abs(gradX()) < kConvergenceEpsilon &&
+         abs(gradZ()) < kConvergenceEpsilon){
          is_converged = true;
      }
     if (is_converged) return p;
