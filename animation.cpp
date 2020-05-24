@@ -18,7 +18,7 @@ void AnimationHelper::setBallPosition(QCustom3DItem* ball, Point p){
 }
 
 
-void AnimationHelper::setArrowGeometry(GradientDescent* descent, Point grad){
+void AnimationHelper::setArrowsGeometry(GradientDescent* descent, Point grad){
     // scale
     descent->arrowX->setScaling(QVector3D(0.1f, 0.1f * grad.x, 0.1f));
     descent->arrowZ->setScaling(QVector3D(0.1f, 0.1f * grad.z, 0.1f));
@@ -62,7 +62,7 @@ void GradientDescentAnimation::animateStep(){
     case 1:
     {
         Point grad(descent->gradX(), descent->gradZ());
-        AnimationHelper::setArrowGeometry(descent, grad);
+        AnimationHelper::setArrowsGeometry(descent, grad);
         // TODO: make arrows visible
         break;
     }

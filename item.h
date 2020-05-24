@@ -4,6 +4,7 @@
 #include <QtDataVisualization/QCustom3DItem>
 
 using namespace QtDataVisualization;
+
 class Item
 {
 public:
@@ -19,7 +20,7 @@ public:
 
 class Arrow : public QCustom3DItem{
 public:
-    Arrow();
+    Arrow(QVector3D direction);
 };
 
 #endif // ITEM_H

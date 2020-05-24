@@ -20,7 +20,7 @@ const int kInterval = 1000; // seconds in between steps
 
 namespace AnimationHelper {
 void setBallPosition(QCustom3DItem* ball, Point p);
-void setArrowGeometry(GradientDescent* descent, Point grad);
+void setArrowsGeometry(GradientDescent* descent, Point grad);
 // void drawArrow(QCustom3DItem* arrow, QVector3D origin, QVector3D direction, double magnitude);
 }
 

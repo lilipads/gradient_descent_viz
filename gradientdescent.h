@@ -26,8 +26,8 @@ public:
     // visual elements
     QColor ball_color;
     std::unique_ptr<Ball> ball;
-    std::unique_ptr<QtDataVisualization::QCustom3DItem> arrowX;
-    std::unique_ptr<QtDataVisualization::QCustom3DItem> arrowZ;
+    std::unique_ptr<Arrow> arrowX;
+    std::unique_ptr<Arrow> arrowZ;
 
 
     // simple getters and setters

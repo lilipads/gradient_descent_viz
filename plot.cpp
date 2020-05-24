@@ -63,30 +63,24 @@ void Plot::initializeGraph(){
     m_graph->setShadowQuality(QAbstract3DGraph::ShadowQualityNone);
     m_graph->activeTheme()->setType(Q3DTheme::Theme(2));
     m_graph->scene()->activeCamera()->setCameraPreset(Q3DCamera::CameraPresetFrontHigh);
-    m_graph->setAxisX(new QValue3DAxis);
-    m_graph->setAxisY(new QValue3DAxis);
-    m_graph->setAxisZ(new QValue3DAxis);
+    QValue3DAxis* xAxis = new QValue3DAxis;
+    xAxis->setTitle("X");
+    xAxis->setTitleVisible(true);
+    m_graph->setAxisX(xAxis);
+    QValue3DAxis* yAxis = new QValue3DAxis;
+    yAxis->setTitle("Y");
+    yAxis->setTitleVisible(true);
+    m_graph->setAxisY(yAxis);
+    QValue3DAxis* zAxis = new QValue3DAxis;
+    zAxis->setTitle("Z");
+    zAxis->setTitleVisible(true);
+    m_graph->setAxisZ(zAxis);
 }
 
 
-void Plot::initializeArrow(GradientDescent* descent){
-    descent->arrowX->setMeshFile(QStringLiteral(":/mesh/narrowarrow.obj"));
-    QImage pointColor = QImage(2, 2, QImage::Format_RGB32);
-    pointColor.fill(Qt::black);
-    descent->arrowX->setTextureImage(pointColor);
-    QQuaternion xRotation = QQuaternion::fromAxisAndAngle(0.0f, 0.0f, 1.0f, 90.);
-    descent->arrowX->setRotation(xRotation);
+void Plot::initializeArrow(GradientDescent* descent){  
     m_graph->addCustomItem(descent->arrowX.get());
-    descent->arrowX->setPosition(descent->ball->position());
-    descent->arrowX->setScaling(QVector3D(0.1f, 0.3f, 0.1f));
-
-    descent->arrowZ->setMeshFile(QStringLiteral(":/mesh/narrowarrow.obj"));
-    descent->arrowZ->setTextureImage(pointColor);
-    QQuaternion zRotation = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.);
-    descent->arrowZ->setRotation(zRotation);
     m_graph->addCustomItem(descent->arrowZ.get());
-    descent->arrowZ->setPosition(descent->ball->position());
-    descent->arrowZ->setScaling(QVector3D(0.1f, 0.3f, 0.1f));
 }
 
 
