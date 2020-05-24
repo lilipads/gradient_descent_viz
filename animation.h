@@ -61,4 +61,24 @@ public:
     void animateStep();
 };
 
+class MomentumAnimation : public Animation
+{
+public:
+    MomentumAnimation(
+            Q3DSurface* _graph, QTimer* _timer, GradientDescent* _descent)
+        : Animation(_graph, _timer, _descent)
+    {
+        num_states = 4;
+    };
+
+    void prepareDetailedAnimation();
+
+    void animateStep();
+
+protected:
+    std::unique_ptr<Arrow> momentumX;
+    std::unique_ptr<Arrow> momentumZ;
+
+};
+
 #endif // ANIMATION_H

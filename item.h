@@ -7,20 +7,21 @@ using namespace QtDataVisualization;
 
 const float kArrowOffset = 0.2;
 
-class Item
+class LabeledItem : public QCustom3DItem
 {
 public:
-    Item();
+    LabeledItem();
+    void setColor(QColor color);
 };
 
 
-class Ball : public QCustom3DItem
+class Ball : public LabeledItem
 {
 public:
     Ball(QColor color);
 };
 
-class Arrow : public QCustom3DItem{
+class Arrow : public LabeledItem{
 public:
     Arrow();
     Arrow(QVector3D vector);

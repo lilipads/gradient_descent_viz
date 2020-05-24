@@ -60,7 +60,6 @@ void GradientDescentAnimation::animateStep(){
     }
     case 2: // show the composite of gradients
     {
-        // TODO: make grad a property
         // TODO: change this to delta
         Point grad(descent->gradX(), descent->gradZ());
         total_arrow->setVector(-QVector3D(grad.x, 0, grad.z));

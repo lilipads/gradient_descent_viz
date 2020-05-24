@@ -74,7 +74,7 @@ public:
         ball = std::unique_ptr<Ball>(new Ball(ball_color));
     }
 
-    double momentum = 0.8;
+    double decay_rate = 0.8;
 
 protected:
     Point getGradientDelta(Point grad);

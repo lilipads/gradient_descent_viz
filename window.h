@@ -47,7 +47,6 @@ private:
     QGroupBox* createAdamGroup();
 
     QLayout* createLearningRateBox(GradientDescent* descent);
-    QDoubleSpinBox* createMomentumBox(Momentum* descent);
     QDoubleSpinBox* createDecayBox(double& val);
 
 };

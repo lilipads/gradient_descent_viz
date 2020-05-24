@@ -166,8 +166,8 @@ QGroupBox *Window::createMomentumGroup(){
     vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
     vbox->addLayout(createLearningRateBox(descent));
 
-    vbox->addWidget(new QLabel(QStringLiteral("Momentum:")));
-    vbox->addWidget(createMomentumBox(descent));
+    vbox->addWidget(new QLabel(QStringLiteral("Decay rate:")));
+    vbox->addWidget(createDecayBox(descent->decay_rate));
 
     vbox->addStretch(1);
     return createDescentGroup(descent, vbox);
@@ -239,25 +239,11 @@ QLayout *Window::createLearningRateBox(GradientDescent* descent){
 }
 
 
-QDoubleSpinBox *Window::createMomentumBox(Momentum* descent){
-    QDoubleSpinBox *momentumBox = new QDoubleSpinBox(this);
-    momentumBox->setDecimals(1);
-    momentumBox->setRange(0.1, 2.0);
-    momentumBox->setValue(descent->momentum);
-    momentumBox->setSingleStep(0.1);
-    QObject::connect(momentumBox,
-        QOverload<double>::of(&QDoubleSpinBox::valueChanged),
-        [=]( const double &newValue ) {
-            descent->momentum = newValue;
-        });
-    return momentumBox;
-}
-
 QDoubleSpinBox *Window::createDecayBox(double& val){
     // learning rate spin box
     QDoubleSpinBox *decayRateBox = new QDoubleSpinBox(this);
     decayRateBox->setDecimals(3);
-    decayRateBox->setRange(0.0, 1.0);
+    decayRateBox->setRange(0.0, 2.0);
     decayRateBox->setValue(val);
     decayRateBox->setSingleStep(0.1);
     QObject::connect(decayRateBox,

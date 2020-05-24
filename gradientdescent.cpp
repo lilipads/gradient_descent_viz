@@ -66,8 +66,8 @@ Point VanillaGradientDescent::getGradientDelta(Point grad){
 Point Momentum::getGradientDelta(Point grad){
     /* https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Momentum */
 
-    delta.x = momentum * delta.x - learning_rate * grad.x;
-    delta.z = momentum * delta.z - learning_rate * grad.z;
+    delta.x = decay_rate * delta.x - learning_rate * grad.x;
+    delta.z = decay_rate * delta.z - learning_rate * grad.z;
     return delta;
 }
 
