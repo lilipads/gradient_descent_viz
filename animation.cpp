@@ -1,6 +1,6 @@
 #include "animation.h"
 
-void AnimationHelper::setBallPosition(QCustom3DItem* ball, Point p){
+void AnimationHelper::setBallPosition(Ball* ball, Point p){
     const float cutoff = 15;
     float y = f(p.x, p.z);
     // hack: if the graph has a hole that's too deep, we can't see the ball
@@ -18,23 +18,6 @@ void AnimationHelper::setBallPosition(QCustom3DItem* ball, Point p){
 }
 
 
-void AnimationHelper::setArrowsGeometry(GradientDescent* descent, Point grad){
-    // scale
-    descent->arrowX->setScaling(QVector3D(0.1f, 0.1f * grad.x, 0.1f));
-    descent->arrowZ->setScaling(QVector3D(0.1f, 0.1f * grad.z, 0.1f));
-    // translate
-    QVector3D ball_position = descent->ball->position();
-    descent->arrowX->setPosition(
-                QVector3D(ball_position.x() - grad.x * kArrowOffset,
-                          ball_position.y(),
-                          ball_position.z()));
-    descent->arrowZ->setPosition(
-                QVector3D(ball_position.x(),
-                          ball_position.y(),
-                          ball_position.z() - grad.z * kArrowOffset));
-}
-
-
 void Animation::triggerAnimation(){
     animateStep();
     timer->setInterval(kInterval);
@@ -45,6 +28,8 @@ void Animation::triggerAnimation(){
 void Animation::prepareDetailedAnimation(){
     QColor color = descent->ball_color;
     color.setAlpha(100);
+    total_arrow = std::unique_ptr<Arrow>(new Arrow);
+    m_graph->addCustomItem(total_arrow.get());
     temporary_ball = std::unique_ptr<Ball>(new Ball(color));
     m_graph->addCustomItem(temporary_ball.get());
 }
@@ -52,22 +37,39 @@ void Animation::prepareDetailedAnimation(){
 
 void GradientDescentAnimation::animateStep(){
     switch(state){
-    case 0:
+    case 0: // just show the ball
     {
+        descent->arrowX->setVisible(false);
+        descent->arrowZ->setVisible(false);
+        total_arrow->setVisible(false);
         Point p = descent->getPosition();
         AnimationHelper::setBallPosition(descent->ball.get(), p);
-        // TODO: make arrows invisible
         break;
     }
-    case 1:
-    {
+    case 1: // show the x and z direction gradients
+    { 
         Point grad(descent->gradX(), descent->gradZ());
-        AnimationHelper::setArrowsGeometry(descent, grad);
-        // TODO: make arrows visible
+        descent->arrowX->setMagnitude(grad.x);
+        descent->arrowZ->setMagnitude(grad.z);
+        for (Arrow* arrow : {descent->arrowX.get(), descent->arrowZ.get()})
+        {
+            arrow->setPosition(descent->ball->position());
+            arrow->setVisible(true);
+        }
         break;
     }
-    // TODO: draw the composite gradient arrow
-    case 2:{
+    case 2: // show the composite of gradients
+    {
+        // TODO: make grad a property
+        // TODO: change this to delta
+        Point grad(descent->gradX(), descent->gradZ());
+        total_arrow->setVector(-QVector3D(grad.x, 0, grad.z));
+        total_arrow->setPosition(descent->ball->position());
+        total_arrow->setVisible(true);
+        break;
+    }
+    case 3: // draw an imganinary ball of the future position
+    {
         Point p = descent->takeGradientStep();
         AnimationHelper::setBallPosition(temporary_ball.get(), p);
         break;

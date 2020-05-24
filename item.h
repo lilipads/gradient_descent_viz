@@ -5,6 +5,8 @@
 
 using namespace QtDataVisualization;
 
+const float kArrowOffset = 0.2;
+
 class Item
 {
 public:
@@ -20,7 +22,16 @@ public:
 
 class Arrow : public QCustom3DItem{
 public:
-    Arrow(QVector3D direction);
+    Arrow();
+    Arrow(QVector3D vector);
+    void setVector(QVector3D vector);
+    void setMagnitude(const float &magnitude);
+    void setPosition(const QVector3D &position);
+
+private:
+    QVector3D direction = QVector3D(0, 1, 0);
+    float magnitude = 1.0;
+
 };
 
 #endif // ITEM_H

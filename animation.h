@@ -13,15 +13,13 @@ using namespace  QtDataVisualization;
 
 const auto f = GradientDescent::f;
 const float kBallYOffset = 10.f;
-const float kArrowOffset = 0.4;
 const float stepX = 16. / 49;
 const float stepZ = 16. / 49;
 const int kInterval = 1000; // seconds in between steps
 
 namespace AnimationHelper {
-void setBallPosition(QCustom3DItem* ball, Point p);
-void setArrowsGeometry(GradientDescent* descent, Point grad);
-// void drawArrow(QCustom3DItem* arrow, QVector3D origin, QVector3D direction, double magnitude);
+void setBallPosition(Ball* ball, Point p);
+void setXZArrows(GradientDescent* descent, Point grad);
 }
 
 
@@ -41,7 +39,8 @@ protected:
     Q3DSurface* m_graph;
     QTimer* timer;
     GradientDescent* descent;
-    std::unique_ptr<QCustom3DItem> temporary_ball;
+    std::unique_ptr<Ball> temporary_ball;
+    std::unique_ptr<Arrow> total_arrow;
 
 
     virtual void animateStep() = 0;
@@ -55,7 +54,7 @@ public:
             Q3DSurface* _graph, QTimer* _timer, GradientDescent* _descent)
         : Animation(_graph, _timer, _descent)
     {
-        num_states = 3;
+        num_states = 4;
     };
 
 
