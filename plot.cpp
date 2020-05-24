@@ -37,7 +37,6 @@ Plot::Plot(Q3DSurface *surface)
 
     for (auto& descent : all_descents)
         m_graph->addCustomItem(descent->ball.get());
-    initializeArrow(gradient_descent.get());
 
     initializeSurface();
 
@@ -52,8 +51,8 @@ Plot::Plot(Q3DSurface *surface)
     toggleAnimation();
     restartAnimation();
 
-    detailed_descent = new GradientDescentAnimation(
-                m_graph.get(), &m_timer, gradient_descent.get());
+    detailed_descent = new MomentumAnimation(
+                m_graph.get(), &m_timer, momemtum.get());
     detailed_descent->prepareDetailedAnimation();
 }
 
@@ -75,12 +74,6 @@ void Plot::initializeGraph(){
     zAxis->setTitle("Z");
     zAxis->setTitleVisible(true);
     m_graph->setAxisZ(zAxis);
-}
-
-
-void Plot::initializeArrow(GradientDescent* descent){  
-    m_graph->addCustomItem(descent->arrowX.get());
-    m_graph->addCustomItem(descent->arrowZ.get());
 }
 
 
@@ -134,7 +127,7 @@ void Plot::triggerAnimation() {
 //            Point p;
 //            for (int i = 0; i < animation_speedup; i++)
 //                p = descent->takeGradientStep();
-//            AnimationHelper::setBallPosition(descent->ball.get(), p);
+//            AnimationHelper::setBallPositionOnSurface(descent->ball.get(), p);
 //            Point grad(descent->gradX(), descent->gradZ());
 //            AnimationHelper::setArrowGeometry(descent, grad);
 //        }
@@ -145,7 +138,7 @@ void Plot::triggerAnimation() {
 
 void Plot::restartAnimation() {
     for (auto& descent : all_descents){
-        descent->resetPosition();
+        descent->resetPositionAndComputeGradient();
     }
 }
 

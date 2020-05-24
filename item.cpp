@@ -43,8 +43,8 @@ void Arrow::setVector(QVector3D vector){
 
 void Arrow::setMagnitude(const float &magnitude){
     // if magnitude is negative, arrow extends in the other direction
-    setScaling(QVector3D(0.1, 0.05 * magnitude, 0.1));
-    this->magnitude = magnitude;
+    setScaling(QVector3D(0.1, kArrowYScale * magnitude, 0.1));
+    m_magnitude = magnitude;
 }
 
 void Arrow::setPosition(const QVector3D &position){
@@ -52,5 +52,5 @@ void Arrow::setPosition(const QVector3D &position){
      * (instead of the center). Should be called after scaling is done
      */
 
-    QCustom3DItem::setPosition(position + direction * magnitude * kArrowOffset);
+    QCustom3DItem::setPosition(position + vector() / 2.);
 }

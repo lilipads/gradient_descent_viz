@@ -1,6 +1,6 @@
 #include "animation.h"
 
-void AnimationHelper::setBallPosition(Ball* ball, Point p){
+void AnimationHelper::setBallPositionOnSurface(Ball* ball, Point p){
     const float cutoff = 15;
     float y = f(p.x, p.z);
     // hack: if the graph has a hole that's too deep, we can't see the ball
@@ -26,8 +26,13 @@ void Animation::triggerAnimation(){
 
 
 void Animation::prepareDetailedAnimation(){
-    QColor color = descent->ball_color;
+//    QColor color = descent->ball_color;
+    QColor color = Qt::magenta;
     color.setAlpha(100);
+    arrowX = std::unique_ptr<Arrow>(new Arrow(QVector3D(-1, 0, 0)));
+    m_graph->addCustomItem(arrowX.get());
+    arrowZ = std::unique_ptr<Arrow>(new Arrow(QVector3D(0, 0, -1)));
+    m_graph->addCustomItem(arrowZ.get());
     total_arrow = std::unique_ptr<Arrow>(new Arrow);
     m_graph->addCustomItem(total_arrow.get());
     temporary_ball = std::unique_ptr<Ball>(new Ball(color));
@@ -39,19 +44,19 @@ void GradientDescentAnimation::animateStep(){
     switch(state){
     case 0: // just show the ball
     {
-        descent->arrowX->setVisible(false);
-        descent->arrowZ->setVisible(false);
+        arrowX->setVisible(false);
+        arrowZ->setVisible(false);
         total_arrow->setVisible(false);
         Point p = descent->position();
-        AnimationHelper::setBallPosition(descent->ball.get(), p);
+        AnimationHelper::setBallPositionOnSurface(descent->ball.get(), p);
         break;
     }
     case 1: // show the x and z direction gradients
     { 
         Point grad(descent->gradX(), descent->gradZ());
-        descent->arrowX->setMagnitude(grad.x);
-        descent->arrowZ->setMagnitude(grad.z);
-        for (Arrow* arrow : {descent->arrowX.get(), descent->arrowZ.get()})
+        arrowX->setMagnitude(grad.x);
+        arrowZ->setMagnitude(grad.z);
+        for (Arrow* arrow : {arrowX.get(), arrowZ.get()})
         {
             arrow->setPosition(descent->ball->position());
             arrow->setVisible(true);
@@ -60,17 +65,101 @@ void GradientDescentAnimation::animateStep(){
     }
     case 2: // show the composite of gradients
     {
-        // TODO: change this to delta
-        Point grad(descent->gradX(), descent->gradZ());
-        total_arrow->setVector(-QVector3D(grad.x, 0, grad.z));
+        descent->takeGradientStep();
+        Point delta = descent->delta();
+        total_arrow->setVector(QVector3D(delta.x, 0, delta.z) /
+                               descent->learning_rate);
         total_arrow->setPosition(descent->ball->position());
         total_arrow->setVisible(true);
         break;
     }
-    case 3: // draw an imganinary ball of the future position
+    case 3: // draw an imaginary ball of the future position
     {
         Point p = descent->takeGradientStep();
-        AnimationHelper::setBallPosition(temporary_ball.get(), p);
+        AnimationHelper::setBallPositionOnSurface(temporary_ball.get(), p);
+        break;
+    }
+    }
+}
+
+
+void MomentumAnimation::prepareDetailedAnimation(){
+    Animation::prepareDetailedAnimation();
+    momentumArrowX = std::unique_ptr<Arrow>(new Arrow(QVector3D(-1, 0, 0)));
+    momentumArrowZ = std::unique_ptr<Arrow>(new Arrow(QVector3D(0, 0, -1)));
+    for (Arrow* arrow : {momentumArrowX.get(), momentumArrowZ.get()}){
+        arrow->setColor(descent->ball_color);
+        arrow->setMagnitude(0.1);
+        m_graph->addCustomItem(arrow);
+    }
+}
+
+
+void MomentumAnimation::animateStep(){
+    switch(state){
+    case 0: // the ball and momentum arrows
+    {
+        arrowX->setVisible(false);
+        arrowZ->setVisible(false);
+        total_arrow->setVisible(false);
+        temporary_ball->setVisible(false);
+
+        Point p = descent->position();
+        AnimationHelper::setBallPositionOnSurface(descent->ball.get(), p);
+
+        momentumArrowX->setMagnitude(-descent->delta().x * descent->decay_rate
+                                     / descent->learning_rate);
+        momentumArrowZ->setMagnitude(-descent->delta().z * descent->decay_rate
+                                     / descent->learning_rate);
+        momentumArrowX->setPosition(descent->ball->position());
+        momentumArrowZ->setPosition(descent->ball->position());
+        break;
+    }
+    case 1: // show the x and z direction gradients
+    {
+        Point grad(descent->gradX(), descent->gradZ());
+        arrowX->setMagnitude(grad.x);
+        arrowZ->setMagnitude(grad.z);
+        // if in the same direction, then start the arrow at the tip of the momentum arrow
+        if (momentumArrowX->magnitude() * grad.x > 0){
+            // hack: *0.95 to offset a little so the two arrows don't look disjointed
+            arrowX->setPosition(descent->ball->position() + momentumArrowX->vector() * 0.95);
+        }
+        else{
+            arrowX->setPosition(descent->ball->position());
+        }
+
+        if (momentumArrowZ->magnitude() * grad.z > 0){
+            arrowZ->setPosition(descent->ball->position() + momentumArrowZ->vector() * 0.95);
+        }
+        else{
+            arrowZ->setPosition(descent->ball->position());
+        }
+
+
+        arrowX->setVisible(true);
+        arrowZ->setVisible(true);
+        break;
+    }
+    case 2: // show the composite of gradients
+    {
+        descent->takeGradientStep();
+        Point delta = descent->delta();
+        total_arrow->setVector(QVector3D(delta.x, 0, delta.z) /
+                               descent->learning_rate);
+        total_arrow->setPosition(descent->ball->position());
+        total_arrow->setVisible(true);
+        break;
+    }
+    case 3: // draw an imaginary ball of the future position
+    {
+        AnimationHelper::setBallPositionOnSurface(temporary_ball.get(),
+                                         descent->position());
+        temporary_ball->setPosition(QVector3D(
+                                        descent->position().x,
+                                        descent->ball->position().y(),
+                                        descent->position().z));
+        temporary_ball->setVisible(true);
         break;
     }
     }

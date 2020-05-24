@@ -46,7 +46,7 @@ private:
     std::unique_ptr<QSurfaceDataProxy> m_surfaceProxy;
     std::unique_ptr<QSurface3DSeries> m_surfaceSeries;
     bool detailedView = true;
-    GradientDescentAnimation* detailed_descent;
+    MomentumAnimation* detailed_descent;
 
     float stepX;
     float stepZ;
@@ -56,7 +56,6 @@ private:
 
     void initializeSurface();
     void initializeGraph();
-    void initializeArrow(GradientDescent* descent);
 };
 
 #endif // PLOT_H

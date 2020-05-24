@@ -26,8 +26,6 @@ public:
     // visual elements
     QColor ball_color;
     std::unique_ptr<Ball> ball;
-    std::unique_ptr<Arrow> arrowX;
-    std::unique_ptr<Arrow> arrowZ;
 
 
     // simple getters and setters
@@ -36,22 +34,23 @@ public:
     bool isConverged() {return is_converged;};
     double gradX() {return grad.x;};
     double gradZ() {return grad.z;};
+    Point delta() {return m_delta;}
 
     // core methods
     static double f(double x, double z); 
     Point takeGradientStep();
-    void resetPosition();
+    void resetPositionAndComputeGradient();
 
 protected:
     Point p; // current position
     Point starting_p; // starting position
-    Point delta; // movement in each direction after a gradient step
+    Point m_delta; // movement in each direction after a gradient step
     Point grad; // gradient at the current position
     bool is_converged = false;
 
-    void setPosition(double x, double z);
-    void calculateGradient();
-    virtual Point getGradientDelta(Point grad) = 0;
+    void setPositionAndComputeGradient(double x, double z);
+    void computeGradient();
+    virtual void updateGradientDelta() = 0;
 };
 
 class VanillaGradientDescent : public GradientDescent {
@@ -63,7 +62,7 @@ public:
     }
 
 protected:
-     Point getGradientDelta(Point grad);
+     void updateGradientDelta();
 };
 
 class Momentum : public GradientDescent {
@@ -77,7 +76,7 @@ public:
     double decay_rate = 0.8;
 
 protected:
-    Point getGradientDelta(Point grad);
+    void updateGradientDelta();
 
 };
 
@@ -91,7 +90,7 @@ public:
     }
 
 protected:
-    Point getGradientDelta(Point grad);
+    void updateGradientDelta();
 
 private:
     Point grad_sum_of_squared;
@@ -108,7 +107,7 @@ public:
     double decay_rate = 0.99;
 
 protected:
-    Point getGradientDelta(Point grad);
+    void updateGradientDelta();
 
 private:
     Point decayed_grad_sum_of_squared;
@@ -128,7 +127,7 @@ public:
     double beta2 = 0.999;
 
 protected:
-    Point getGradientDelta(Point grad);
+    void updateGradientDelta();
 
 private:
     Point decayed_grad_sum;
