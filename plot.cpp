@@ -9,12 +9,10 @@ using namespace QtDataVisualization;
 
 const int sampleCountX = 50;
 const int sampleCountZ = 50;
-const float sampleMin = -8.0f; // -2
-const float sampleMax = 8.0f; // 2
 const float kCameraMoveStepSize = 0.1f;
 const float kCameraZoomStepSize = 10.f;
 
-Plot::Plot(Q3DSurface *surface)
+Plot::Plot(Surface *surface)
     : gradient_descent(new VanillaGradientDescent),
       momentum(new Momentum),
       ada_grad(new AdaGrad),
@@ -24,9 +22,6 @@ Plot::Plot(Q3DSurface *surface)
       m_surfaceProxy(new QSurfaceDataProxy()),
       m_surfaceSeries(new QSurface3DSeries(m_surfaceProxy.get()))
 {
-    stepX = (sampleMax - sampleMin) / float(sampleCountX - 1);
-    stepZ = (sampleMax - sampleMin) / float(sampleCountZ - 1);
-
     initializeGraph();
 
     all_descents.push_back(gradient_descent.get());
@@ -78,16 +73,19 @@ void Plot::initializeGraph(){
 
 
 void Plot::initializeSurface() {
+    float stepX = (m_graph->sampleMaxX - m_graph->sampleMinX) / float(sampleCountX - 1);
+    float stepZ = (m_graph->sampleMaxZ - m_graph->sampleMinZ) / float(sampleCountZ - 1);
+
     QSurfaceDataArray *dataArray = new QSurfaceDataArray;
     dataArray->reserve(sampleCountZ);
     for (int i = 0 ; i < sampleCountZ ; i++) {
         QSurfaceDataRow *newRow = new QSurfaceDataRow(sampleCountX);
         // Keep values within range bounds, since just adding step can cause minor drift due
         // to the rounding errors.
-        float z = qMin(sampleMax, (i * stepZ + sampleMin));
+        float z = qMin(m_graph->sampleMaxZ, (i * stepZ + m_graph->sampleMinZ));
         int index = 0;
         for (int j = 0; j < sampleCountX; j++) {
-            float x = qMin(sampleMax, (j * stepX + sampleMin));
+            float x = qMin(m_graph->sampleMaxX, (j * stepX + m_graph->sampleMinZ));
             float y = gradient_descent->f(x, z);
             (*newRow)[index++].setPosition(QVector3D(x, y, z));
         }
@@ -99,7 +97,7 @@ void Plot::initializeSurface() {
     // surface look
     m_surfaceSeries->setDrawMode(QSurface3DSeries::DrawSurfaceAndWireframe);
     m_surfaceSeries->setFlatShadingEnabled(false);
-    m_surfaceSeries->setBaseColor( QColor( 100, 0, 0, 255 ));
+    m_surfaceSeries->setBaseColor(QColor( 100, 0, 0, 255 ));
     //gradient
     QLinearGradient gr;
     gr.setColorAt(1.0, Qt::darkGreen);

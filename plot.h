@@ -4,22 +4,21 @@
 #include <memory>
 #include <vector>
 
-#include <QtDataVisualization/Q3DSurface>
 #include <QtDataVisualization/QSurfaceDataProxy>
 #include <QtDataVisualization/QHeightMapSurfaceDataProxy>
 #include <QtDataVisualization/QSurface3DSeries>
 #include <QtCore/QTimer>
 
+#include "surface.h"
 #include "gradientdescent.h"
 #include "animation.h"
 
-using namespace QtDataVisualization;
 
 class Plot : public QObject
 {
     Q_OBJECT
 public:
-    explicit Plot(Q3DSurface *surface);
+    explicit Plot(Surface *surface);
     ~Plot();
     std::unique_ptr<VanillaGradientDescent> gradient_descent;
     std::unique_ptr<Momentum> momentum;
@@ -42,14 +41,12 @@ private:
 
     std::vector<GradientDescent*> all_descents;
     QTimer m_timer;
-    std::unique_ptr<Q3DSurface> m_graph;
+    std::unique_ptr<Surface> m_graph;
     std::unique_ptr<QSurfaceDataProxy> m_surfaceProxy;
     std::unique_ptr<QSurface3DSeries> m_surfaceSeries;
     bool detailedView = true;
     MomentumAnimation* detailed_descent;
 
-    float stepX;
-    float stepZ;
     int timer_counter = 0;
     int animation_slowdown = 1; // slow down factor
     int animation_speedup = 1;  // speed up factor

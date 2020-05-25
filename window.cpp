@@ -1,6 +1,5 @@
 #include <QtWidgets>
 #include <math.h>
-#include <string>
 
 #include "window.h"
 
@@ -10,7 +9,7 @@ Window::Window(QWidget *parent)
 {
     setWindowTitle(QStringLiteral("Gradient Descent Visualization"));
 
-    Q3DSurface *graph = new Q3DSurface();
+    Surface *graph = new Surface();
     QWidget *container = QWidget::createWindowContainer(graph);
 
     QSize screenSize = graph->screen()->size();

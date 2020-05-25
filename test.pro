@@ -28,6 +28,7 @@ HEADERS += \
     gradientdescent.h \
     item.h \
     plot.h \
+    surface.h \
     window.h
 
 RESOURCES += rotations.qrc
