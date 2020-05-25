@@ -33,7 +33,6 @@ void GradientDescent::resetPositionAndComputeGradient(){
     is_converged = false;
     m_delta = Point(0, 0);
     resetState();
-    qDebug() << "RESET STATE\n\n\n\n";
     setPositionAndComputeGradient(starting_p.x, starting_p.z);
 }
 
@@ -81,10 +80,8 @@ void Momentum::updateGradientDelta(){
 void AdaGrad::updateGradientDelta(){
     /* https://en.wikipedia.org/wiki/Stochastic_gradient_descent#AdaGrad */
 
-    qDebug() << "in AdaGrad: sum of squared before: " << grad_sum_of_squared.x;
-    qDebug() << "in AdaGrad: grad.x " << grad.x;
     grad_sum_of_squared.x += pow(grad.x, 2);
-    qDebug() << "in AdaGrad: sum of squared after: " << grad_sum_of_squared.x;
+    qDebug() << "in AdaGrad: sum of squared x: " << grad_sum_of_squared.x;
     grad_sum_of_squared.z += pow(grad.z, 2);
     m_delta.x = -learning_rate * grad.x / (sqrt(grad_sum_of_squared.x) + 1e-8);
     m_delta.z = -learning_rate * grad.z / (sqrt(grad_sum_of_squared.z) + 1e-8);
@@ -93,7 +90,6 @@ void AdaGrad::updateGradientDelta(){
 
 void AdaGrad::resetState(){
     grad_sum_of_squared = Point(0, 0);
-    qDebug() << "adagrad reset state - grad sum of squared: " << grad_sum_of_squared.x;
 }
 
 

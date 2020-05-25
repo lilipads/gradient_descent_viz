@@ -8,7 +8,7 @@
 
 using namespace QtDataVisualization;
 
-const float kArrowYScale = 0.02; // how much we want to scale down the arrow
+const float kArrowYScale = 0.1; // 0.02; // how much we want to scale down the arrow
 const float kArrowOffset = 8; // original arrow dimension in y axis
 const QVector3D kLabelOffset(0, 20, 0);
 
@@ -56,7 +56,7 @@ public:
     Arrow(QVector3D vector);
     void setVector(QVector3D vector);
     void setMagnitude(const float &magnitude);
-    void setPosition(const QVector3D &position);
+//    void setPosition(const QVector3D &position);
     QVector3D vector(){
         /* the xyz coordinates of the rendered vector (starts from the origin)
          * scale down by a constant because when rendering, we don't draw it
