@@ -2,6 +2,9 @@
 #define ITEM_H
 
 #include <QtDataVisualization/QCustom3DItem>
+#include <QtDataVisualization/QCustom3DLabel>
+#include <QtDataVisualization/Q3DSurface>
+
 
 using namespace QtDataVisualization;
 
@@ -11,8 +14,14 @@ const float kArrowOffset = 8; // original arrow dimension in y axis
 class LabeledItem : public QCustom3DItem
 {
 public:
-    LabeledItem();
+    LabeledItem() : m_label(new QCustom3DLabel){};
     void setColor(QColor color);
+    void setLabel(const QString &s);
+    void addToGraph(Q3DSurface* graph);
+    void hideLabel();
+
+private:
+    std::unique_ptr<QCustom3DLabel> m_label;
 };
 
 

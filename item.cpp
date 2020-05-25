@@ -1,7 +1,9 @@
 #include "item.h"
 
-LabeledItem::LabeledItem()
+LabeledItem::LabeledItem() : m_label(new QCustom3DLabel)
 {
+    m_label->setFacingCamera(true);
+    m_label->setScaling();
 }
 
 
