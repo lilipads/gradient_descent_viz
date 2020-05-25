@@ -26,8 +26,7 @@ void Animation::triggerAnimation(){
 
 
 void Animation::prepareDetailedAnimation(){
-//    QColor color = descent->ball_color;
-    QColor color = Qt::magenta;
+    QColor color = descent->ball_color;
     color.setAlpha(100);
     arrowX = std::unique_ptr<Arrow>(new Arrow(QVector3D(-1, 0, 0)));
     arrowX->setMagnitude(0);
@@ -130,8 +129,10 @@ void MomentumAnimation::animateStep(){
         Point p = descent->position();
         AnimationHelper::setBallPositionOnSurface(descent->ball.get(), p);
 
-        momentumArrowX->setMagnitude(momentumArrowX->magnitude() * descent->decay_rate);
-        momentumArrowZ->setMagnitude(momentumArrowZ->magnitude() * descent->decay_rate);
+        momentumArrowX->setMagnitude(momentumArrowX->magnitude() *
+                                     dynamic_cast<Momentum*> (descent) ->decay_rate);
+        momentumArrowZ->setMagnitude(momentumArrowZ->magnitude() *
+                                     dynamic_cast<Momentum*> (descent) ->decay_rate);
         momentumArrowX->setLabel("decay momentum");
         momentumArrowZ->setLabel("decay momentum");
         momentumArrowX->setPosition(descent->ball->position());

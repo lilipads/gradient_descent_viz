@@ -26,8 +26,9 @@ void setXZArrows(GradientDescent* descent, Point grad);
 class Animation
 {
 public:
-    Animation(Q3DSurface* _graph, QTimer* _timer)
-        : m_graph(_graph),
+    Animation(Q3DSurface* _graph, QTimer* _timer, GradientDescent* _descent)
+        : descent(_descent),
+          m_graph(_graph),
           timer(_timer) {}
 
     void triggerAnimation();
@@ -37,6 +38,7 @@ protected:
     int num_states;
     int state = 0;
 
+    GradientDescent* descent;
     Q3DSurface* m_graph;
     QTimer* timer;
     std::unique_ptr<Ball> temporary_ball;
@@ -53,8 +55,7 @@ class GradientDescentAnimation : public Animation
 public:
     GradientDescentAnimation(
             Q3DSurface* _graph, QTimer* _timer, VanillaGradientDescent* _descent)
-        : Animation(_graph, _timer),
-          descent(_descent)
+        : Animation(_graph, _timer, _descent)
     {
         num_states = 4;
     };
@@ -63,7 +64,7 @@ public:
     void animateStep();
 
 protected:
-    VanillaGradientDescent* descent;
+
 };
 
 class MomentumAnimation : public Animation
@@ -71,8 +72,7 @@ class MomentumAnimation : public Animation
 public:
     MomentumAnimation(
             Q3DSurface* _graph, QTimer* _timer, Momentum* _descent)
-        : Animation(_graph, _timer),
-          descent(_descent)
+        : Animation(_graph, _timer, _descent)
     {
         num_states = 6;
     };
@@ -82,7 +82,6 @@ public:
     void animateStep();
 
 protected:
-    Momentum* descent;
     std::unique_ptr<Arrow> momentumArrowX;
     std::unique_ptr<Arrow> momentumArrowZ;
     bool in_initial_state = true;
