@@ -13,8 +13,8 @@ using namespace  QtDataVisualization;
 
 const auto f = GradientDescent::f;
 const float kBallYOffset = 10.f;
-const float stepX = 16. / 49;
-const float stepZ = 16. / 49;
+const float stepX = 4. / 49;
+const float stepZ = 4. / 49;
 const int kInterval = 1000; // seconds in between steps
 
 namespace AnimationHelper {

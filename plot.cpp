@@ -9,8 +9,8 @@ using namespace QtDataVisualization;
 
 const int sampleCountX = 50;
 const int sampleCountZ = 50;
-const float sampleMin = -8.0f;
-const float sampleMax = 8.0f;
+const float sampleMin = -2.0f;
+const float sampleMax = 2.0f;
 const float kCameraMoveStepSize = 0.1f;
 const float kCameraZoomStepSize = 10.f;
 
@@ -120,17 +120,15 @@ void Plot::toggleAnimation() {
 
 void Plot::triggerAnimation() {
     if (timer_counter == 0){
-        detailed_descent->triggerAnimation();
-//        for (auto& descent : all_descents){
-//            // TODO: move this to animation class
-//            if (descent->isConverged()) continue;
-//            Point p;
-//            for (int i = 0; i < animation_speedup; i++)
-//                p = descent->takeGradientStep();
-//            AnimationHelper::setBallPositionOnSurface(descent->ball.get(), p);
-//            Point grad(descent->gradX(), descent->gradZ());
-//            AnimationHelper::setArrowGeometry(descent, grad);
-//        }
+//        detailed_descent->triggerAnimation();
+        for (auto& descent : all_descents){
+            // TODO: move this to animation class
+            if (descent->isConverged()) continue;
+            Point p;
+            for (int i = 0; i < animation_speedup; i++)
+                p = descent->takeGradientStep();
+            AnimationHelper::setBallPositionOnSurface(descent->ball.get(), p);
+        }
     }
     timer_counter = (timer_counter + 1) % animation_slowdown;
 }

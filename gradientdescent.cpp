@@ -30,10 +30,11 @@ void GradientDescent::computeGradient(){
 }
 
 void GradientDescent::resetPositionAndComputeGradient(){
-    setPositionAndComputeGradient(starting_p.x, starting_p.z);
     is_converged = false;
     m_delta = Point(0, 0);
     resetState();
+    qDebug() << "RESET STATE\n\n\n\n";
+    setPositionAndComputeGradient(starting_p.x, starting_p.z);
 }
 
 
@@ -92,6 +93,7 @@ void AdaGrad::updateGradientDelta(){
 
 void AdaGrad::resetState(){
     grad_sum_of_squared = Point(0, 0);
+    qDebug() << "adagrad reset state - grad sum of squared: " << grad_sum_of_squared.x;
 }
 
 

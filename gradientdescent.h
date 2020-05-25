@@ -51,7 +51,7 @@ protected:
     void setPositionAndComputeGradient(double x, double z);
     void computeGradient();
     virtual void updateGradientDelta() = 0;
-    void resetState(){}
+    virtual void resetState(){}
 };
 
 class VanillaGradientDescent : public GradientDescent {
@@ -78,8 +78,6 @@ public:
 
 protected:
     void updateGradientDelta();
-    void resetState();
-
 };
 
 class AdaGrad : public GradientDescent {

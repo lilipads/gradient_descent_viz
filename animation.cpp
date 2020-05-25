@@ -1,19 +1,20 @@
 #include "animation.h"
 
 void AnimationHelper::setBallPositionOnSurface(Ball* ball, Point p){
-    const float cutoff = 15;
+//    const float cutoff = 15;
     float y = f(p.x, p.z);
-    // hack: if the graph has a hole that's too deep, we can't see the ball
-    // hardcode to lift the ball up
-    if (f(p.x + stepX, p.z) - y > cutoff ||
-        f(p.x, p.z + stepZ) - y > cutoff){
-        y = std::max(f(p.x + stepX, p.z),
-                f(p.x, p.z + stepZ) - y) - cutoff - 10;
-    }
-    else{
-        // to make the ball look like it's above the surface
-        y += kBallYOffset;
-    }
+//    // hack: if the graph has a hole that's too deep, we can't see the ball
+//    // hardcode to lift the ball up
+//    if (f(p.x + stepX, p.z) - y > cutoff ||
+//        f(p.x, p.z + stepZ) - y > cutoff){
+//        y = std::max(f(p.x + stepX, p.z),
+//                f(p.x, p.z + stepZ) - y) - cutoff - 10;
+//    }
+//    else{
+//        // to make the ball look like it's above the surface
+//        y += kBallYOffset;
+//    }
+//    y += kBallYOffset;
     ball->setPosition(QVector3D(p.x, y, p.z));
 }
 
