@@ -10,18 +10,22 @@ using namespace QtDataVisualization;
 
 const float kArrowYScale = 0.02; // how much we want to scale down the arrow
 const float kArrowOffset = 8; // original arrow dimension in y axis
+const QVector3D kLabelOffset(0, 20, 0);
 
 class LabeledItem : public QCustom3DItem
 {
 public:
-    LabeledItem() : m_label(new QCustom3DLabel){};
+    LabeledItem();
     void setColor(QColor color);
-    void setLabel(const QString &s);
+    void setLabel(const QString &text);
     void addToGraph(Q3DSurface* graph);
-    void hideLabel();
+    void setLabelVisibility(bool visible);
+    void setVisible(bool visible);
+    void setPosition(const QVector3D& position);
 
-private:
-    std::unique_ptr<QCustom3DLabel> m_label;
+protected:
+    QCustom3DLabel* m_label;
+    bool label_visibility = false;
 };
 
 

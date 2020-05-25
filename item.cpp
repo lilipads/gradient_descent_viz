@@ -3,7 +3,14 @@
 LabeledItem::LabeledItem() : m_label(new QCustom3DLabel)
 {
     m_label->setFacingCamera(true);
-    m_label->setScaling();
+    m_label->setScaling(QVector3D(1., 1., 1.));
+    m_label->setVisible(false);
+}
+
+
+void LabeledItem::addToGraph(Q3DSurface *graph){
+    graph->addCustomItem(this);
+    graph->addCustomItem(m_label);
 }
 
 
@@ -11,6 +18,33 @@ void LabeledItem::setColor(QColor color){
     QImage pointColor = QImage(2, 2, QImage::Format_ARGB32);
     pointColor.fill(color);
     setTextureImage(pointColor);
+}
+
+
+void LabeledItem::setLabel(const QString &text){
+    m_label->setText(text);
+    label_visibility = true;
+    m_label->setVisible(label_visibility);
+}
+
+
+void LabeledItem::setVisible(bool visible){
+    QCustom3DItem::setVisible(visible);
+    if (visible)
+        m_label->setVisible(label_visibility);
+    else
+        m_label->setVisible(false);
+}
+
+
+void LabeledItem::setLabelVisibility(bool visible){
+    label_visibility = visible;
+    m_label->setVisible(visible);
+}
+
+void LabeledItem::setPosition(const QVector3D & position){
+    QCustom3DItem::setPosition(position);
+    m_label->setPosition(position + kLabelOffset);
 }
 
 
@@ -55,4 +89,5 @@ void Arrow::setPosition(const QVector3D &position){
      */
 
     QCustom3DItem::setPosition(position + vector() / 2.);
+    m_label->setPosition(position + kLabelOffset + vector() / 2);
 }

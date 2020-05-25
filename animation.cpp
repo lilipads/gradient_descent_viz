@@ -30,13 +30,16 @@ void Animation::prepareDetailedAnimation(){
     QColor color = Qt::magenta;
     color.setAlpha(100);
     arrowX = std::unique_ptr<Arrow>(new Arrow(QVector3D(-1, 0, 0)));
-    m_graph->addCustomItem(arrowX.get());
+    arrowX->setLabel("gradient in x");
+    arrowX->addToGraph(m_graph);
     arrowZ = std::unique_ptr<Arrow>(new Arrow(QVector3D(0, 0, -1)));
-    m_graph->addCustomItem(arrowZ.get());
+    arrowZ->setLabel("gradient in z");
+    arrowZ->addToGraph(m_graph);
     total_arrow = std::unique_ptr<Arrow>(new Arrow);
-    m_graph->addCustomItem(total_arrow.get());
+    total_arrow->setLabel("total gradient");
+    total_arrow->addToGraph(m_graph);
     temporary_ball = std::unique_ptr<Ball>(new Ball(color));
-    m_graph->addCustomItem(temporary_ball.get());
+    temporary_ball->addToGraph(m_graph);
 }
 
 
@@ -87,10 +90,12 @@ void MomentumAnimation::prepareDetailedAnimation(){
     Animation::prepareDetailedAnimation();
     momentumArrowX = std::unique_ptr<Arrow>(new Arrow(QVector3D(-1, 0, 0)));
     momentumArrowZ = std::unique_ptr<Arrow>(new Arrow(QVector3D(0, 0, -1)));
+    momentumArrowX->setLabel("momentum in x");
+    momentumArrowZ->setLabel("momentum in z");
     for (Arrow* arrow : {momentumArrowX.get(), momentumArrowZ.get()}){
         arrow->setColor(descent->ball_color);
         arrow->setMagnitude(0.1);
-        m_graph->addCustomItem(arrow);
+        arrow->addToGraph(m_graph);
     }
 }
 
@@ -106,7 +111,8 @@ void MomentumAnimation::animateStep(){
 
         Point p = descent->position();
         AnimationHelper::setBallPositionOnSurface(descent->ball.get(), p);
-
+        momentumArrowX->setLabelVisibility(true);
+        momentumArrowZ->setLabelVisibility(true);
         momentumArrowX->setMagnitude(-descent->delta().x * descent->decay_rate
                                      / descent->learning_rate);
         momentumArrowZ->setMagnitude(-descent->delta().z * descent->decay_rate
@@ -118,6 +124,8 @@ void MomentumAnimation::animateStep(){
     case 1: // show the x and z direction gradients
     {
         Point grad(descent->gradX(), descent->gradZ());
+        momentumArrowX->setLabelVisibility(false);
+        momentumArrowZ->setLabelVisibility(false);
         arrowX->setMagnitude(grad.x);
         arrowZ->setMagnitude(grad.z);
         // if in the same direction, then start the arrow at the tip of the momentum arrow
