@@ -16,7 +16,7 @@ const float kCameraZoomStepSize = 10.f;
 
 Plot::Plot(Q3DSurface *surface)
     : gradient_descent(new VanillaGradientDescent),
-      momemtum(new Momentum),
+      momentum(new Momentum),
       ada_grad(new AdaGrad),
       rms_prop(new RMSProp),
       adam(new Adam),
@@ -30,7 +30,7 @@ Plot::Plot(Q3DSurface *surface)
     initializeGraph();
 
     all_descents.push_back(gradient_descent.get());
-    all_descents.push_back(momemtum.get());
+    all_descents.push_back(momentum.get());
     all_descents.push_back(ada_grad.get());
     all_descents.push_back(rms_prop.get());
     all_descents.push_back(adam.get());
@@ -51,8 +51,8 @@ Plot::Plot(Q3DSurface *surface)
     toggleAnimation();
     restartAnimation();
 
-    detailed_descent = new AdaGradAnimation(
-                m_graph.get(), &m_timer, ada_grad.get());
+    detailed_descent = new MomentumAnimation(
+                m_graph.get(), &m_timer, momentum.get());
     detailed_descent->prepareDetailedAnimation();
 }
 

@@ -160,7 +160,7 @@ QGroupBox *Window::createGradientDescentGroup(){
 
 
 QGroupBox *Window::createMomentumGroup(){
-    Momentum* descent = plot->momemtum.get();
+    Momentum* descent = plot->momentum.get();
 
     QVBoxLayout *vbox = new QVBoxLayout;
     vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));

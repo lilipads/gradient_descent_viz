@@ -56,7 +56,7 @@ public:
     Arrow(QVector3D vector);
     void setVector(QVector3D vector);
     void setMagnitude(const float &magnitude);
-//    void setPosition(const QVector3D &position);
+
     QVector3D vector(){
         /* the xyz coordinates of the rendered vector (starts from the origin)
          * scale down by a constant because when rendering, we don't draw it

@@ -22,7 +22,7 @@ public:
     explicit Plot(Q3DSurface *surface);
     ~Plot();
     std::unique_ptr<VanillaGradientDescent> gradient_descent;
-    std::unique_ptr<Momentum> momemtum;
+    std::unique_ptr<Momentum> momentum;
     std::unique_ptr<AdaGrad> ada_grad;
     std::unique_ptr<RMSProp> rms_prop;
     std::unique_ptr<Adam> adam;
@@ -46,7 +46,7 @@ private:
     std::unique_ptr<QSurfaceDataProxy> m_surfaceProxy;
     std::unique_ptr<QSurface3DSeries> m_surfaceSeries;
     bool detailedView = true;
-    AdaGradAnimation* detailed_descent;
+    MomentumAnimation* detailed_descent;
 
     float stepX;
     float stepZ;
