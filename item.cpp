@@ -1,5 +1,19 @@
 #include "item.h"
 
+
+void Item::setColor(QColor color){
+    QImage pointColor = QImage(2, 2, QImage::Format_ARGB32);
+    pointColor.fill(color);
+    setTextureImage(pointColor);
+}
+
+
+void Item::addToGraph(Q3DSurface *graph){
+    graph->addCustomItem(this);
+    m_graph = graph;
+}
+
+
 LabeledItem::LabeledItem()
 {
     initializeLabel();
@@ -16,13 +30,6 @@ void LabeledItem::addToGraph(Q3DSurface *graph){
     graph->addCustomItem(this);
     graph->addCustomItem(m_label);
     m_graph = graph;
-}
-
-
-void LabeledItem::setColor(QColor color){
-    QImage pointColor = QImage(2, 2, QImage::Format_ARGB32);
-    pointColor.fill(color);
-    setTextureImage(pointColor);
 }
 
 
@@ -106,4 +113,14 @@ void Arrow::setPosition(const QVector3D &position){
 
     QCustom3DItem::setPosition(position + vector() / 2.);
     m_label->setPosition(position + kLabelOffset + vector() / 2);
+}
+
+
+Square::Square(){
+    setMeshFile(QStringLiteral(":/mesh/plane.obj"));
+    setScaling(QVector3D(0.1, 0.1, 0.1));
+}
+
+void Square::setArea(const float &area){
+    setScaling(QVector3D(0.1 * sqrt(area), 0.1, 0.1 * sqrt(area)));
 }

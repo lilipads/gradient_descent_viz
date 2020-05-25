@@ -51,8 +51,8 @@ Plot::Plot(Q3DSurface *surface)
     toggleAnimation();
     restartAnimation();
 
-    detailed_descent = new MomentumAnimation(
-                m_graph.get(), &m_timer, momemtum.get());
+    detailed_descent = new AdaGradAnimation(
+                m_graph.get(), &m_timer, ada_grad.get());
     detailed_descent->prepareDetailedAnimation();
 }
 

@@ -12,11 +12,25 @@ const float kArrowYScale = 0.02; // how much we want to scale down the arrow
 const float kArrowOffset = 8; // original arrow dimension in y axis
 const QVector3D kLabelOffset(0, 20, 0);
 
-class LabeledItem : public QCustom3DItem
+
+class Item : public QCustom3DItem{
+public:
+    Item() {}
+
+    void setColor(QColor color);
+    void addToGraph(Q3DSurface* graph);
+
+protected:
+    QCustom3DLabel* m_label = nullptr;
+    Q3DSurface* m_graph = nullptr;
+};
+
+
+class LabeledItem : public Item
 {
 public:
     LabeledItem();
-    void setColor(QColor color);
+
     void setLabel(const QString &text);
     void addToGraph(Q3DSurface* graph);
     void setLabelVisibility(bool visible);
@@ -24,15 +38,13 @@ public:
     void setPosition(const QVector3D& position);
 
 protected:
-    QCustom3DLabel* m_label;
-    Q3DSurface* m_graph = nullptr;
     bool label_visibility = false;
 
     void initializeLabel();
 };
 
 
-class Ball : public LabeledItem
+class Ball : public Item
 {
 public:
     Ball(QColor color);
@@ -57,6 +69,13 @@ public:
 private:
     QVector3D direction = QVector3D(0, 1, 0);
     float m_magnitude = 1.0;
+
+};
+
+class Square : public LabeledItem{
+public:
+    Square();
+    void setArea(const float &area);
 
 };
 

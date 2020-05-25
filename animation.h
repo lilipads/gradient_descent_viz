@@ -88,4 +88,26 @@ protected:
 
 };
 
+
+class AdaGradAnimation : public Animation
+{
+public:
+    AdaGradAnimation(
+            Q3DSurface* _graph, QTimer* _timer, AdaGrad* _descent)
+        : Animation(_graph, _timer, _descent)
+    {
+        num_states = 4;
+    };
+
+    void prepareDetailedAnimation();
+
+    void animateStep();
+
+protected:
+    std::unique_ptr<Square> squareX;
+    std::unique_ptr<Square> squareZ;
+    bool in_initial_state = true;
+
+};
+
 #endif // ANIMATION_H

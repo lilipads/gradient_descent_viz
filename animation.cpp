@@ -28,6 +28,8 @@ void Animation::triggerAnimation(){
 void Animation::prepareDetailedAnimation(){
     QColor color = descent->ball_color;
     color.setAlpha(100);
+    temporary_ball = std::unique_ptr<Ball>(new Ball(color));
+    temporary_ball->addToGraph(m_graph);
     arrowX = std::unique_ptr<Arrow>(new Arrow(QVector3D(-1, 0, 0)));
     arrowX->setMagnitude(0);
     arrowX->setLabel("gradient in x");
@@ -42,8 +44,6 @@ void Animation::prepareDetailedAnimation(){
     total_arrow->setLabel("total gradient");
     total_arrow->addToGraph(m_graph);
     total_arrow->setVisible(false);
-    temporary_ball = std::unique_ptr<Ball>(new Ball(color));
-    temporary_ball->addToGraph(m_graph);
 }
 
 
@@ -208,6 +208,73 @@ void MomentumAnimation::animateStep(){
                                         descent->position().z));
 
         temporary_ball->setVisible(true);
+        break;
+    }
+    }
+}
+
+
+void AdaGradAnimation::prepareDetailedAnimation(){
+    Animation::prepareDetailedAnimation();
+    squareX = std::unique_ptr<Square>(new Square);
+    squareX->setLabel("sum of gradient squared in x");
+    squareX->addToGraph(m_graph);
+    squareX->setVisible(true);
+    squareZ = std::unique_ptr<Square>(new Square);
+    squareZ->setLabel("sum of gradient squared in z");
+    squareZ->addToGraph(m_graph);
+    squareZ->setVisible(false);
+}
+
+
+void AdaGradAnimation::animateStep(){
+    switch(state){
+    case 0: // just show the ball
+    {
+        Point p = descent->position();
+        AnimationHelper::setBallPositionOnSurface(descent->ball.get(), p);
+
+        arrowX->setVisible(false);
+        arrowZ->setVisible(false);
+        total_arrow->setVisible(false);
+        break;
+    }
+    case 1: // show the x and z direction gradients
+    {
+        Point grad(descent->gradX(), descent->gradZ());
+        qDebug() << "grad x: " << descent->gradX();
+        arrowX->setMagnitude(grad.x);
+        arrowZ->setMagnitude(grad.z);
+        for (Arrow* arrow : {arrowX.get(), arrowZ.get()})
+        {
+            arrow->setPosition(descent->ball->position());
+            arrow->setVisible(true);
+        }
+        break;
+    }
+    case 2: // show the composite of gradients
+    {
+        descent->takeGradientStep();
+        Point delta = descent->delta();
+        total_arrow->setVector(QVector3D(delta.x, 0, delta.z) /
+                               descent->learning_rate);
+        total_arrow->setPosition(descent->ball->position());
+        total_arrow->setVisible(true);
+
+        squareX->setArea(dynamic_cast<AdaGrad*> (descent)->gradSumOfSquared().x);
+        squareZ->setArea(dynamic_cast<AdaGrad*> (descent)->gradSumOfSquared().z);
+        squareX->setPosition(descent->ball->position());
+        squareZ->setPosition(descent->ball->position());
+        squareX->setVisible(true);
+        squareZ->setVisible(true);
+        qDebug() << "grad sum of squared" << dynamic_cast<AdaGrad*> (descent)->gradSumOfSquared().x;
+
+        break;
+    }
+    case 3: // draw an imaginary ball of the future position
+    {
+        Point p = descent->takeGradientStep();
+        AnimationHelper::setBallPositionOnSurface(temporary_ball.get(), p);
         break;
     }
     }

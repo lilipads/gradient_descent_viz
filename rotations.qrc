@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>mesh/narrowarrow.obj</file>
         <file>mesh/largesphere.obj</file>
+        <file>mesh/plane.obj</file>
     </qresource>
 </RCC>

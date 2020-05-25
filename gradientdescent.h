@@ -90,6 +90,7 @@ public:
         ball = std::unique_ptr<Ball>(new Ball(ball_color));
         learning_rate = 1.;
     }
+    Point gradSumOfSquared(){return grad_sum_of_squared;}
 
 protected:
     void updateGradientDelta();
