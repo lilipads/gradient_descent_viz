@@ -32,6 +32,8 @@ void GradientDescent::computeGradient(){
 void GradientDescent::resetPositionAndComputeGradient(){
     setPositionAndComputeGradient(starting_p.x, starting_p.z);
     is_converged = false;
+    m_delta = Point(0, 0);
+    resetState();
 }
 
 
@@ -84,6 +86,12 @@ void AdaGrad::updateGradientDelta(){
     m_delta.z = -learning_rate * grad.z / (sqrt(grad_sum_of_squared.z) + 1e-8);
 }
 
+
+void AdaGrad::resetState(){
+    grad_sum_of_squared = Point(0, 0);
+}
+
+
 void RMSProp::updateGradientDelta(){
     /* https://en.wikipedia.org/wiki/Stochastic_gradient_descent#RMSProp */
 
@@ -94,6 +102,12 @@ void RMSProp::updateGradientDelta(){
     m_delta.x = -learning_rate * grad.x / (sqrt(decayed_grad_sum_of_squared.x) + kDivisionEpsilon);
     m_delta.z = -learning_rate * grad.z / (sqrt(decayed_grad_sum_of_squared.z) + kDivisionEpsilon);
 }
+
+
+void RMSProp::resetState(){
+    decayed_grad_sum_of_squared = Point(0, 0);
+}
+
 
 void Adam::updateGradientDelta(){
     /* https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Adam */
@@ -113,4 +127,10 @@ void Adam::updateGradientDelta(){
             (sqrt(decayed_grad_sum_of_squared.x) + kDivisionEpsilon);
     m_delta.z = -learning_rate * decayed_grad_sum.z /
             (sqrt(decayed_grad_sum_of_squared.z) + kDivisionEpsilon);
+}
+
+
+void Adam::resetState(){
+    decayed_grad_sum_of_squared = Point(0, 0);
+    decayed_grad_sum = Point(0, 0);
 }

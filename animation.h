@@ -74,7 +74,7 @@ public:
         : Animation(_graph, _timer),
           descent(_descent)
     {
-        num_states = 4;
+        num_states = 6;
     };
 
     void prepareDetailedAnimation();
@@ -85,6 +85,7 @@ protected:
     Momentum* descent;
     std::unique_ptr<Arrow> momentumArrowX;
     std::unique_ptr<Arrow> momentumArrowZ;
+    bool in_initial_state = true;
 
 };
 

@@ -1,16 +1,21 @@
 #include "item.h"
 
-LabeledItem::LabeledItem() : m_label(new QCustom3DLabel)
+LabeledItem::LabeledItem()
 {
-    m_label->setFacingCamera(true);
-    m_label->setScaling(QVector3D(1., 1., 1.));
-    m_label->setVisible(false);
+    initializeLabel();
 }
 
+void LabeledItem::initializeLabel(){
+    m_label = new QCustom3DLabel;
+    m_label->setFacingCamera(true);
+    m_label->setScaling(QVector3D(1., 1., 1.));
+    m_label->setVisible(label_visibility && this->isVisible());
+}
 
 void LabeledItem::addToGraph(Q3DSurface *graph){
     graph->addCustomItem(this);
     graph->addCustomItem(m_label);
+    m_graph = graph;
 }
 
 
@@ -22,24 +27,34 @@ void LabeledItem::setColor(QColor color){
 
 
 void LabeledItem::setLabel(const QString &text){
+    // the graph somehow doesn't update the text on its own
+    // so we need this roundabout way of removing the label
+    // and reinitializing it
+    if (m_graph != nullptr){
+        m_graph->removeCustomItem(m_label);
+        m_label = nullptr;
+    }
+
+    initializeLabel();
     m_label->setText(text);
     label_visibility = true;
-    m_label->setVisible(label_visibility);
+    m_label->setVisible(label_visibility && this->isVisible());
+
+    if (m_graph != nullptr){
+        m_graph->addCustomItem(m_label);
+    }
 }
 
 
 void LabeledItem::setVisible(bool visible){
     QCustom3DItem::setVisible(visible);
-    if (visible)
-        m_label->setVisible(label_visibility);
-    else
-        m_label->setVisible(false);
+    m_label->setVisible(label_visibility && isVisible());
 }
 
 
 void LabeledItem::setLabelVisibility(bool visible){
     label_visibility = visible;
-    m_label->setVisible(visible);
+    m_label->setVisible(visible && this->isVisible());
 }
 
 void LabeledItem::setPosition(const QVector3D & position){
@@ -58,6 +73,7 @@ Ball::Ball(QColor color){
 Arrow::Arrow(){
     setMeshFile(QStringLiteral(":/mesh/narrowarrow.obj"));
     setColor(Qt::black);
+    setMagnitude(0);
 }
 
 Arrow::Arrow(QVector3D vector): Arrow() {

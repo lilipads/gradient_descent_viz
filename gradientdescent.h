@@ -51,6 +51,7 @@ protected:
     void setPositionAndComputeGradient(double x, double z);
     void computeGradient();
     virtual void updateGradientDelta() = 0;
+    void resetState(){}
 };
 
 class VanillaGradientDescent : public GradientDescent {
@@ -77,6 +78,7 @@ public:
 
 protected:
     void updateGradientDelta();
+    void resetState();
 
 };
 
@@ -91,6 +93,7 @@ public:
 
 protected:
     void updateGradientDelta();
+    void resetState();
 
 private:
     Point grad_sum_of_squared;
@@ -108,6 +111,7 @@ public:
 
 protected:
     void updateGradientDelta();
+    void resetState();
 
 private:
     Point decayed_grad_sum_of_squared;
@@ -128,6 +132,7 @@ public:
 
 protected:
     void updateGradientDelta();
+    void resetState();
 
 private:
     Point decayed_grad_sum;

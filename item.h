@@ -25,7 +25,10 @@ public:
 
 protected:
     QCustom3DLabel* m_label;
+    Q3DSurface* m_graph = nullptr;
     bool label_visibility = false;
+
+    void initializeLabel();
 };
 
 
