@@ -15,7 +15,7 @@ GradientDescent::GradientDescent()
 }
 
 double GradientDescent::f(double x, double z){
-//    return x * x + z * z;
+    // return x * x + z * z;
     z *= 1.4;
     return -2 * exp(-((x - 1) * (x - 1) + z * z) / .2) -6. * exp(-((x + 1) * (x + 1) + z * z) / .2) + x * x + z * z;
 }

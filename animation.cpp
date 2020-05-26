@@ -27,9 +27,6 @@ void Animation::triggerAnimation(){
 
 
 void Animation::prepareDetailedAnimation(){
-    QColor color = descent->ball_color;
-    color.setAlpha(100);
-    temporary_ball = std::unique_ptr<Ball>(new Ball(m_graph, color));
     arrowX = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(-1, 0, 0)));
     arrowX->setMagnitude(0);
     arrowX->setLabel("gradient in x");
@@ -41,6 +38,9 @@ void Animation::prepareDetailedAnimation(){
     total_arrow = std::unique_ptr<Arrow>(new Arrow(m_graph));
     total_arrow->setLabel("total gradient");
     total_arrow->setVisible(false);
+    QColor color = descent->ball_color;
+    color.setAlpha(100);
+    temporary_ball = std::unique_ptr<Ball>(new Ball(m_graph, color));
 }
 
 
@@ -93,8 +93,10 @@ void MomentumAnimation::prepareDetailedAnimation(){
                 new Arrow(m_graph, QVector3D(-1, 0, 0), descent->ball_color));
     momentumArrowX->setLabel("momentum x");
     momentumArrowX->setMagnitude(0);
+
     momentumArrowZ = std::unique_ptr<Arrow>(
                 new Arrow(m_graph, QVector3D(0, 0, -1), descent->ball_color));
+    momentumArrowZ->setLabel("momentum z");
     momentumArrowZ->setMagnitude(0);
 }
 
@@ -128,14 +130,13 @@ void MomentumAnimation::animateStep(){
         momentumArrowZ->setMagnitude(momentumArrowZ->magnitude() *
                                      dynamic_cast<Momentum*> (descent) ->decay_rate);
         momentumArrowX->setLabel("decay momentum");
-        momentumArrowZ->setLabel("decay momentum");
         momentumArrowX->setPosition(descent->ball->position());
         momentumArrowZ->setPosition(descent->ball->position());
 
         temporary_ball->setVisible(false);
         total_arrow->setVisible(false);
         momentumArrowX->setLabelVisibility(!in_initial_state);
-        momentumArrowZ->setLabelVisibility(!in_initial_state);
+        momentumArrowZ->setLabelVisibility(false);
 
         in_initial_state = false;
 
@@ -148,15 +149,14 @@ void MomentumAnimation::animateStep(){
         arrowZ->setMagnitude(grad.z);
         // if in the same direction, then start the arrow at the tip of the momentum arrow
         if (momentumArrowX->magnitude() * grad.x > 0){
-            // hack: *0.95 to offset a little so the two arrows don't look disjointed
-            arrowX->setPosition(descent->ball->position() + momentumArrowX->vector() * 0.95);
+            arrowX->setPosition(descent->ball->position() + momentumArrowX->renderedVectorInPlotUnit());
         }
         else{
             arrowX->setPosition(descent->ball->position());
         }
 
         if (momentumArrowZ->magnitude() * grad.z > 0){
-            arrowZ->setPosition(descent->ball->position() + momentumArrowZ->vector() * 0.95);
+            arrowZ->setPosition(descent->ball->position() + momentumArrowZ->renderedVectorInPlotUnit());
         }
         else{
             arrowZ->setPosition(descent->ball->position());
@@ -184,7 +184,6 @@ void MomentumAnimation::animateStep(){
         momentumArrowX->setMagnitude(-delta.x / descent->learning_rate);
         momentumArrowZ->setMagnitude(-delta.z / descent->learning_rate);
         momentumArrowX->setLabel("momentum for next iteration");
-        momentumArrowZ->setLabel("momentum for next iteration");
         momentumArrowX->setPosition(descent->ball->position());
         momentumArrowZ->setPosition(descent->ball->position());
 

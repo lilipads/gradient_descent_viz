@@ -1,5 +1,6 @@
-#include "item.h"
+#include <math.h>
 
+#include "item.h"
 
 void Item::setColor(QColor color){
     QImage pointColor = QImage(2, 2, QImage::Format_ARGB32);
@@ -40,18 +41,22 @@ void LabeledItem::setLabel(const QString &text){
 
 void LabeledItem::setVisible(bool visible){
     QCustom3DItem::setVisible(visible);
-    m_label->setVisible(label_visibility && isVisible());
+    if (m_label != nullptr)
+        m_label->setVisible(label_visibility && isVisible());
 }
 
 
 void LabeledItem::setLabelVisibility(bool visible){
     label_visibility = visible;
-    m_label->setVisible(visible && this->isVisible());
+    if (m_label != nullptr)
+        m_label->setVisible(visible && this->isVisible());
 }
+
 
 void LabeledItem::setPosition(const QVector3D & position){
     QCustom3DItem::setPosition(position);
-    m_label->setPosition(position + kLabelOffset);
+    if (m_label != nullptr)
+        m_label->setPosition(position + kLabelOffset);
 }
 
 
@@ -76,31 +81,43 @@ Arrow::Arrow(Surface* graph, QVector3D vector): Arrow(graph) {
 
 
 Arrow::Arrow(Surface* graph, QVector3D vector, QColor color) {
+    m_graph = graph;
     setMeshFile(QStringLiteral(":/mesh/narrowarrow.obj"));
     setMagnitude(0);
     setColor(color);
     setVector(vector);
-    addToGraph(graph);
+    m_graph->addCustomItem(this);
 }
 
 
 void Arrow::setVector(QVector3D vector){
     /* draw an arrow representing the vector (direction and magnitude) */
 
-    // negative 1 because oddly, the default xyz axis
-    // in Q3DSurface has Z axis flipped
     direction = vector.normalized();
-    vector.setZ(-vector.z());
+    // z times -1 because oddly, the default xyz axis in Q3DSurface has Z axis flipped
     QQuaternion rotation = QQuaternion::rotationTo(
-                QVector3D(0, 1, 0), vector);
+                QVector3D(0, 1, 0), direction * QVector3D(1, 1, -1));
     setRotation(rotation);
     setMagnitude(vector.length());
 }
 
 void Arrow::setMagnitude(const float &magnitude){
     // if magnitude is negative, arrow extends in the other direction
-    setScaling(QVector3D(0.1, 0.1 * magnitude, 0.1));
+    float unitPlotPerGraph = (direction *
+        QVector3D(m_graph->maxX - m_graph->minX, 0, m_graph->maxZ - m_graph->minZ)
+        ).length();
+
     m_magnitude = magnitude;
+    float magnitude_in_unit_arrow = magnitude * kUnitItemPerGraph / unitPlotPerGraph * kItemScale;
+    setScaling(QVector3D(0.1, 0.1 * magnitude_in_unit_arrow, 0.1));
+}
+
+
+void Arrow::setPosition(const QVector3D & position){
+    QCustom3DItem::setPosition(position);
+    if (m_label != nullptr)
+        m_label->setPosition(position + kLabelOffset
+                             + renderedVectorInPlotUnit() / 2);
 }
 
 

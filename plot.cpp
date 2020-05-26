@@ -74,8 +74,8 @@ void Plot::initializeGraph(){
 
 
 void Plot::initializeSurface() {
-    float stepX = (m_graph->sampleMaxX - m_graph->sampleMinX) / float(sampleCountX - 1);
-    float stepZ = (m_graph->sampleMaxZ - m_graph->sampleMinZ) / float(sampleCountZ - 1);
+    float stepX = (m_graph->maxX - m_graph->minX) / float(sampleCountX - 1);
+    float stepZ = (m_graph->maxZ - m_graph->minZ) / float(sampleCountZ - 1);
 
     QSurfaceDataArray *dataArray = new QSurfaceDataArray;
     dataArray->reserve(sampleCountZ);
@@ -83,10 +83,10 @@ void Plot::initializeSurface() {
         QSurfaceDataRow *newRow = new QSurfaceDataRow(sampleCountX);
         // Keep values within range bounds, since just adding step can cause minor drift due
         // to the rounding errors.
-        float z = qMin(m_graph->sampleMaxZ, (i * stepZ + m_graph->sampleMinZ));
+        float z = qMin(m_graph->maxZ, (i * stepZ + m_graph->minZ));
         int index = 0;
         for (int j = 0; j < sampleCountX; j++) {
-            float x = qMin(m_graph->sampleMaxX, (j * stepX + m_graph->sampleMinZ));
+            float x = qMin(m_graph->maxX, (j * stepX + m_graph->minX));
             float y = gradient_descent->f(x, z);
             (*newRow)[index++].setPosition(QVector3D(x, y, z));
         }

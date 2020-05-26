@@ -6,12 +6,15 @@
 
 #include "surface.h"
 
-
 using namespace QtDataVisualization;
 
-const float kArrowYScale = 0.1; // 0.02; // how much we want to scale down the arrow
-const float kArrowOffset = 8; // original arrow dimension in y axis
-const QVector3D kLabelOffset(0, 20, 0);
+// for 1 unit of magnitude, the rendered item spans this many units on the graph
+// one might want to change this if gradient arrows rendered in 1:1 ratio is too
+// big / small to see.
+const float kItemScale = 0.1;
+// how many unit arrows in one side of the graph
+const float kUnitItemPerGraph = 110;
+const QVector3D kLabelOffset(0, 20, 0); // label's position relative to the object's position
 
 
 class Item : public QCustom3DItem{
@@ -61,19 +64,19 @@ public:
     void setVector(QVector3D vector);
     void setMagnitude(const float &magnitude);
 
-    QVector3D vector(){
+    QVector3D renderedVectorInPlotUnit(){
         /* the xyz coordinates of the rendered vector (starts from the origin)
          * scale down by a constant because when rendering, we don't draw it
          * to the full scale (otherwise it would dominate the screen)
          */
-
-         return direction * m_magnitude * kArrowYScale * kArrowOffset;}
+         return direction * m_magnitude * kItemScale;
+    }
     float magnitude(){return m_magnitude;}
+    void setPosition(const QVector3D& position);
 
 private:
     QVector3D direction = QVector3D(0, 1, 0);
     float m_magnitude = 1.0;
-
 };
 
 class Square : public LabeledItem{

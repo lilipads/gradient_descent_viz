@@ -7,10 +7,10 @@ using namespace QtDataVisualization;
 
 class Surface : public Q3DSurface{
 public:
-    float sampleMinX = -8.0f;
-    float sampleMaxX = 8.0f;
-    float sampleMinZ = -8.0f;
-    float sampleMaxZ = 8.0;
+    float minX = -8.0f;
+    float maxX = 8.0f;
+    float minZ = -8.0f;
+    float maxZ = 8.0;
 };
 
 
