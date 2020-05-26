@@ -11,7 +11,7 @@ using namespace QtDataVisualization;
 // for 1 unit of magnitude, the rendered item spans this many units on the graph
 // one might want to change this if gradient arrows rendered in 1:1 ratio is too
 // big / small to see.
-const float kItemScale = 0.1;
+const float kItemScale = 1;
 // how many unit arrows in one side of the graph
 const float kUnitItemPerGraph = 110;
 // TODO: if this is absolute, doesn't work when graph is scaled
@@ -47,6 +47,7 @@ public:
 protected:
     LabeledItem(){}
     bool label_visibility = false;
+    virtual QVector3D label_offset() {return kLabelOffset;}
 };
 
 
@@ -73,18 +74,24 @@ public:
          return direction * m_magnitude * kItemScale;
     }
     float magnitude(){return m_magnitude;}
-    void setPosition(const QVector3D& position);
 
 private:
     QVector3D direction = QVector3D(0, 1, 0);
     float m_magnitude = 1.0;
+    QVector3D label_offset() {return
+                LabeledItem::label_offset() + renderedVectorInPlotUnit() / 2;}
 };
 
 class Square : public LabeledItem{
 public:
     Square(Surface* graph);
     void setArea(const float &area);
+    float area(){return m_area;}
 
+private:
+    float m_area;
+    QVector3D label_offset(){return QVector3D(-1, 1, 0) * sqrt(area()) * kItemScale
+                + LabeledItem::label_offset();}
 };
 
 #endif // ITEM_H

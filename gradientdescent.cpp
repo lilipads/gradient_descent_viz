@@ -98,6 +98,8 @@ void RMSProp::updateGradientDelta(){
 
     decayed_grad_sum_of_squared.x *= decay_rate;
     decayed_grad_sum_of_squared.x += (1 - decay_rate) * pow(grad.x, 2);
+    qDebug() << "decayed grad sum of squared x " << decayed_grad_sum_of_squared.x
+             <<" grad.x " << grad.x;
     decayed_grad_sum_of_squared.z *= decay_rate;
     decayed_grad_sum_of_squared.z += (1 - decay_rate) * pow(grad.z, 2);
     m_delta.x = -learning_rate * grad.x / (sqrt(decayed_grad_sum_of_squared.x) + kDivisionEpsilon);

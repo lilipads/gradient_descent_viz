@@ -34,7 +34,7 @@ void LabeledItem::setLabel(const QString &text){
     m_label->setText(text);
     label_visibility = true;
     m_label->setVisible(label_visibility && this->isVisible());
-    m_label->setPosition(position() + kLabelOffset);
+    m_label->setPosition(position() + label_offset());
 
     m_graph->addCustomItem(m_label);
 }
@@ -57,7 +57,7 @@ void LabeledItem::setLabelVisibility(bool visible){
 void LabeledItem::setPosition(const QVector3D & position){
     QCustom3DItem::setPosition(position);
     if (m_label != nullptr)
-        m_label->setPosition(position + kLabelOffset);
+        m_label->setPosition(position + label_offset());
 }
 
 
@@ -114,14 +114,6 @@ void Arrow::setMagnitude(const float &magnitude){
 }
 
 
-void Arrow::setPosition(const QVector3D & position){
-    QCustom3DItem::setPosition(position);
-    if (m_label != nullptr)
-        m_label->setPosition(position + kLabelOffset
-                             + renderedVectorInPlotUnit() / 2);
-}
-
-
 Square::Square(Surface* graph) : LabeledItem(){
     setMeshFile(QStringLiteral(":/mesh/plane.obj"));
     setScaling(QVector3D(0.1, 0.1, 0.1));
@@ -137,4 +129,6 @@ void Square::setArea(const float &area){
                                        m_graph->maxZ - m_graph->minZ).length();
     float scale = sqrt(area) * kUnitItemPerGraph / unitPlotPerGraph * kItemScale;
     setScaling(QVector3D(scale, 1, scale) * 0.1);
+    m_area = area;
 }
+

@@ -106,7 +106,29 @@ protected:
     std::unique_ptr<Square> squareX;
     std::unique_ptr<Square> squareZ;
     // scale up the arrow, otherwise you can't see because adagrad moves so slow
-    const float arrowScale = 10;
+    const float arrowScale = 1;
+};
+
+
+class RMSPropAnimation : public Animation
+{
+public:
+    RMSPropAnimation(
+            Surface* _graph, QTimer* _timer, RMSProp* _descent)
+        : Animation(_graph, _timer, _descent)
+    {
+        num_states = 7;
+    };
+
+    void prepareDetailedAnimation();
+
+    void animateStep();
+
+protected:
+    std::unique_ptr<Square> squareX;
+    std::unique_ptr<Square> squareZ;
+    // scale up the arrow, otherwise you can't see because adagrad moves so slow
+    const float arrowScale = 1;
 };
 
 #endif // ANIMATION_H

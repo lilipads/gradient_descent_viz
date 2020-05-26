@@ -47,8 +47,8 @@ Plot::Plot(Surface *surface)
     toggleAnimation();
     restartAnimation();
 
-    detailed_descent = new AdaGradAnimation(
-                m_graph.get(), &m_timer, ada_grad.get());
+    detailed_descent = new RMSPropAnimation(
+                m_graph.get(), &m_timer, rms_prop.get());
     detailed_descent->prepareDetailedAnimation();
 }
 

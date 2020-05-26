@@ -305,3 +305,111 @@ void AdaGradAnimation::animateStep(){
     }
     }
 }
+
+
+
+void RMSPropAnimation::prepareDetailedAnimation(){
+    Animation::prepareDetailedAnimation();
+    squareX = std::unique_ptr<Square>(new Square(m_graph));
+    squareX->setLabel("sum of gradient squared in x");
+    squareX->setArea(0);
+    QQuaternion z_rotation = QQuaternion::fromAxisAndAngle(0, 0, 1, 90);
+    QQuaternion y_rotation = QQuaternion::fromAxisAndAngle(1, 0, 0, -90);
+    squareX->setRotation(z_rotation * y_rotation);
+    squareX->setVisible(false);
+
+    squareZ = std::unique_ptr<Square>(new Square(m_graph));
+    squareZ->setLabel("sum of gradient squared in z");
+    squareZ->setArea(0);
+    squareZ->setVisible(false);
+}
+
+
+void RMSPropAnimation::animateStep(){
+    switch(state){
+    case 0: // just show the ball and sum of squares
+    {
+        Point p = descent->position();
+        AnimationHelper::setBallPositionOnSurface(descent->ball.get(), p);
+
+        squareX->setLabel("sum of gradient_x^2");
+        squareZ->setLabel("sum of gradient_z^2");
+        squareX->setPosition(descent->ball->position());
+        squareZ->setPosition(descent->ball->position());
+
+        temporary_ball->setVisible(false);
+        total_arrow->setVisible(false);
+        arrowX->setVisible(false);
+        arrowZ->setVisible(false);
+        squareX->setLabelVisibility(!in_initial_state);
+        squareZ->setLabelVisibility(!in_initial_state);
+        break;
+    }
+    case 1: // show the x and z direction gradients
+    {
+        Point grad(descent->gradX(), descent->gradZ());
+        arrowX->setMagnitude(grad.x * arrowScale);
+        arrowZ->setMagnitude(grad.z * arrowScale);
+        arrowX->setLabel("gradient in X (10x)");
+        arrowX->setPosition(descent->ball->position());
+        arrowZ->setPosition(descent->ball->position());
+
+        squareX->setLabelVisibility(false);
+        squareZ->setLabelVisibility(false);
+        arrowX->setVisible(true);
+        arrowZ->setVisible(true);
+        in_initial_state = true;
+        break;
+    }
+    case 2: // show sum of squares updating
+    {
+        squareX->setArea(squareX->area() * dynamic_cast<RMSProp*> (descent)->decay_rate);
+        squareZ->setArea(squareZ->area() * dynamic_cast<RMSProp*> (descent)->decay_rate);
+        squareX->setLabel("decay gradient^2");
+        squareX->setVisible(true);
+        squareZ->setVisible(true);
+        arrowX->setLabelVisibility(false);
+        arrowZ->setLabelVisibility(false);
+        break;
+    }
+    case 3: // show sum of squares updating
+    {
+        descent->takeGradientStep();
+        squareX->setArea(dynamic_cast<RMSProp*> (descent)->decayedGradSumOfSquared().x);
+        squareZ->setArea(dynamic_cast<RMSProp*> (descent)->decayedGradSumOfSquared().z);
+        squareX->setLabel("add on current gradient^2");
+        break;
+    }
+    case 4: // show delta arrows shrink wrt gradient arrows
+    {
+        arrowX->setMagnitude(-descent->delta().x / descent->learning_rate * arrowScale);
+        arrowZ->setMagnitude(-descent->delta().z / descent->learning_rate * arrowScale);
+        arrowX->setLabel("divide by the side of the square");
+        break;
+    }
+    case 5: // show the composite of gradients
+    {
+        Point delta = descent->delta();
+        total_arrow->setVector(QVector3D(delta.x, 0, delta.z) /
+                               descent->learning_rate * arrowScale);
+        total_arrow->setPosition(descent->ball->position());
+        total_arrow->setVisible(true);
+        squareX->setLabelVisibility(false);
+        arrowX->setLabelVisibility(false);
+
+        break;
+    }
+    case 6: // draw an imaginary ball of the future position
+    {
+        AnimationHelper::setBallPositionOnSurface(temporary_ball.get(),
+                                         descent->position());
+        temporary_ball->setPosition(QVector3D(
+                                        descent->position().x,
+                                        descent->ball->position().y(),
+                                        descent->position().z));
+
+        temporary_ball->setVisible(true);
+        break;
+    }
+    }
+}
