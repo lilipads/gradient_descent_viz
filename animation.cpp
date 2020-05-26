@@ -29,21 +29,17 @@ void Animation::triggerAnimation(){
 void Animation::prepareDetailedAnimation(){
     QColor color = descent->ball_color;
     color.setAlpha(100);
-    temporary_ball = std::unique_ptr<Ball>(new Ball(color));
-    temporary_ball->addToGraph(m_graph);
-    arrowX = std::unique_ptr<Arrow>(new Arrow(QVector3D(-1, 0, 0)));
+    temporary_ball = std::unique_ptr<Ball>(new Ball(m_graph, color));
+    arrowX = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(-1, 0, 0)));
     arrowX->setMagnitude(0);
     arrowX->setLabel("gradient in x");
-    arrowX->addToGraph(m_graph);
     arrowX->setVisible(false);
-    arrowZ = std::unique_ptr<Arrow>(new Arrow(QVector3D(0, 0, -1)));
+    arrowZ = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(0, 0, -1)));
     arrowZ->setMagnitude(0);
     arrowZ->setLabel("gradient in z");
-    arrowZ->addToGraph(m_graph);
     arrowZ->setVisible(false);
-    total_arrow = std::unique_ptr<Arrow>(new Arrow);
+    total_arrow = std::unique_ptr<Arrow>(new Arrow(m_graph));
     total_arrow->setLabel("total gradient");
-    total_arrow->addToGraph(m_graph);
     total_arrow->setVisible(false);
 }
 
@@ -93,16 +89,13 @@ void GradientDescentAnimation::animateStep(){
 
 void MomentumAnimation::prepareDetailedAnimation(){
     Animation::prepareDetailedAnimation();
-    momentumArrowX = std::unique_ptr<Arrow>(new Arrow(QVector3D(-1, 0, 0)));
+    momentumArrowX = std::unique_ptr<Arrow>(
+                new Arrow(m_graph, QVector3D(-1, 0, 0), descent->ball_color));
     momentumArrowX->setLabel("momentum x");
     momentumArrowX->setMagnitude(0);
-    momentumArrowZ = std::unique_ptr<Arrow>(new Arrow(QVector3D(0, 0, -1)));
+    momentumArrowZ = std::unique_ptr<Arrow>(
+                new Arrow(m_graph, QVector3D(0, 0, -1), descent->ball_color));
     momentumArrowZ->setMagnitude(0);
-    for (Arrow* arrow : {momentumArrowX.get(), momentumArrowZ.get()}){
-        arrow->setColor(descent->ball_color);
-        arrow->setMagnitude(0.1);
-        arrow->addToGraph(m_graph);
-    }
 }
 
 
@@ -217,13 +210,11 @@ void MomentumAnimation::animateStep(){
 
 void AdaGradAnimation::prepareDetailedAnimation(){
     Animation::prepareDetailedAnimation();
-    squareX = std::unique_ptr<Square>(new Square);
+    squareX = std::unique_ptr<Square>(new Square(m_graph));
     squareX->setLabel("sum of gradient squared in x");
-    squareX->addToGraph(m_graph);
     squareX->setVisible(true);
-    squareZ = std::unique_ptr<Square>(new Square);
+    squareZ = std::unique_ptr<Square>(new Square(m_graph));
     squareZ->setLabel("sum of gradient squared in z");
-    squareZ->addToGraph(m_graph);
     squareZ->setVisible(false);
 }
 

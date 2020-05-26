@@ -8,28 +8,11 @@ void Item::setColor(QColor color){
 }
 
 
-void Item::addToGraph(Q3DSurface *graph){
-    graph->addCustomItem(this);
-    m_graph = graph;
-}
-
-
-LabeledItem::LabeledItem()
-{
-    initializeLabel();
-}
-
-void LabeledItem::initializeLabel(){
-    m_label = new QCustom3DLabel;
-    m_label->setFacingCamera(true);
-    m_label->setScaling(QVector3D(1., 1., 1.));
-    m_label->setVisible(label_visibility && this->isVisible());
-}
-
-void LabeledItem::addToGraph(Q3DSurface *graph){
-    graph->addCustomItem(this);
-    graph->addCustomItem(m_label);
-    m_graph = graph;
+void Item::addToGraph(Surface *graph){
+    if (m_graph == nullptr){
+        m_graph = graph;
+        m_graph->addCustomItem(this);
+    }
 }
 
 
@@ -37,19 +20,21 @@ void LabeledItem::setLabel(const QString &text){
     // the graph somehow doesn't update the text on its own
     // so we need this roundabout way of removing the label
     // and reinitializing it
-    if (m_graph != nullptr){
+    if (m_label != nullptr){
         m_graph->removeCustomItem(m_label);
         m_label = nullptr;
     }
 
-    initializeLabel();
+    m_label = new QCustom3DLabel;
+    m_label->setFacingCamera(true);
+    m_label->setScaling(QVector3D(1., 1., 1.));
+    m_label->setVisible(label_visibility && this->isVisible());
+
     m_label->setText(text);
     label_visibility = true;
     m_label->setVisible(label_visibility && this->isVisible());
 
-    if (m_graph != nullptr){
-        m_graph->addCustomItem(m_label);
-    }
+    m_graph->addCustomItem(m_label);
 }
 
 
@@ -70,22 +55,34 @@ void LabeledItem::setPosition(const QVector3D & position){
 }
 
 
-Ball::Ball(QColor color){
+Ball::Ball(Surface* graph, QColor color){
     setScaling(QVector3D(0.01f, 0.01f, 0.01f));
     setMeshFile(QStringLiteral(":/mesh/largesphere.obj"));
     setColor(color);
+    addToGraph(graph);
 }
 
 
-Arrow::Arrow(){
+Arrow::Arrow(Surface* graph) : LabeledItem(graph){
     setMeshFile(QStringLiteral(":/mesh/narrowarrow.obj"));
-    setColor(Qt::black);
     setMagnitude(0);
+    setColor(Qt::black);
 }
 
-Arrow::Arrow(QVector3D vector): Arrow() {
+
+Arrow::Arrow(Surface* graph, QVector3D vector): Arrow(graph) {
     setVector(vector);
 }
+
+
+Arrow::Arrow(Surface* graph, QVector3D vector, QColor color) {
+    setMeshFile(QStringLiteral(":/mesh/narrowarrow.obj"));
+    setMagnitude(0);
+    setColor(color);
+    setVector(vector);
+    addToGraph(graph);
+}
+
 
 void Arrow::setVector(QVector3D vector){
     /* draw an arrow representing the vector (direction and magnitude) */
@@ -107,7 +104,7 @@ void Arrow::setMagnitude(const float &magnitude){
 }
 
 
-Square::Square(){
+Square::Square(Surface* graph) : LabeledItem(graph){
     setMeshFile(QStringLiteral(":/mesh/plane.obj"));
     setScaling(QVector3D(0.1, 0.1, 0.1));
 }

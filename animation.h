@@ -5,8 +5,8 @@
 
 #include <QtCore/QTimer>
 #include <QtDataVisualization/QCustom3DItem>
-#include <QtDataVisualization/Q3DSurface>
 
+#include "surface.h"
 #include "gradientdescent.h"
 
 using namespace  QtDataVisualization;
@@ -26,7 +26,7 @@ void setXZArrows(GradientDescent* descent, Point grad);
 class Animation
 {
 public:
-    Animation(Q3DSurface* _graph, QTimer* _timer, GradientDescent* _descent)
+    Animation(Surface* _graph, QTimer* _timer, GradientDescent* _descent)
         : descent(_descent),
           m_graph(_graph),
           timer(_timer) {}
@@ -39,7 +39,7 @@ protected:
     int state = 0;
 
     GradientDescent* descent;
-    Q3DSurface* m_graph;
+    Surface* m_graph;
     QTimer* timer;
     std::unique_ptr<Ball> temporary_ball;
     std::unique_ptr<Arrow> arrowX;
@@ -54,7 +54,7 @@ class GradientDescentAnimation : public Animation
 {
 public:
     GradientDescentAnimation(
-            Q3DSurface* _graph, QTimer* _timer, VanillaGradientDescent* _descent)
+            Surface* _graph, QTimer* _timer, VanillaGradientDescent* _descent)
         : Animation(_graph, _timer, _descent)
     {
         num_states = 4;
@@ -71,7 +71,7 @@ class MomentumAnimation : public Animation
 {
 public:
     MomentumAnimation(
-            Q3DSurface* _graph, QTimer* _timer, Momentum* _descent)
+            Surface* _graph, QTimer* _timer, Momentum* _descent)
         : Animation(_graph, _timer, _descent)
     {
         num_states = 6;
@@ -93,7 +93,7 @@ class AdaGradAnimation : public Animation
 {
 public:
     AdaGradAnimation(
-            Q3DSurface* _graph, QTimer* _timer, AdaGrad* _descent)
+            Surface* _graph, QTimer* _timer, AdaGrad* _descent)
         : Animation(_graph, _timer, _descent)
     {
         num_states = 4;

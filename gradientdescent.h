@@ -59,7 +59,6 @@ public:
     VanillaGradientDescent() {
         ball_color = Qt::cyan;
         name = "&Gradient Descent";
-        ball = std::unique_ptr<Ball>(new Ball(ball_color));
     }
 
 protected:
@@ -71,7 +70,6 @@ public:
     Momentum() {
         ball_color = Qt::magenta;
         name = "&Momentum";
-        ball = std::unique_ptr<Ball>(new Ball(ball_color));
     }
 
     double decay_rate = 0.8;
@@ -85,7 +83,6 @@ public:
     AdaGrad() : grad_sum_of_squared(0., 0.){
         ball_color = Qt::white;
         name = "&AdaGrad";
-        ball = std::unique_ptr<Ball>(new Ball(ball_color));
         learning_rate = 1.;
     }
     Point gradSumOfSquared(){return grad_sum_of_squared;}
@@ -103,7 +100,6 @@ public:
     RMSProp() : decayed_grad_sum_of_squared(0., 0.){
         ball_color = Qt::green;
         name = "&RMSProp";
-        ball = std::unique_ptr<Ball>(new Ball(ball_color));
     }
 
     double decay_rate = 0.99;
@@ -123,7 +119,6 @@ public:
     {
         ball_color = Qt::blue;
         name = "&Adam";
-        ball = std::unique_ptr<Ball>(new Ball(ball_color));
     }
 
     double beta1 = 0.9;

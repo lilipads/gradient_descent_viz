@@ -31,7 +31,8 @@ Plot::Plot(Surface *surface)
     all_descents.push_back(adam.get());
 
     for (auto& descent : all_descents)
-        m_graph->addCustomItem(descent->ball.get());
+        descent->ball = std::unique_ptr<Ball>(new Ball(m_graph.get(),
+                                                       descent->ball_color));
 
     initializeSurface();
 
