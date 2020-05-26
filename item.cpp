@@ -34,6 +34,7 @@ void LabeledItem::setLabel(const QString &text){
     m_label->setText(text);
     label_visibility = true;
     m_label->setVisible(label_visibility && this->isVisible());
+    m_label->setPosition(position() + kLabelOffset);
 
     m_graph->addCustomItem(m_label);
 }
@@ -121,11 +122,19 @@ void Arrow::setPosition(const QVector3D & position){
 }
 
 
-Square::Square(Surface* graph) : LabeledItem(graph){
+Square::Square(Surface* graph) : LabeledItem(){
     setMeshFile(QStringLiteral(":/mesh/plane.obj"));
     setScaling(QVector3D(0.1, 0.1, 0.1));
+    QColor color = Qt::white;
+    color.setAlpha(150);
+    setColor(color);
+    setRotationAxisAndAngle(QVector3D(0, 0, 1), 90);
+    addToGraph(graph);
 }
 
 void Square::setArea(const float &area){
-    setScaling(QVector3D(0.1 * sqrt(area), 0.1, 0.1 * sqrt(area)));
+    float unitPlotPerGraph = QVector3D(m_graph->maxX - m_graph->minX, 0,
+                                       m_graph->maxZ - m_graph->minZ).length();
+    float scale = sqrt(area) * kUnitItemPerGraph / unitPlotPerGraph * kItemScale;
+    setScaling(QVector3D(scale, 1, scale) * 0.1);
 }

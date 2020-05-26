@@ -47,6 +47,7 @@ protected:
     std::unique_ptr<Arrow> total_arrow;
 
     virtual void animateStep() = 0;
+    bool in_initial_state = true;
 };
 
 
@@ -84,8 +85,6 @@ public:
 protected:
     std::unique_ptr<Arrow> momentumArrowX;
     std::unique_ptr<Arrow> momentumArrowZ;
-    bool in_initial_state = true;
-
 };
 
 
@@ -96,7 +95,7 @@ public:
             Surface* _graph, QTimer* _timer, AdaGrad* _descent)
         : Animation(_graph, _timer, _descent)
     {
-        num_states = 4;
+        num_states = 6;
     };
 
     void prepareDetailedAnimation();
@@ -106,8 +105,8 @@ public:
 protected:
     std::unique_ptr<Square> squareX;
     std::unique_ptr<Square> squareZ;
-    bool in_initial_state = true;
-
+    // scale up the arrow, otherwise you can't see because adagrad moves so slow
+    const float arrowScale = 10;
 };
 
 #endif // ANIMATION_H

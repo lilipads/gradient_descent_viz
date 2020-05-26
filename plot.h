@@ -45,7 +45,7 @@ private:
     std::unique_ptr<QSurfaceDataProxy> m_surfaceProxy;
     std::unique_ptr<QSurface3DSeries> m_surfaceSeries;
     bool detailedView = true;
-    MomentumAnimation* detailed_descent;
+    AdaGradAnimation* detailed_descent;
 
     int timer_counter = 0;
     int animation_slowdown = 1; // slow down factor

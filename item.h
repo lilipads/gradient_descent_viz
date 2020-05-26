@@ -14,6 +14,7 @@ using namespace QtDataVisualization;
 const float kItemScale = 0.1;
 // how many unit arrows in one side of the graph
 const float kUnitItemPerGraph = 110;
+// TODO: if this is absolute, doesn't work when graph is scaled
 const QVector3D kLabelOffset(0, 20, 0); // label's position relative to the object's position
 
 
