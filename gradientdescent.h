@@ -125,7 +125,7 @@ public:
     double beta1 = 0.9;
     double beta2 = 0.999;
     Point decayedGradSum(){return decayed_grad_sum;}
-    Point decayedGradSumofSquared(){return decayed_grad_sum_of_squared;}
+    Point decayedGradSumOfSquared(){return decayed_grad_sum_of_squared;}
 
 protected:
     void updateGradientDelta();

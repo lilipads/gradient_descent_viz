@@ -47,6 +47,7 @@ protected:
     std::unique_ptr<Arrow> total_arrow;
 
     virtual void animateStep() = 0;
+    virtual int interval(){return kInterval;}
     bool in_initial_state = true;
 };
 
@@ -129,6 +130,31 @@ protected:
     std::unique_ptr<Square> squareZ;
     // scale up the arrow, otherwise you can't see because adagrad moves so slow
     const float arrowScale = 1;
+};
+
+
+class AdamAnimation : public Animation
+{
+public:
+    AdamAnimation(
+            Surface* _graph, QTimer* _timer, Adam* _descent)
+        : Animation(_graph, _timer, _descent)
+    {
+        num_states = 9;
+    };
+
+    void prepareDetailedAnimation();
+
+    void animateStep();
+
+protected:
+    std::unique_ptr<Arrow> momentumArrowX;
+    std::unique_ptr<Arrow> momentumArrowZ;
+    std::unique_ptr<Square> squareX;
+    std::unique_ptr<Square> squareZ;
+    // scale up the arrow, otherwise you can't see because adagrad moves so slow
+    const float arrowScale = 1;
+    int interval() {return 2000;}
 };
 
 #endif // ANIMATION_H

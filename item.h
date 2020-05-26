@@ -90,7 +90,7 @@ public:
 
 private:
     float m_area;
-    QVector3D label_offset(){return QVector3D(-1, 1, 0) * sqrt(area()) * kItemScale
+    QVector3D label_offset(){return QVector3D(0, 1, -1) * sqrt(area()) * kItemScale
                 + LabeledItem::label_offset();}
 };
 
