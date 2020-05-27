@@ -19,12 +19,22 @@ void AnimationHelper::setBallPositionOnSurface(Ball* ball, Point p){
 }
 
 
-void Animation::triggerSimpleAnimation(int animation_speedup){
+void Animation::triggerSimpleAnimation(int animation_speedup, bool show_gradient){
     if (descent->isConverged()) return;
     Point p;
     for (int i = 0; i < animation_speedup; i++)
         p = descent->takeGradientStep();
     AnimationHelper::setBallPositionOnSurface(descent->ball.get(), p);
+    if (show_gradient){
+        if (arrowX == nullptr)
+            arrowX = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(-1, 0, 0), Qt::black));
+        if (arrowZ == nullptr)
+            arrowZ = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(0, 0, -1), Qt::black));
+        arrowX->setMagnitude(descent->gradX());
+        arrowZ->setMagnitude(descent->gradZ());
+        arrowX->setPosition(descent->ball->position());
+        arrowZ->setPosition(descent->ball->position());
+    }
 }
 
 

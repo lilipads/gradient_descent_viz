@@ -31,7 +31,7 @@ public:
           timer(_timer) {}
 
     void triggerDetailedAnimation();
-    virtual void triggerSimpleAnimation(int animation_speedup);
+    virtual void triggerSimpleAnimation(int animation_speedup, bool show_gradient);
     virtual void prepareDetailedAnimation();
     std::unique_ptr<GradientDescent> descent;
 
@@ -42,10 +42,10 @@ protected:
     Surface* m_graph;
     QTimer* timer;
 
-    std::unique_ptr<Ball> temporary_ball;
-    std::unique_ptr<Arrow> arrowX;
-    std::unique_ptr<Arrow> arrowZ;
-    std::unique_ptr<Arrow> total_arrow;
+    std::unique_ptr<Ball> temporary_ball = nullptr;
+    std::unique_ptr<Arrow> arrowX = nullptr;
+    std::unique_ptr<Arrow> arrowZ = nullptr;
+    std::unique_ptr<Arrow> total_arrow = nullptr;
 
     virtual void animateStep() = 0;
     virtual int interval(){return kInterval;}
