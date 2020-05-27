@@ -28,6 +28,8 @@ Window::Window(QWidget *parent)
 
     vLayout->addWidget(createControlGroup());
 
+    vLayout->addWidget(createViewTabs());
+
     // widgets to tune gradient parameters
     vLayout->addWidget(createGradientDescentGroup());
     vLayout->addWidget(createMomentumGroup());
@@ -242,4 +244,28 @@ QDoubleSpinBox *Window::createDecayBox(double& val){
         QOverload<double>::of(&QDoubleSpinBox::valueChanged),
         [&](const double &newValue ) {val = newValue;});
     return decayRateBox;
+}
+
+QTabWidget *Window::createViewTabs(){
+    QTabWidget* tab = new QTabWidget;
+    QWidget* container = new QWidget();
+    QCheckBox* gradient = new QCheckBox("Gradient (scaled down 10x)");
+    QCheckBox* momentum = new QCheckBox("Momentum / sum of gradient");
+    QCheckBox* squaredGrad = new QCheckBox("Sum of gradient squared");
+    QVBoxLayout* vbox = new QVBoxLayout;
+    container->setLayout(vbox);
+    vbox->addWidget(gradient);
+    vbox->addWidget(momentum);
+    vbox->addWidget(squaredGrad);
+    tab->addTab(container, "Overview");
+
+    QComboBox* descentPicker = new QComboBox;
+    descentPicker->addItem("Choose a method");
+    descentPicker->addItem("Gradient Descent");
+    descentPicker->addItem("Momentum");
+    descentPicker->addItem("Ada Grad");
+    descentPicker->addItem("RMS Prop");
+    descentPicker->addItem("Adam");
+    tab->addTab(descentPicker, "Step-by-Step");
+    return tab;
 }

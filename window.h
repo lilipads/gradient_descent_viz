@@ -39,6 +39,8 @@ private:
     QSlider* createZoomSlider();
     QComboBox* createPlaybackSpeedBox();
 
+    QTabWidget* createViewTabs();
+
     QGroupBox* createDescentGroup(GradientDescent* descent,
         QFormLayout* layout);
     QGroupBox* createGradientDescentGroup();
