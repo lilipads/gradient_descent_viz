@@ -78,6 +78,12 @@ void Animation::animateGradientSquared(){
 }
 
 
+void Animation::cleanupGradient(){
+    arrowX = nullptr;
+    arrowZ = nullptr;
+}
+
+
 void Animation::triggerDetailedAnimation(){
     animateStep();
     if (!in_initial_state)

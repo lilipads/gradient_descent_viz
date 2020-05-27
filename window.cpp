@@ -250,8 +250,10 @@ QDoubleSpinBox *Window::createDecayBox(double& val){
 QTabWidget *Window::createViewTabs(){
     QTabWidget* tab = new QTabWidget;
     QWidget* container = new QWidget();
-    QCheckBox* gradient = new QCheckBox("Gradient (scaled down 5x)");
-    QCheckBox* momentum = new QCheckBox("Momentum (scaled down 5x)");
+    // TODO: say it's scaled down
+    QCheckBox* gradient = new QCheckBox("Gradient");
+    QObject::connect(gradient, &QCheckBox::clicked, plot, &Plot::setShowGradient);
+    QCheckBox* momentum = new QCheckBox("Momentum");
     QCheckBox* squaredGrad = new QCheckBox("Sum of gradient squared");
     QVBoxLayout* vbox = new QVBoxLayout;
     container->setLayout(vbox);

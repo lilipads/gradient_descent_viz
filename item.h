@@ -37,6 +37,7 @@ class LabeledItem : public Item
 {
 public:
     LabeledItem(Surface* graph) : Item(graph){};
+    ~LabeledItem();
 
     void setLabel(const QString &text);
     void setLabelVisibility(bool visible);

@@ -195,3 +195,13 @@ void Plot::setAnimationSpeed(int index){
         case 4: animation_speedup = 10; break;
     }
 }
+
+
+void Plot::setShowGradient(bool show){
+    if (show == show_gradient) return;
+    show_gradient = show;
+    if (!show){
+        for (auto animation : all_animations)
+            animation->cleanupGradient();
+    }
+}

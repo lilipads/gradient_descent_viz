@@ -25,6 +25,7 @@ public:
     std::unique_ptr<Animation> ada_grad;
     std::unique_ptr<Animation> rms_prop;
     std::unique_ptr<Animation> adam;
+    void setShowGradient(bool show);
 
 public Q_SLOTS:
     void toggleAnimation();
@@ -49,6 +50,9 @@ private:
     int timer_counter = 0;
     int animation_slowdown = 1; // slow down factor
     int animation_speedup = 1;  // speed up factor
+    bool show_gradient = false;
+    bool show_momentum = false;
+    bool show_gradient_squared = false;
 
     void initializeSurface();
     void initializeGraph();

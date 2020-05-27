@@ -35,6 +35,8 @@ public:
         bool show_gradient, bool show_momentum, bool show_gradient_squared);
     virtual void prepareDetailedAnimation();
     std::unique_ptr<GradientDescent> descent;
+    // void cleanupAll();
+    void cleanupGradient();
 
 protected:
     int num_states;
@@ -64,7 +66,6 @@ protected:
     void animateGradientSquared();
     virtual Point momentum(){return Point();};
     virtual Point gradSumOfSquared(){return Point();};
-
 };
 
 

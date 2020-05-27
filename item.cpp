@@ -16,6 +16,13 @@ void Item::addToGraph(Surface *graph){
     }
 }
 
+LabeledItem::~LabeledItem(){
+    if (m_label != nullptr){
+        m_graph->removeCustomItem(m_label);
+        m_label = nullptr;
+    }
+    m_graph->releaseCustomItem(this);
+}
 
 void LabeledItem::setLabel(const QString &text){
     // the graph somehow doesn't update the text on its own
