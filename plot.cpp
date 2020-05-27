@@ -130,7 +130,7 @@ void Plot::triggerAnimation() {
     if (timer_counter == 0){
 //        detailed_descent->triggerDetailedAnimation();
         for (auto animation : all_animations)
-            animation->triggerSimpleAnimation(animation_speedup, true);
+            animation->triggerSimpleAnimation(animation_speedup, true, true);
     }
     timer_counter = (timer_counter + 1) % animation_slowdown;
 }

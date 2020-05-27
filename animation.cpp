@@ -1,5 +1,7 @@
 #include "animation.h"
 
+const float simpleAnimationArrowScale = 0.2;
+
 void AnimationHelper::setBallPositionOnSurface(Ball* ball, Point p){
 //    const float cutoff = 15;
     float y = f(p.x, p.z);
@@ -19,22 +21,42 @@ void AnimationHelper::setBallPositionOnSurface(Ball* ball, Point p){
 }
 
 
-void Animation::triggerSimpleAnimation(int animation_speedup, bool show_gradient){
+void Animation::triggerSimpleAnimation(int animation_speedup,
+     bool show_gradient, bool show_momentum){
     if (descent->isConverged()) return;
     Point p;
     for (int i = 0; i < animation_speedup; i++)
         p = descent->takeGradientStep();
     AnimationHelper::setBallPositionOnSurface(descent->ball.get(), p);
-    if (show_gradient){
-        if (arrowX == nullptr)
-            arrowX = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(-1, 0, 0), Qt::black));
-        if (arrowZ == nullptr)
-            arrowZ = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(0, 0, -1), Qt::black));
-        arrowX->setMagnitude(descent->gradX());
-        arrowZ->setMagnitude(descent->gradZ());
-        arrowX->setPosition(descent->ball->position());
-        arrowZ->setPosition(descent->ball->position());
-    }
+    if (show_gradient) animateGradient();
+    if (has_momentum && show_momentum) animateMomentum();
+
+}
+
+
+void Animation::animateGradient(){
+    if (arrowX == nullptr)
+        arrowX = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(-1, 0, 0), Qt::black));
+    if (arrowZ == nullptr)
+        arrowZ = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(0, 0, -1), Qt::black));
+    arrowX->setMagnitude(descent->gradX() * simpleAnimationArrowScale);
+    arrowZ->setMagnitude(descent->gradZ() * simpleAnimationArrowScale);
+    arrowX->setPosition(descent->ball->position());
+    arrowZ->setPosition(descent->ball->position());
+}
+
+
+void Animation::animateMomentum(){
+    if (momentumArrowX == nullptr)
+        momentumArrowX = std::unique_ptr<Arrow>(
+                    new Arrow(m_graph, QVector3D(-1, 0, 0), Qt::magenta));
+    if (momentumArrowZ == nullptr)
+        momentumArrowZ = std::unique_ptr<Arrow>(
+                    new Arrow(m_graph, QVector3D(0, 0, -1), Qt::magenta));
+    momentumArrowX->setMagnitude(momentum().x * simpleAnimationArrowScale);
+    momentumArrowZ->setMagnitude(momentum().z * simpleAnimationArrowScale);
+    momentumArrowX->setPosition(descent->ball->position());
+    momentumArrowZ->setPosition(descent->ball->position());
 }
 
 

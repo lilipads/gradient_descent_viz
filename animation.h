@@ -31,13 +31,17 @@ public:
           timer(_timer) {}
 
     void triggerDetailedAnimation();
-    virtual void triggerSimpleAnimation(int animation_speedup, bool show_gradient);
+    virtual void triggerSimpleAnimation(int animation_speedup,
+        bool show_gradient, bool show_momentum);
     virtual void prepareDetailedAnimation();
     std::unique_ptr<GradientDescent> descent;
 
 protected:
     int num_states;
     int state = 0;
+    bool in_initial_state = true;
+    bool has_momentum = false;
+    bool has_gradient_squared = false;
 
     Surface* m_graph;
     QTimer* timer;
@@ -47,9 +51,19 @@ protected:
     std::unique_ptr<Arrow> arrowZ = nullptr;
     std::unique_ptr<Arrow> total_arrow = nullptr;
 
+    std::unique_ptr<Arrow> momentumArrowX = nullptr;
+    std::unique_ptr<Arrow> momentumArrowZ = nullptr;
+    std::unique_ptr<Square> squareX = nullptr;
+    std::unique_ptr<Square> squareZ = nullptr;
+
     virtual void animateStep() = 0;
     virtual int interval(){return kInterval;}
-    bool in_initial_state = true;
+
+    void animateGradient();
+    void animateMomentum();
+    virtual Point momentum(){return Point();};
+    virtual Point gradSumOfSquared(){return Point();};
+
 };
 
 
@@ -78,6 +92,7 @@ public:
     {
         num_states = 6;
         descent = std::unique_ptr<GradientDescent>(new Momentum);
+        has_momentum = true;
     };
 
     void prepareDetailedAnimation();
@@ -85,8 +100,8 @@ public:
     void animateStep();
 
 protected:
-    std::unique_ptr<Arrow> momentumArrowX;
-    std::unique_ptr<Arrow> momentumArrowZ;
+    Point momentum(){return Point(-descent->delta().x / descent->learning_rate,
+                                  -descent->delta().z / descent->learning_rate);}
 };
 
 
@@ -105,8 +120,6 @@ public:
     void animateStep();
 
 protected:
-    std::unique_ptr<Square> squareX;
-    std::unique_ptr<Square> squareZ;
     // scale up the arrow, otherwise you can't see because adagrad moves so slow
     const float arrowScale = 1;
 };
@@ -127,8 +140,6 @@ public:
     void animateStep();
 
 protected:
-    std::unique_ptr<Square> squareX;
-    std::unique_ptr<Square> squareZ;
     const float arrowScale = 1;
 };
 
@@ -141,6 +152,7 @@ public:
     {
         num_states = 9;
         descent = std::unique_ptr<GradientDescent>(new Adam);
+        has_momentum = true;
     };
 
     void prepareDetailedAnimation();
@@ -148,13 +160,11 @@ public:
     void animateStep();
 
 protected:
-    std::unique_ptr<Arrow> momentumArrowX;
-    std::unique_ptr<Arrow> momentumArrowZ;
-    std::unique_ptr<Square> squareX;
-    std::unique_ptr<Square> squareZ;
     // scale up the arrow, otherwise you can't see because adagrad moves so slow
     const float arrowScale = 1;
     int interval() {return 2000;}
+    Point momentum() {
+        return dynamic_cast<Adam*> (descent.get())->decayedGradSum();}
 };
 
 #endif // ANIMATION_H
