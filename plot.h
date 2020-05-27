@@ -38,7 +38,6 @@ public Q_SLOTS:
     void cameraZoomOut();
 
 private:
-
     std::vector<Animation*> all_animations;
     QTimer m_timer;
     std::unique_ptr<Surface> m_graph;

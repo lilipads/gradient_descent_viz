@@ -22,7 +22,7 @@ void AnimationHelper::setBallPositionOnSurface(Ball* ball, Point p){
 
 
 void Animation::triggerSimpleAnimation(int animation_speedup,
-     bool show_gradient, bool show_momentum){
+     bool show_gradient, bool show_momentum, bool show_gradient_squared){
     if (descent->isConverged()) return;
     Point p;
     for (int i = 0; i < animation_speedup; i++)
@@ -30,6 +30,7 @@ void Animation::triggerSimpleAnimation(int animation_speedup,
     AnimationHelper::setBallPositionOnSurface(descent->ball.get(), p);
     if (show_gradient) animateGradient();
     if (has_momentum && show_momentum) animateMomentum();
+    if (has_gradient_squared && show_gradient_squared) animateGradientSquared();
 
 }
 
@@ -57,6 +58,23 @@ void Animation::animateMomentum(){
     momentumArrowZ->setMagnitude(momentum().z * simpleAnimationArrowScale);
     momentumArrowX->setPosition(descent->ball->position());
     momentumArrowZ->setPosition(descent->ball->position());
+}
+
+
+void Animation::animateGradientSquared(){
+    if (squareX == nullptr){
+        squareX = std::unique_ptr<Square>(new Square(m_graph));
+        QQuaternion z_rotation = QQuaternion::fromAxisAndAngle(0, 0, 1, 90);
+        QQuaternion y_rotation = QQuaternion::fromAxisAndAngle(1, 0, 0, -90);
+        squareX->setRotation(z_rotation * y_rotation);
+    }
+    if (squareZ == nullptr)
+        squareZ = std::unique_ptr<Square>(new Square(m_graph));
+
+    squareX->setArea(gradSumOfSquared().x * pow(simpleAnimationArrowScale, 2));
+    squareZ->setArea(gradSumOfSquared().z * pow(simpleAnimationArrowScale, 2));
+    squareX->setPosition(descent->ball->position());
+    squareZ->setPosition(descent->ball->position());
 }
 
 
@@ -467,7 +485,6 @@ void AdamAnimation::prepareDetailedAnimation(){
 
     momentumArrowZ = std::unique_ptr<Arrow>(
                 new Arrow(m_graph, QVector3D(0, 0, -1), Momentum().ball_color));
-//    momentumArrowZ->setLabel("momentum z");
     momentumArrowZ->setMagnitude(0);
 
     squareX = std::unique_ptr<Square>(new Square(m_graph));
@@ -478,7 +495,6 @@ void AdamAnimation::prepareDetailedAnimation(){
     squareX->setVisible(false);
 
     squareZ = std::unique_ptr<Square>(new Square(m_graph));
-    squareZ->setLabel("sum of gradient squared in z");
     squareZ->setArea(0);
     squareZ->setVisible(false);
 }

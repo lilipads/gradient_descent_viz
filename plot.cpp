@@ -37,8 +37,8 @@ Plot::Plot(Surface *surface)
 
     toggleAnimation();
     restartAnimation();
-    detailed_descent = adam.get();
-    detailed_descent->prepareDetailedAnimation();
+//    detailed_descent = adam.get();
+//    detailed_descent->prepareDetailedAnimation();
 }
 
 Plot::~Plot() {}
@@ -130,7 +130,8 @@ void Plot::triggerAnimation() {
     if (timer_counter == 0){
 //        detailed_descent->triggerDetailedAnimation();
         for (auto animation : all_animations)
-            animation->triggerSimpleAnimation(animation_speedup, true, true);
+            animation->triggerSimpleAnimation(animation_speedup,
+                show_gradient, show_momentum, show_gradient_squared);
     }
     timer_counter = (timer_counter + 1) % animation_slowdown;
 }

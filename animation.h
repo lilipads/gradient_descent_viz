@@ -32,7 +32,7 @@ public:
 
     void triggerDetailedAnimation();
     virtual void triggerSimpleAnimation(int animation_speedup,
-        bool show_gradient, bool show_momentum);
+        bool show_gradient, bool show_momentum, bool show_gradient_squared);
     virtual void prepareDetailedAnimation();
     std::unique_ptr<GradientDescent> descent;
 
@@ -61,6 +61,7 @@ protected:
 
     void animateGradient();
     void animateMomentum();
+    void animateGradientSquared();
     virtual Point momentum(){return Point();};
     virtual Point gradSumOfSquared(){return Point();};
 
@@ -96,7 +97,6 @@ public:
     };
 
     void prepareDetailedAnimation();
-
     void animateStep();
 
 protected:
@@ -113,15 +113,18 @@ public:
     {
         num_states = 6;
         descent = std::unique_ptr<GradientDescent>(new AdaGrad);
+        has_gradient_squared = true;
     };
 
     void prepareDetailedAnimation();
-
     void animateStep();
 
 protected:
     // scale up the arrow, otherwise you can't see because adagrad moves so slow
     const float arrowScale = 1;
+
+    Point gradSumOfSquared() {
+        return dynamic_cast<AdaGrad*> (descent.get())->gradSumOfSquared();}
 };
 
 
@@ -133,14 +136,17 @@ public:
     {
         num_states = 7;
         descent = std::unique_ptr<GradientDescent>(new RMSProp);
+        has_gradient_squared = true;
     };
 
     void prepareDetailedAnimation();
-
     void animateStep();
 
 protected:
     const float arrowScale = 1;
+
+    Point gradSumOfSquared(){
+        return dynamic_cast<RMSProp*> (descent.get())->decayedGradSumOfSquared();}
 };
 
 
@@ -153,18 +159,22 @@ public:
         num_states = 9;
         descent = std::unique_ptr<GradientDescent>(new Adam);
         has_momentum = true;
+        has_gradient_squared = true;
     };
 
     void prepareDetailedAnimation();
-
     void animateStep();
 
 protected:
     // scale up the arrow, otherwise you can't see because adagrad moves so slow
     const float arrowScale = 1;
     int interval() {return 2000;}
+
     Point momentum() {
-        return dynamic_cast<Adam*> (descent.get())->decayedGradSum();}
+        return dynamic_cast<Adam*> (descent.get())->decayedGradSum();} 
+    Point gradSumOfSquared(){
+        return dynamic_cast<Adam*> (descent.get())->decayedGradSumOfSquared();}
+
 };
 
 #endif // ANIMATION_H
