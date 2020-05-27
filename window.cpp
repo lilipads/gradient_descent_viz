@@ -152,7 +152,8 @@ QGroupBox *Window::createDescentGroup(GradientDescent* descent,
 
 
 QGroupBox *Window::createGradientDescentGroup(){
-    VanillaGradientDescent* descent = plot->gradient_descent.get();
+    VanillaGradientDescent* descent = dynamic_cast<VanillaGradientDescent*> (
+                plot->gradient_descent->descent.get());
 
     QFormLayout *form = new QFormLayout;
     form->addRow(new QLabel(QStringLiteral("Learning Rate:")),
@@ -163,7 +164,7 @@ QGroupBox *Window::createGradientDescentGroup(){
 
 
 QGroupBox *Window::createMomentumGroup(){
-    Momentum* descent = plot->momentum.get();
+    Momentum* descent = dynamic_cast<Momentum*> (plot->momentum->descent.get());
 
     QFormLayout *form = new QFormLayout;
     form->addRow(new QLabel(QStringLiteral("Learning Rate:")),
@@ -176,7 +177,7 @@ QGroupBox *Window::createMomentumGroup(){
 
 
 QGroupBox *Window::createAdaGradGroup(){
-    AdaGrad* descent = plot->ada_grad.get();
+    AdaGrad* descent = dynamic_cast<AdaGrad*> (plot->ada_grad->descent.get());
 
     QFormLayout *form = new QFormLayout;
     form->addRow(new QLabel(QStringLiteral("Learning Rate:")),
@@ -187,7 +188,7 @@ QGroupBox *Window::createAdaGradGroup(){
 
 
 QGroupBox *Window::createRMSPropGroup(){
-    RMSProp* descent = plot->rms_prop.get();
+    RMSProp* descent = dynamic_cast<RMSProp*> (plot->rms_prop->descent.get());
 
     QFormLayout *form = new QFormLayout;
     form->addRow(new QLabel(QStringLiteral("Learning Rate:")),
@@ -200,7 +201,7 @@ QGroupBox *Window::createRMSPropGroup(){
 
 
 QGroupBox *Window::createAdamGroup(){
-    Adam* descent = plot->adam.get();
+    Adam* descent = dynamic_cast<Adam*> (plot->adam->descent.get());
 
     QFormLayout *form = new QFormLayout;
     form->addRow(new QLabel(QStringLiteral("Learning Rate:")),

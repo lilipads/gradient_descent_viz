@@ -20,11 +20,11 @@ class Plot : public QObject
 public:
     explicit Plot(Surface *surface);
     ~Plot();
-    std::unique_ptr<VanillaGradientDescent> gradient_descent;
-    std::unique_ptr<Momentum> momentum;
-    std::unique_ptr<AdaGrad> ada_grad;
-    std::unique_ptr<RMSProp> rms_prop;
-    std::unique_ptr<Adam> adam;
+    std::unique_ptr<Animation> gradient_descent;
+    std::unique_ptr<Animation> momentum;
+    std::unique_ptr<Animation> ada_grad;
+    std::unique_ptr<Animation> rms_prop;
+    std::unique_ptr<Animation> adam;
 
 public Q_SLOTS:
     void toggleAnimation();
@@ -39,13 +39,13 @@ public Q_SLOTS:
 
 private:
 
-    std::vector<GradientDescent*> all_descents;
+    std::vector<Animation*> all_animations;
     QTimer m_timer;
     std::unique_ptr<Surface> m_graph;
     std::unique_ptr<QSurfaceDataProxy> m_surfaceProxy;
     std::unique_ptr<QSurface3DSeries> m_surfaceSeries;
     bool detailedView = true;
-    AdamAnimation* detailed_descent;
+    Animation* detailed_descent;
 
     int timer_counter = 0;
     int animation_slowdown = 1; // slow down factor
@@ -53,6 +53,7 @@ private:
 
     void initializeSurface();
     void initializeGraph();
+    void initializeAnimations();
 };
 
 #endif // PLOT_H

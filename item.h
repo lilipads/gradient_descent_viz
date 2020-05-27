@@ -26,7 +26,6 @@ public:
 
 protected:
     Item(){}
-    QCustom3DLabel* m_label = nullptr;
     Surface* m_graph = nullptr;
 
     void setColor(QColor color);
@@ -45,8 +44,10 @@ public:
     void setPosition(const QVector3D& position);
 
 protected:
-    LabeledItem(){}
+    QCustom3DLabel* m_label = nullptr;
     bool label_visibility = false;
+
+    LabeledItem(){}
     virtual QVector3D label_offset() {return kLabelOffset;}
 };
 

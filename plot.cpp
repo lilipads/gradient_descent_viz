@@ -13,26 +13,17 @@ const float kCameraMoveStepSize = 0.1f;
 const float kCameraZoomStepSize = 10.f;
 
 Plot::Plot(Surface *surface)
-    : gradient_descent(new VanillaGradientDescent),
-      momentum(new Momentum),
-      ada_grad(new AdaGrad),
-      rms_prop(new RMSProp),
-      adam(new Adam),
-      m_graph(surface),
+    : m_graph(surface),
       m_surfaceProxy(new QSurfaceDataProxy()),
       m_surfaceSeries(new QSurface3DSeries(m_surfaceProxy.get()))
 {
     initializeGraph();
 
-    all_descents.push_back(gradient_descent.get());
-    all_descents.push_back(momentum.get());
-    all_descents.push_back(ada_grad.get());
-    all_descents.push_back(rms_prop.get());
-    all_descents.push_back(adam.get());
+    initializeAnimations();
 
-    for (auto& descent : all_descents)
-        descent->ball = std::unique_ptr<Ball>(new Ball(m_graph.get(),
-                                                       descent->ball_color));
+    for (auto& animation : all_animations)
+        animation->descent->ball = std::unique_ptr<Ball>(new Ball(m_graph.get(),
+                                                       animation->descent->ball_color));
 
     initializeSurface();
 
@@ -46,9 +37,7 @@ Plot::Plot(Surface *surface)
 
     toggleAnimation();
     restartAnimation();
-
-    detailed_descent = new AdamAnimation(
-                m_graph.get(), &m_timer, adam.get());
+    detailed_descent = adam.get();
     detailed_descent->prepareDetailedAnimation();
 }
 
@@ -72,6 +61,26 @@ void Plot::initializeGraph(){
     m_graph->setAxisZ(zAxis);
 }
 
+void Plot::initializeAnimations(){
+    gradient_descent = std::unique_ptr<GradientDescentAnimation>(
+                new GradientDescentAnimation(m_graph.get(), &m_timer));
+    momentum = std::unique_ptr<Animation>(
+                new MomentumAnimation(m_graph.get(), &m_timer));
+    ada_grad = std::unique_ptr<Animation>(
+                new AdaGradAnimation(m_graph.get(), &m_timer));
+    rms_prop = std::unique_ptr<Animation>(
+                new RMSPropAnimation(m_graph.get(), &m_timer));
+    adam = std::unique_ptr<Animation>(
+                new AdamAnimation(m_graph.get(), &m_timer));
+    all_animations = {
+        gradient_descent.get(),
+        momentum.get(),
+        ada_grad.get(),
+        rms_prop.get(),
+        adam.get()
+    };
+}
+
 
 void Plot::initializeSurface() {
     float stepX = (m_graph->maxX - m_graph->minX) / float(sampleCountX - 1);
@@ -87,7 +96,7 @@ void Plot::initializeSurface() {
         int index = 0;
         for (int j = 0; j < sampleCountX; j++) {
             float x = qMin(m_graph->maxX, (j * stepX + m_graph->minX));
-            float y = gradient_descent->f(x, z);
+            float y = GradientDescent::f(x, z);
             (*newRow)[index++].setPosition(QVector3D(x, y, z));
         }
         *dataArray << newRow;
@@ -134,8 +143,8 @@ void Plot::triggerAnimation() {
 
 
 void Plot::restartAnimation() {
-    for (auto& descent : all_descents){
-        descent->resetPositionAndComputeGradient();
+    for (auto& animation : all_animations){
+        animation->descent->resetPositionAndComputeGradient();
     }
 }
 
@@ -145,8 +154,8 @@ void Plot::restartFromNewPosition(QPoint q_pos){
         return;
     // convert the 2d Qt internal point for to the 3d point on the series
     QVector3D p = m_surfaceProxy->itemAt(q_pos)->position();
-    for (auto descent : all_descents){
-        descent->setStartingPosition(p.x(), p.z());
+    for (auto animation : all_animations){
+        animation->descent->setStartingPosition(p.x(), p.z());
     }
     restartAnimation();
 }

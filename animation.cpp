@@ -127,9 +127,9 @@ void MomentumAnimation::animateStep(){
         AnimationHelper::setBallPositionOnSurface(descent->ball.get(), p);
 
         momentumArrowX->setMagnitude(momentumArrowX->magnitude() *
-                                     dynamic_cast<Momentum*> (descent) ->decay_rate);
+                                     dynamic_cast<Momentum*> (descent.get()) ->decay_rate);
         momentumArrowZ->setMagnitude(momentumArrowZ->magnitude() *
-                                     dynamic_cast<Momentum*> (descent) ->decay_rate);
+                                     dynamic_cast<Momentum*> (descent.get()) ->decay_rate);
         momentumArrowX->setLabel("decay momentum");
         momentumArrowX->setPosition(descent->ball->position());
         momentumArrowZ->setPosition(descent->ball->position());
@@ -264,8 +264,8 @@ void AdaGradAnimation::animateStep(){
     case 2: // show sum of squares updating
     {
         descent->takeGradientStep();
-        squareX->setArea(dynamic_cast<AdaGrad*> (descent)->gradSumOfSquared().x);
-        squareZ->setArea(dynamic_cast<AdaGrad*> (descent)->gradSumOfSquared().z);
+        squareX->setArea(dynamic_cast<AdaGrad*> (descent.get())->gradSumOfSquared().x);
+        squareZ->setArea(dynamic_cast<AdaGrad*> (descent.get())->gradSumOfSquared().z);
         squareX->setLabel("add onto current gradient^2");
         squareX->setVisible(true);
         squareZ->setVisible(true);
@@ -364,8 +364,8 @@ void RMSPropAnimation::animateStep(){
     }
     case 2: // show sum of squares decaying
     {
-        squareX->setArea(squareX->area() * dynamic_cast<RMSProp*> (descent)->decay_rate);
-        squareZ->setArea(squareZ->area() * dynamic_cast<RMSProp*> (descent)->decay_rate);
+        squareX->setArea(squareX->area() * dynamic_cast<RMSProp*> (descent.get())->decay_rate);
+        squareZ->setArea(squareZ->area() * dynamic_cast<RMSProp*> (descent.get())->decay_rate);
         squareX->setLabel("decay gradient^2");
         squareX->setLabelVisibility(!in_initial_state);
         squareX->setVisible(true);
@@ -378,8 +378,8 @@ void RMSPropAnimation::animateStep(){
     case 3: // show sum of squares updating
     {
         descent->takeGradientStep();
-        squareX->setArea(dynamic_cast<RMSProp*> (descent)->decayedGradSumOfSquared().x);
-        squareZ->setArea(dynamic_cast<RMSProp*> (descent)->decayedGradSumOfSquared().z);
+        squareX->setArea(dynamic_cast<RMSProp*> (descent.get())->decayedGradSumOfSquared().x);
+        squareZ->setArea(dynamic_cast<RMSProp*> (descent.get())->decayedGradSumOfSquared().z);
         squareX->setLabel("add on current gradient^2");
         break;
     }
@@ -426,7 +426,7 @@ void AdamAnimation::prepareDetailedAnimation(){
 
     momentumArrowZ = std::unique_ptr<Arrow>(
                 new Arrow(m_graph, QVector3D(0, 0, -1), Momentum().ball_color));
-    momentumArrowZ->setLabel("momentum z");
+//    momentumArrowZ->setLabel("momentum z");
     momentumArrowZ->setMagnitude(0);
 
     squareX = std::unique_ptr<Square>(new Square(m_graph));
@@ -473,9 +473,9 @@ void AdamAnimation::animateStep(){
         AnimationHelper::setBallPositionOnSurface(descent->ball.get(), p);
 
         momentumArrowX->setMagnitude(momentumArrowX->magnitude() *
-                                     dynamic_cast<Adam*> (descent) ->beta1);
+                                     dynamic_cast<Adam*> (descent.get()) ->beta1);
         momentumArrowZ->setMagnitude(momentumArrowZ->magnitude() *
-                                     dynamic_cast<Adam*> (descent) ->beta1);
+                                     dynamic_cast<Adam*> (descent.get()) ->beta1);
         momentumArrowZ->setLabel("decay momentum");
         momentumArrowX->setPosition(descent->ball->position());
         momentumArrowZ->setPosition(descent->ball->position());
@@ -489,8 +489,8 @@ void AdamAnimation::animateStep(){
     }
     case 2: // show sum of squares decaying
     {
-        squareX->setArea(squareX->area() * dynamic_cast<Adam*> (descent)->beta2);
-        squareZ->setArea(squareZ->area() * dynamic_cast<Adam*> (descent)->beta2);
+        squareX->setArea(squareX->area() * dynamic_cast<Adam*> (descent.get())->beta2);
+        squareZ->setArea(squareZ->area() * dynamic_cast<Adam*> (descent.get())->beta2);
         squareZ->setLabel("decay gradient^2");
 
         squareZ->setLabelVisibility(!in_initial_state);
@@ -530,8 +530,8 @@ void AdamAnimation::animateStep(){
     case 4: // update momentum
     {
         descent->takeGradientStep();
-        momentumArrowX->setMagnitude(dynamic_cast<Adam*> (descent)->decayedGradSum().x);
-        momentumArrowZ->setMagnitude(dynamic_cast<Adam*> (descent)->decayedGradSum().z);
+        momentumArrowX->setMagnitude(dynamic_cast<Adam*> (descent.get())->decayedGradSum().x);
+        momentumArrowZ->setMagnitude(dynamic_cast<Adam*> (descent.get())->decayedGradSum().z);
         momentumArrowZ->setLabel("add gradient to momentum");
 
         arrowX->setVisible(false);
@@ -540,8 +540,8 @@ void AdamAnimation::animateStep(){
     }
     case 5: // update sum of squares
     {
-        squareX->setArea(dynamic_cast<Adam*> (descent)->decayedGradSumOfSquared().x);
-        squareZ->setArea(dynamic_cast<Adam*> (descent)->decayedGradSumOfSquared().z);
+        squareX->setArea(dynamic_cast<Adam*> (descent.get())->decayedGradSumOfSquared().x);
+        squareZ->setArea(dynamic_cast<Adam*> (descent.get())->decayedGradSumOfSquared().z);
         squareZ->setLabel("add on current gradient^2");
         momentumArrowZ->setLabelVisibility(false);
         break;
