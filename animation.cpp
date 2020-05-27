@@ -266,7 +266,7 @@ void AdaGradAnimation::animateStep(){
         descent->takeGradientStep();
         squareX->setArea(dynamic_cast<AdaGrad*> (descent)->gradSumOfSquared().x);
         squareZ->setArea(dynamic_cast<AdaGrad*> (descent)->gradSumOfSquared().z);
-        squareX->setLabel("add on current gradient^2");
+        squareX->setLabel("add onto current gradient^2");
         squareX->setVisible(true);
         squareZ->setVisible(true);
         arrowX->setLabelVisibility(false);

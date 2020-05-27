@@ -31,7 +31,8 @@ HEADERS += \
     surface.h \
     window.h
 
-RESOURCES += rotations.qrc
+RESOURCES += \
+    resources.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

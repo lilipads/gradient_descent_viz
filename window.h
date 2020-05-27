@@ -6,6 +6,7 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QFormLayout>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QSpinBox>
@@ -39,7 +40,7 @@ private:
     QComboBox* createPlaybackSpeedBox();
 
     QGroupBox* createDescentGroup(GradientDescent* descent,
-        QVBoxLayout* vbox);
+        QFormLayout* layout);
     QGroupBox* createGradientDescentGroup();
     QGroupBox* createMomentumGroup();
     QGroupBox* createAdaGradGroup();

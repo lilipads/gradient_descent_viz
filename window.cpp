@@ -1,5 +1,6 @@
-#include <QtWidgets>
 #include <math.h>
+
+#include <QtWidgets>
 
 #include "window.h"
 
@@ -128,7 +129,7 @@ QComboBox *Window::createPlaybackSpeedBox(){
 
 
 QGroupBox *Window::createDescentGroup(GradientDescent* descent,
-                                      QVBoxLayout* vbox){
+                                      QFormLayout* layout){
     QGroupBox *groupBox = new QGroupBox(tr(descent->name));
     groupBox->setCheckable(true);
     groupBox->setChecked(true);
@@ -141,7 +142,9 @@ QGroupBox *Window::createDescentGroup(GradientDescent* descent,
     groupBox->setStyleSheet(QString("QGroupBox::title {font: 10pt; border-radius: 5px; background: %1;}"
                                     ).arg(descent->ball_color.name()));
 
-    groupBox->setLayout(vbox);
+    groupBox->setLayout(layout);
+    layout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
+    layout->setLabelAlignment(Qt::AlignLeft);
     return groupBox;
 }
 
@@ -149,79 +152,69 @@ QGroupBox *Window::createDescentGroup(GradientDescent* descent,
 QGroupBox *Window::createGradientDescentGroup(){
     VanillaGradientDescent* descent = plot->gradient_descent.get();
 
-    QVBoxLayout *vbox = new QVBoxLayout;
-    vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
-    vbox->addLayout(createLearningRateBox(descent));
+    QFormLayout *form = new QFormLayout;
+    form->addRow(new QLabel(QStringLiteral("Learning Rate:")),
+                 createLearningRateBox(descent));
 
-    vbox->addStretch(1);
-    return createDescentGroup(descent, vbox);
+    return createDescentGroup(descent, form);
 }
 
 
 QGroupBox *Window::createMomentumGroup(){
     Momentum* descent = plot->momentum.get();
 
-    QVBoxLayout *vbox = new QVBoxLayout;
-    vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
-    vbox->addLayout(createLearningRateBox(descent));
+    QFormLayout *form = new QFormLayout;
+    form->addRow(new QLabel(QStringLiteral("Learning Rate:")),
+                 createLearningRateBox(descent));
+    form->addRow(new QLabel(QStringLiteral("Decay rate:")),
+                 createDecayBox(descent->decay_rate));
 
-    vbox->addWidget(new QLabel(QStringLiteral("Decay rate:")));
-    vbox->addWidget(createDecayBox(descent->decay_rate));
-
-    vbox->addStretch(1);
-    return createDescentGroup(descent, vbox);
+    return createDescentGroup(descent, form);
 }
 
 
 QGroupBox *Window::createAdaGradGroup(){
     AdaGrad* descent = plot->ada_grad.get();
 
-    QVBoxLayout *vbox = new QVBoxLayout;
-    vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
-    vbox->addLayout(createLearningRateBox(descent));
+    QFormLayout *form = new QFormLayout;
+    form->addRow(new QLabel(QStringLiteral("Learning Rate:")),
+                 createLearningRateBox(descent));
 
-    vbox->addStretch(1);
-    return createDescentGroup(descent, vbox);
+    return createDescentGroup(descent, form);
 }
 
 
 QGroupBox *Window::createRMSPropGroup(){
     RMSProp* descent = plot->rms_prop.get();
 
-    QVBoxLayout *vbox = new QVBoxLayout;
-    vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
-    vbox->addLayout(createLearningRateBox(descent));
+    QFormLayout *form = new QFormLayout;
+    form->addRow(new QLabel(QStringLiteral("Learning Rate:")),
+                 createLearningRateBox(descent));
+    form->addRow(new QLabel(QStringLiteral("Decay rate:")),
+                 createDecayBox(descent->decay_rate));
 
-    vbox->addWidget(new QLabel(QStringLiteral("Decay Rate:")));
-    vbox->addWidget(createDecayBox(descent->decay_rate));
-
-    vbox->addStretch(1);
-    return createDescentGroup(descent, vbox);
+    return createDescentGroup(descent, form);
 }
 
 
 QGroupBox *Window::createAdamGroup(){
     Adam* descent = plot->adam.get();
 
-    QVBoxLayout *vbox = new QVBoxLayout;
-    vbox->addWidget(new QLabel(QStringLiteral("Learning Rate:")));
-    vbox->addLayout(createLearningRateBox(descent));
+    QFormLayout *form = new QFormLayout;
+    form->addRow(new QLabel(QStringLiteral("Learning Rate:")),
+                 createLearningRateBox(descent));
+    form->addRow(new QLabel(QStringLiteral("Beta1:")),
+                 createDecayBox(descent->beta1));
+    form->addRow(new QLabel(QStringLiteral("Beta2:")),
+                 createDecayBox(descent->beta2));
 
-    vbox->addWidget(new QLabel(QStringLiteral("Beta1 (1st order decay):")));
-    vbox->addWidget(createDecayBox(descent->beta1));
-
-    vbox->addWidget(new QLabel(QStringLiteral("Beta2 (2nd order decay):")));
-    vbox->addWidget(createDecayBox(descent->beta2));
-
-    vbox->addStretch(1);
-    return createDescentGroup(descent, vbox);
+    return createDescentGroup(descent, form);
 }
 
 
 QLayout *Window::createLearningRateBox(GradientDescent* descent){
     // learning rate spin box
-    QHBoxLayout *hbox = new QHBoxLayout;
-    hbox->addWidget(new QLabel(QStringLiteral("1e")));
+    QFormLayout *hbox = new QFormLayout;
 
     QSpinBox *learningRateBox = new QSpinBox(this);
     learningRateBox->setRange(-10, 10);
@@ -232,14 +225,14 @@ QLayout *Window::createLearningRateBox(GradientDescent* descent){
             descent->learning_rate = pow(10, newValue);
         });
 
-    hbox->addWidget(learningRateBox, 1, Qt::AlignLeft);
+    hbox->addRow(new QLabel(QStringLiteral("1e")), learningRateBox);
+    hbox->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
 
     return hbox;
 }
 
 
 QDoubleSpinBox *Window::createDecayBox(double& val){
-    // learning rate spin box
     QDoubleSpinBox *decayRateBox = new QDoubleSpinBox(this);
     decayRateBox->setDecimals(3);
     decayRateBox->setRange(0.0, 2.0);
