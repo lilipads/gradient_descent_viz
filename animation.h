@@ -30,7 +30,8 @@ public:
         : m_graph(_graph),
           timer(_timer) {}
 
-    void triggerAnimation();
+    void triggerDetailedAnimation();
+    virtual void triggerSimpleAnimation(int animation_speedup);
     virtual void prepareDetailedAnimation();
     std::unique_ptr<GradientDescent> descent;
 

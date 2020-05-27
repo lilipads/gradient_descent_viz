@@ -128,15 +128,9 @@ void Plot::toggleAnimation() {
 
 void Plot::triggerAnimation() {
     if (timer_counter == 0){
-        detailed_descent->triggerAnimation();
-//        for (auto& descent : all_descents){
-//            // TODO: move this to animation class
-//            if (descent->isConverged()) continue;
-//            Point p;
-//            for (int i = 0; i < animation_speedup; i++)
-//                p = descent->takeGradientStep();
-//            AnimationHelper::setBallPositionOnSurface(descent->ball.get(), p);
-//        }
+//        detailed_descent->triggerDetailedAnimation();
+        for (auto animation : all_animations)
+            animation->triggerSimpleAnimation(animation_speedup);
     }
     timer_counter = (timer_counter + 1) % animation_slowdown;
 }

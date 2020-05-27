@@ -19,7 +19,16 @@ void AnimationHelper::setBallPositionOnSurface(Ball* ball, Point p){
 }
 
 
-void Animation::triggerAnimation(){
+void Animation::triggerSimpleAnimation(int animation_speedup){
+    if (descent->isConverged()) return;
+    Point p;
+    for (int i = 0; i < animation_speedup; i++)
+        p = descent->takeGradientStep();
+    AnimationHelper::setBallPositionOnSurface(descent->ball.get(), p);
+}
+
+
+void Animation::triggerDetailedAnimation(){
     animateStep();
     if (!in_initial_state)
         timer->setInterval(interval());

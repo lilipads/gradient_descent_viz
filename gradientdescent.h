@@ -23,6 +23,7 @@ public:
     const char* name;
     double learning_rate = 0.01;
 
+    // TODO: move these to the animation class
     // visual elements
     QColor ball_color;
     std::unique_ptr<Ball> ball;
