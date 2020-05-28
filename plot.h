@@ -26,6 +26,8 @@ public:
     std::unique_ptr<Animation> rms_prop;
     std::unique_ptr<Animation> adam;
     void setShowGradient(bool show);
+    void setShowMomentum(bool show);
+    void setShowGradientSquared(bool show);
 
 public Q_SLOTS:
     void toggleAnimation();

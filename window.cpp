@@ -252,7 +252,9 @@ QTabWidget *Window::createViewTabs(){
     QCheckBox* gradient = new QCheckBox("Gradient");
     QObject::connect(gradient, &QCheckBox::clicked, plot, &Plot::setShowGradient);
     QCheckBox* momentum = new QCheckBox("Momentum");
+    QObject::connect(momentum, &QCheckBox::clicked, plot, &Plot::setShowMomentum);
     QCheckBox* squaredGrad = new QCheckBox("Sum of gradient squared");
+    QObject::connect(squaredGrad, &QCheckBox::clicked, plot, &Plot::setShowGradientSquared);
     QVBoxLayout* vbox = new QVBoxLayout;
     container->setLayout(vbox);
     vbox->addWidget(gradient);

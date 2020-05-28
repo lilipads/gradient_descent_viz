@@ -199,3 +199,22 @@ void Plot::setShowGradient(bool show){
             animation->cleanupGradient();
     }
 }
+
+void Plot::setShowMomentum(bool show){
+    if (show == show_momentum) return;
+    show_momentum = show;
+    if (!show){
+        for (auto animation : all_animations)
+            animation->cleanupMomentum();
+    }
+}
+
+
+void Plot::setShowGradientSquared(bool show){
+    if (show == show_gradient_squared) return;
+    show_gradient_squared = show;
+    if (!show){
+        for (auto animation : all_animations)
+            animation->cleanupGradientSquared();
+    }
+}
