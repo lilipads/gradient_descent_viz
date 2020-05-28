@@ -130,19 +130,17 @@ QComboBox *Window::createPlaybackSpeedBox(){
 }
 
 
-QGroupBox *Window::createDescentGroup(GradientDescent* descent,
+QGroupBox *Window::createDescentGroup(Animation* animation,
                                       QFormLayout* layout){
-    QGroupBox *groupBox = new QGroupBox(tr(descent->name));
+    QGroupBox *groupBox = new QGroupBox(tr(animation->descent->name));
     groupBox->setCheckable(true);
     groupBox->setChecked(true);
 
     QObject::connect(groupBox, &QGroupBox::clicked,
-        [=](){
-            descent->ball->setVisible(!descent->ball->isVisible());
-        });
+                     [=](const bool& visible){animation->setVisible(visible);});
 
     groupBox->setStyleSheet(QString("QGroupBox::title {font: 10pt; border-radius: 5px; background: %1;}"
-                                    ).arg(descent->ball_color.name()));
+                                    ).arg(animation->descent->ball_color.name()));
 
     groupBox->setLayout(layout);
     layout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
@@ -159,7 +157,7 @@ QGroupBox *Window::createGradientDescentGroup(){
     form->addRow(new QLabel(QStringLiteral("Learning Rate:")),
                  createLearningRateBox(descent));
 
-    return createDescentGroup(descent, form);
+    return createDescentGroup(plot->gradient_descent.get(), form);
 }
 
 
@@ -172,7 +170,7 @@ QGroupBox *Window::createMomentumGroup(){
     form->addRow(new QLabel(QStringLiteral("Decay rate:")),
                  createDecayBox(descent->decay_rate));
 
-    return createDescentGroup(descent, form);
+    return createDescentGroup(plot->momentum.get(), form);
 }
 
 
@@ -183,7 +181,7 @@ QGroupBox *Window::createAdaGradGroup(){
     form->addRow(new QLabel(QStringLiteral("Learning Rate:")),
                  createLearningRateBox(descent));
 
-    return createDescentGroup(descent, form);
+    return createDescentGroup(plot->ada_grad.get(), form);
 }
 
 
@@ -196,7 +194,7 @@ QGroupBox *Window::createRMSPropGroup(){
     form->addRow(new QLabel(QStringLiteral("Decay rate:")),
                  createDecayBox(descent->decay_rate));
 
-    return createDescentGroup(descent, form);
+    return createDescentGroup(plot->rms_prop.get(), form);
 }
 
 
@@ -211,7 +209,7 @@ QGroupBox *Window::createAdamGroup(){
     form->addRow(new QLabel(QStringLiteral("Beta2:")),
                  createDecayBox(descent->beta2));
 
-    return createDescentGroup(descent, form);
+    return createDescentGroup(plot->adam.get(), form);
 }
 
 

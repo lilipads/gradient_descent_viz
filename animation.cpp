@@ -27,6 +27,7 @@ void Animation::triggerSimpleAnimation(int animation_speedup,
     Point p;
     for (int i = 0; i < animation_speedup; i++)
         p = descent->takeGradientStep();
+    if (!m_visible) return;
     AnimationHelper::setBallPositionOnSurface(descent->ball.get(), p);
     if (show_gradient) animateGradient();
     if (has_momentum && show_momentum) animateMomentum();
@@ -83,6 +84,39 @@ void Animation::cleanupGradient(){
     arrowZ = nullptr;
 }
 
+
+void Animation::cleanupMomentum(){
+    momentumArrowX = nullptr;
+    momentumArrowZ = nullptr;
+}
+
+
+void Animation::cleanupGradientSquared(){
+    squareX = nullptr;
+    squareZ = nullptr;
+}
+
+
+void Animation::cleanupAll(){
+    cleanupGradient();
+    cleanupMomentum();
+    cleanupGradientSquared();
+}
+
+
+void Animation::setVisible(bool visible){ 
+    if (visible != m_visible){
+        m_visible = visible;
+        descent->ball->setVisible(visible);
+
+        if (arrowX != nullptr) arrowX->setVisible(visible);
+        if (arrowZ != nullptr) arrowZ->setVisible(visible);
+        if (momentumArrowX != nullptr) momentumArrowX->setVisible(visible);
+        if (momentumArrowZ != nullptr) momentumArrowZ->setVisible(visible);
+        if (squareX != nullptr) squareX->setVisible(visible);
+        if (squareZ != nullptr) squareZ->setVisible(visible);
+    }
+}
 
 void Animation::triggerDetailedAnimation(){
     animateStep();

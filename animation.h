@@ -19,7 +19,6 @@ const int kInterval = 1000; // seconds in between steps
 
 namespace AnimationHelper {
 void setBallPositionOnSurface(Ball* ball, Point p);
-void setXZArrows(GradientDescent* descent, Point grad);
 }
 
 
@@ -35,8 +34,11 @@ public:
         bool show_gradient, bool show_momentum, bool show_gradient_squared);
     virtual void prepareDetailedAnimation();
     std::unique_ptr<GradientDescent> descent;
-    // void cleanupAll();
+    void cleanupAll();
     void cleanupGradient();
+    void cleanupMomentum();
+    void cleanupGradientSquared();
+    void setVisible(bool visible);
 
 protected:
     int num_states;
@@ -44,6 +46,7 @@ protected:
     bool in_initial_state = true;
     bool has_momentum = false;
     bool has_gradient_squared = false;
+    bool m_visible = true;
 
     Surface* m_graph;
     QTimer* timer;

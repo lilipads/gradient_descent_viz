@@ -41,7 +41,7 @@ private:
 
     QTabWidget* createViewTabs();
 
-    QGroupBox* createDescentGroup(GradientDescent* descent,
+    QGroupBox* createDescentGroup(Animation* animation,
         QFormLayout* layout);
     QGroupBox* createGradientDescentGroup();
     QGroupBox* createMomentumGroup();
