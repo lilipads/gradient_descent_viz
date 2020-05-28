@@ -20,14 +20,7 @@ public:
     GradientDescent();
     virtual ~GradientDescent() {}
 
-    const char* name;
     double learning_rate = 0.01;
-
-    // TODO: move these to the animation class
-    // visual elements
-    QColor ball_color;
-    std::unique_ptr<Ball> ball;
-
 
     // simple getters and setters
     Point position() {return p;}
@@ -57,10 +50,7 @@ protected:
 
 class VanillaGradientDescent : public GradientDescent {
 public:
-    VanillaGradientDescent() {
-        ball_color = Qt::cyan;
-        name = "&Gradient Descent";
-    }
+    VanillaGradientDescent() {}
 
 protected:
      void updateGradientDelta();
@@ -68,10 +58,7 @@ protected:
 
 class Momentum : public GradientDescent {
 public:
-    Momentum() {
-        ball_color = Qt::magenta;
-        name = "&Momentum";
-    }
+    Momentum() {}
 
     double decay_rate = 0.8;
 
@@ -82,8 +69,6 @@ protected:
 class AdaGrad : public GradientDescent {
 public:
     AdaGrad() : grad_sum_of_squared(0., 0.){
-        ball_color = Qt::white;
-        name = "&AdaGrad";
         learning_rate = 1.;
     }
     Point gradSumOfSquared(){return grad_sum_of_squared;}
@@ -98,10 +83,7 @@ private:
 
 class RMSProp : public GradientDescent {
 public:
-    RMSProp() : decayed_grad_sum_of_squared(0., 0.){
-        ball_color = Qt::green;
-        name = "&RMSProp";
-    }
+    RMSProp() : decayed_grad_sum_of_squared(0., 0.){}
 
     double decay_rate = 0.99;
     Point decayedGradSumOfSquared(){return decayed_grad_sum_of_squared;}
@@ -118,10 +100,7 @@ class Adam : public GradientDescent {
 public:
     Adam() : decayed_grad_sum(0., 0.),
         decayed_grad_sum_of_squared(0., 0.)
-    {
-        ball_color = Qt::blue;
-        name = "&Adam";
-    }
+    {}
 
     double beta1 = 0.9;
     double beta2 = 0.999;

@@ -18,13 +18,7 @@ Plot::Plot(Surface *surface)
       m_surfaceSeries(new QSurface3DSeries(m_surfaceProxy.get()))
 {
     initializeGraph();
-
     initializeAnimations();
-
-    for (auto& animation : all_animations)
-        animation->descent->ball = std::unique_ptr<Ball>(new Ball(m_graph.get(),
-                                                       animation->descent->ball_color));
-
     initializeSurface();
 
     QObject::connect(&m_timer, &QTimer::timeout, this,

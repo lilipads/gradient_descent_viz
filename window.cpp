@@ -132,7 +132,7 @@ QComboBox *Window::createPlaybackSpeedBox(){
 
 QGroupBox *Window::createDescentGroup(Animation* animation,
                                       QFormLayout* layout){
-    QGroupBox *groupBox = new QGroupBox(tr(animation->descent->name));
+    QGroupBox *groupBox = new QGroupBox(animation->name);
     groupBox->setCheckable(true);
     groupBox->setChecked(true);
 
@@ -140,7 +140,7 @@ QGroupBox *Window::createDescentGroup(Animation* animation,
                      [=](const bool& visible){animation->setVisible(visible);});
 
     groupBox->setStyleSheet(QString("QGroupBox::title {font: 10pt; border-radius: 5px; background: %1;}"
-                                    ).arg(animation->descent->ball_color.name()));
+                                    ).arg(animation->ball_color.name()));
 
     groupBox->setLayout(layout);
     layout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);

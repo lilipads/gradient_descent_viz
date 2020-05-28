@@ -16,6 +16,7 @@ const float kBallYOffset = 10.f;
 const float stepX = 4. / 49;
 const float stepZ = 4. / 49;
 const int kInterval = 1000; // seconds in between steps
+const QColor momentum_color = Qt::magenta;
 
 namespace AnimationHelper {
 void setBallPositionOnSurface(Ball* ball, Point p);
@@ -28,6 +29,10 @@ public:
     Animation(Surface* _graph, QTimer* _timer)
         : m_graph(_graph),
           timer(_timer) {}
+    virtual ~Animation(){}
+
+    QString name;
+    QColor ball_color;
 
     void triggerDetailedAnimation();
     virtual void triggerSimpleAnimation(int animation_speedup,
@@ -51,11 +56,13 @@ protected:
     Surface* m_graph;
     QTimer* timer;
 
+    // visual elements (applicable to all descents)
+    std::unique_ptr<Ball> ball;
     std::unique_ptr<Ball> temporary_ball = nullptr;
     std::unique_ptr<Arrow> arrowX = nullptr;
     std::unique_ptr<Arrow> arrowZ = nullptr;
     std::unique_ptr<Arrow> total_arrow = nullptr;
-
+    // visual elements (applicable to some descents)
     std::unique_ptr<Arrow> momentumArrowX = nullptr;
     std::unique_ptr<Arrow> momentumArrowZ = nullptr;
     std::unique_ptr<Square> squareX = nullptr;
@@ -78,7 +85,10 @@ public:
     GradientDescentAnimation(Surface* _graph, QTimer* _timer)
         : Animation(_graph, _timer)
     {
+        name = "Gradient Descent";
         num_states = 4;
+        ball_color = Qt::cyan;
+        ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color));
         descent = std::unique_ptr<GradientDescent>(new VanillaGradientDescent);
     };
 
@@ -95,7 +105,10 @@ public:
     MomentumAnimation(Surface* _graph, QTimer* _timer)
         : Animation(_graph, _timer)
     {
+        name = "Momentum";
         num_states = 6;
+        ball_color = Qt::magenta;
+        ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color));
         descent = std::unique_ptr<GradientDescent>(new Momentum);
         has_momentum = true;
     };
@@ -115,7 +128,10 @@ public:
     AdaGradAnimation(Surface* _graph, QTimer* _timer)
         : Animation(_graph, _timer)
     {
+        name = "AdaGrad";
         num_states = 6;
+        ball_color = Qt::white;
+        ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color));
         descent = std::unique_ptr<GradientDescent>(new AdaGrad);
         has_gradient_squared = true;
     };
@@ -138,7 +154,10 @@ public:
     RMSPropAnimation(Surface* _graph, QTimer* _timer)
         : Animation(_graph, _timer)
     {
+        name = "RMSProp";
         num_states = 7;
+        ball_color = Qt::green;
+        ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color));
         descent = std::unique_ptr<GradientDescent>(new RMSProp);
         has_gradient_squared = true;
     };
@@ -160,7 +179,10 @@ public:
     AdamAnimation(Surface* _graph, QTimer* _timer)
         : Animation(_graph, _timer)
     {
+        name = "Adam";
         num_states = 9;
+        ball_color = Qt::blue;
+        ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color));
         descent = std::unique_ptr<GradientDescent>(new Adam);
         has_momentum = true;
         has_gradient_squared = true;
