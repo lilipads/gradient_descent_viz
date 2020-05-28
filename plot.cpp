@@ -7,8 +7,8 @@
 
 using namespace QtDataVisualization;
 
-const int sampleCountX = 50;
-const int sampleCountZ = 50;
+const int sampleCountX = 51;
+const int sampleCountZ = 51;
 const float kCameraMoveStepSize = 0.1f;
 const float kCameraZoomStepSize = 10.f;
 
@@ -30,7 +30,7 @@ Plot::Plot(Surface *surface)
                      this, &Plot::restartFromNewPosition);
 
     toggleAnimation();
-    restartAnimation();
+    restartAnimations();
 }
 
 Plot::~Plot(){}
@@ -133,9 +133,12 @@ void Plot::triggerAnimation() {
 }
 
 
-void Plot::restartAnimation() {
-    for (auto& animation : all_animations){
-        animation->descent->resetPositionAndComputeGradient();
+void Plot::restartAnimations() {
+    if (detailedView){
+        detailed_descent->restartAnimation();
+    } else{
+        for (auto& animation : all_animations)
+            animation->restartAnimation();
     }
 }
 
@@ -148,7 +151,7 @@ void Plot::restartFromNewPosition(QPoint q_pos){
     for (auto animation : all_animations){
         animation->descent->setStartingPosition(p.x(), p.z());
     }
-    restartAnimation();
+    restartAnimations();
 }
 
 
@@ -223,19 +226,30 @@ void Plot::setShowGradientSquared(bool show){
 
 
 void Plot::setDetailedAnimation(QString descent_name){
-    bool found = false;
     for (auto animation : all_animations){
         if (animation->name == descent_name){
             detailed_descent = animation;
-            detailed_descent->prepareDetailedAnimation();
-            found = true;
+            detailed_descent->restartAnimation();
+            for (auto animation : all_animations){
+                if (animation != detailed_descent)
+                    animation->cleanupAll();
+            }
+            detailedView = true;
+            return;
         }
     }
-    if (found){
-        for (auto animation : all_animations){
-            if (animation != detailed_descent)
-                animation->cleanupAll();
-        }
+}
+
+
+
+void Plot::setAnimationMode(const int& view_type){
+    // switch to overview mode
+    m_timer.stop();
+    if (view_type == 0){
+        if (detailed_descent != nullptr)
+            detailed_descent->cleanupAll();
+        detailedView = false;
+        restartAnimations();
     }
-    detailedView = found;
+    m_timer.start(15);
 }

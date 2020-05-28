@@ -37,13 +37,13 @@ public:
     void triggerDetailedAnimation();
     virtual void triggerSimpleAnimation(int animation_speedup,
         bool show_gradient, bool show_momentum, bool show_gradient_squared);
-    virtual void prepareDetailedAnimation();
     std::unique_ptr<GradientDescent> descent;
     void cleanupAll();
     void cleanupGradient();
     void cleanupMomentum();
     void cleanupGradientSquared();
     void setVisible(bool visible);
+    void restartAnimation();
 
 protected:
     int num_states;
@@ -52,6 +52,7 @@ protected:
     bool has_momentum = false;
     bool has_gradient_squared = false;
     bool m_visible = true;
+    bool detailed_animation_prepared = false;
 
     Surface* m_graph;
     QTimer* timer;
@@ -70,6 +71,7 @@ protected:
 
     virtual void animateStep() = 0;
     virtual int interval(){return kInterval;}
+    virtual void prepareDetailedAnimation();
 
     void animateGradient();
     void animateMomentum();

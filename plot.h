@@ -33,7 +33,8 @@ public:
 public Q_SLOTS:
     void toggleAnimation();
     void triggerAnimation();
-    void restartAnimation();
+    void restartAnimations();
+    void setAnimationMode(const int& view_type);
     void setDetailedAnimation(QString descent_name);
     void setAnimationSpeed(int index);
     void setCameraZoom(float zoom);
@@ -49,7 +50,7 @@ private:
     std::unique_ptr<QSurfaceDataProxy> m_surfaceProxy;
     std::unique_ptr<QSurface3DSeries> m_surfaceSeries;
     bool detailedView = false;
-    Animation* detailed_descent;
+    Animation* detailed_descent = nullptr;
 
     int timer_counter = 0;
     int animation_slowdown = 1; // slow down factor

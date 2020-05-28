@@ -100,7 +100,7 @@ QPushButton *Window::createRestartAnimationButton(){
     QPushButton *restartAnimationButton = new QPushButton(this);
     restartAnimationButton->setText(QStringLiteral("Restart"));
     QObject::connect(restartAnimationButton, &QPushButton::clicked, plot,
-                     &Plot::restartAnimation);
+                     &Plot::restartAnimations);
     return restartAnimationButton;
 }
 
@@ -269,5 +269,11 @@ QTabWidget *Window::createViewTabs(){
     QObject::connect(descentPicker, SIGNAL(currentIndexChanged(QString)),
                      plot, SLOT(setDetailedAnimation(QString)));
     tab->addTab(descentPicker, "Step-by-Step");
+
+    QObject::connect(tab, &QTabWidget::currentChanged,
+                     plot, &Plot::setAnimationMode);
+    // when switching to overview, clear prevoius selection and reset to "Choose your method"
+    QObject::connect(tab, &QTabWidget::currentChanged,
+                     [=](int idx){if (idx == 1) descentPicker->setCurrentIndex(0);});
     return tab;
 }

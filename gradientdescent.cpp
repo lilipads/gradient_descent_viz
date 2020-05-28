@@ -16,8 +16,13 @@ GradientDescent::GradientDescent()
 
 double GradientDescent::f(double x, double z){
     // return x * x + z * z;
-    z *= 1.4;
-    return -2 * exp(-((x - 1) * (x - 1) + z * z) / .2) -6. * exp(-((x + 1) * (x + 1) + z * z) / .2) + x * x + z * z;
+    // local minima. recommended ranage: (-2, 2)
+//    z *= 1.4;
+//    return -2 * exp(-((x - 1) * (x - 1) + z * z) / .2) -6. * exp(-((x + 1) * (x + 1) + z * z) / .2) + x * x + z * z;
+    // saddle point. recommended ranage: (-2, 2)
+    // return 2 * x * x - z * z;
+    // slow and fast direction
+    return x* x + 10 * z * z;
 }
 
 void GradientDescent::computeGradient(){
