@@ -11,6 +11,7 @@ public:
     float maxX = 8.0f;
     float minZ = -8.0f;
     float maxZ = 8.0;
+    ~Surface(){qDebug() << "destructor for surface\n";}
 };
 
 

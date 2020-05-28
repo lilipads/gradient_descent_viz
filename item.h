@@ -23,6 +23,7 @@ public:
     Item(Surface* graph) : m_graph(graph){
         m_graph->addCustomItem(this);
     }
+    ~Item(){m_graph->releaseCustomItem(this);}
 
 protected:
     Item(){}

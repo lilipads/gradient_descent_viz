@@ -25,6 +25,7 @@ public:
     std::unique_ptr<Animation> ada_grad;
     std::unique_ptr<Animation> rms_prop;
     std::unique_ptr<Animation> adam;
+    std::vector<Animation*> all_animations;
     void setShowGradient(bool show);
     void setShowMomentum(bool show);
     void setShowGradientSquared(bool show);
@@ -33,6 +34,7 @@ public Q_SLOTS:
     void toggleAnimation();
     void triggerAnimation();
     void restartAnimation();
+    void setDetailedAnimation(QString descent_name);
     void setAnimationSpeed(int index);
     void setCameraZoom(float zoom);
     void restartFromNewPosition(QPoint q_pos);
@@ -40,13 +42,13 @@ public Q_SLOTS:
     void cameraZoomIn();
     void cameraZoomOut();
 
+
 private:
-    std::vector<Animation*> all_animations;
     QTimer m_timer;
     std::unique_ptr<Surface> m_graph;
     std::unique_ptr<QSurfaceDataProxy> m_surfaceProxy;
     std::unique_ptr<QSurface3DSeries> m_surfaceSeries;
-    bool detailedView = true;
+    bool detailedView = false;
     Animation* detailed_descent;
 
     int timer_counter = 0;

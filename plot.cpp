@@ -31,11 +31,9 @@ Plot::Plot(Surface *surface)
 
     toggleAnimation();
     restartAnimation();
-//    detailed_descent = adam.get();
-//    detailed_descent->prepareDetailedAnimation();
 }
 
-Plot::~Plot() {}
+Plot::~Plot(){}
 
 void Plot::initializeGraph(){
     m_graph->setShadowQuality(QAbstract3DGraph::ShadowQualityNone);
@@ -122,10 +120,14 @@ void Plot::toggleAnimation() {
 
 void Plot::triggerAnimation() {
     if (timer_counter == 0){
-//        detailed_descent->triggerDetailedAnimation();
-        for (auto animation : all_animations)
-            animation->triggerSimpleAnimation(animation_speedup,
-                show_gradient, show_momentum, show_gradient_squared);
+        if (detailedView){
+            detailed_descent->triggerDetailedAnimation();
+        } else{
+            for (auto animation : all_animations)
+                animation->triggerSimpleAnimation(animation_speedup,
+                    show_gradient, show_momentum, show_gradient_squared);
+
+        }
     }
     timer_counter = (timer_counter + 1) % animation_slowdown;
 }
@@ -217,4 +219,23 @@ void Plot::setShowGradientSquared(bool show){
         for (auto animation : all_animations)
             animation->cleanupGradientSquared();
     }
+}
+
+
+void Plot::setDetailedAnimation(QString descent_name){
+    bool found = false;
+    for (auto animation : all_animations){
+        if (animation->name == descent_name){
+            detailed_descent = animation;
+            detailed_descent->prepareDetailedAnimation();
+            found = true;
+        }
+    }
+    if (found){
+        for (auto animation : all_animations){
+            if (animation != detailed_descent)
+                animation->cleanupAll();
+        }
+    }
+    detailedView = found;
 }

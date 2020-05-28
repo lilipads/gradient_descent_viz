@@ -18,10 +18,10 @@ void Item::addToGraph(Surface *graph){
 
 LabeledItem::~LabeledItem(){
     if (m_label != nullptr){
-        m_graph->removeCustomItem(m_label);
-        m_label = nullptr;
+        // since QCustom3DLabe is a QObject, it will automatically take care
+        // of deleting its child pointers
+        m_graph->releaseCustomItem(m_label);
     }
-    m_graph->releaseCustomItem(this);
 }
 
 void LabeledItem::setLabel(const QString &text){
@@ -30,7 +30,6 @@ void LabeledItem::setLabel(const QString &text){
     // and reinitializing it
     if (m_label != nullptr){
         m_graph->removeCustomItem(m_label);
-        m_label = nullptr;
     }
 
     m_label = new QCustom3DLabel;

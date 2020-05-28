@@ -98,6 +98,9 @@ void Animation::cleanupGradientSquared(){
 
 
 void Animation::cleanupAll(){
+    ball->setVisible(false);
+    if (temporary_ball != nullptr) temporary_ball = nullptr;
+    if (total_arrow != nullptr) total_arrow = nullptr;
     cleanupGradient();
     cleanupMomentum();
     cleanupGradientSquared();
@@ -127,6 +130,9 @@ void Animation::triggerDetailedAnimation(){
 
 
 void Animation::prepareDetailedAnimation(){
+    timer->stop();
+    descent->resetPositionAndComputeGradient();
+    ball->setVisible(true);
     arrowX = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(-1, 0, 0), Qt::black));
     arrowX->setMagnitude(0);
     arrowX->setLabel("gradient in x");
@@ -136,11 +142,12 @@ void Animation::prepareDetailedAnimation(){
     arrowZ->setLabel("gradient in z");
     arrowZ->setVisible(false);
     total_arrow = std::unique_ptr<Arrow>(new Arrow(m_graph));
-    total_arrow->setLabel("total gradient");
+    total_arrow->setLabel("gradient step");
     total_arrow->setVisible(false);
     QColor color = ball_color;
     color.setAlpha(100);
     temporary_ball = std::unique_ptr<Ball>(new Ball(m_graph, color));
+    timer->start(15);
 }
 
 
@@ -148,6 +155,8 @@ void GradientDescentAnimation::animateStep(){
     switch(state){
     case 0: // just show the ball
     {
+        in_initial_state = false;
+        temporary_ball->setVisible(false);
         arrowX->setVisible(false);
         arrowZ->setVisible(false);
         total_arrow->setVisible(false);
@@ -179,8 +188,14 @@ void GradientDescentAnimation::animateStep(){
     }
     case 3: // draw an imaginary ball of the future position
     {
-        Point p = descent->takeGradientStep();
-        AnimationHelper::setBallPositionOnSurface(temporary_ball.get(), p);
+        AnimationHelper::setBallPositionOnSurface(temporary_ball.get(),
+                                         descent->position());
+        temporary_ball->setPosition(QVector3D(
+                                        descent->position().x,
+                                        ball->position().y(),
+                                        descent->position().z));
+
+        temporary_ball->setVisible(true);
         break;
     }
     }
@@ -193,11 +208,15 @@ void MomentumAnimation::prepareDetailedAnimation(){
                 new Arrow(m_graph, QVector3D(-1, 0, 0), ball_color));
     momentumArrowX->setLabel("momentum x");
     momentumArrowX->setMagnitude(0);
+    momentumArrowX->setPosition(ball->position());
+    momentumArrowX->setLabelVisibility(false);
 
     momentumArrowZ = std::unique_ptr<Arrow>(
                 new Arrow(m_graph, QVector3D(0, 0, -1), ball_color));
     momentumArrowZ->setLabel("momentum z");
     momentumArrowZ->setMagnitude(0);
+    momentumArrowZ->setPosition(ball->position());
+    momentumArrowZ->setLabelVisibility(false);
 }
 
 
@@ -308,7 +327,9 @@ void MomentumAnimation::animateStep(){
 
 
 void AdaGradAnimation::prepareDetailedAnimation(){
+    qDebug() << "begin prep\n";
     Animation::prepareDetailedAnimation();
+    qDebug() << "Done general prep\n";
     squareX = std::unique_ptr<Square>(new Square(m_graph));
     squareX->setLabel("sum of gradient squared in x");
     squareX->setArea(0);
@@ -317,10 +338,13 @@ void AdaGradAnimation::prepareDetailedAnimation(){
     squareX->setRotation(z_rotation * y_rotation);
     squareX->setVisible(false);
 
+    qDebug() << "set up square X\n";
+
     squareZ = std::unique_ptr<Square>(new Square(m_graph));
     squareZ->setLabel("sum of gradient squared in z");
     squareZ->setArea(0);
     squareZ->setVisible(false);
+    qDebug() <<"set up square Z\n";
 }
 
 

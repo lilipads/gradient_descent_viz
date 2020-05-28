@@ -128,7 +128,7 @@ public:
     AdaGradAnimation(Surface* _graph, QTimer* _timer)
         : Animation(_graph, _timer)
     {
-        name = "AdaGrad";
+        name = "Adagrad";
         num_states = 6;
         ball_color = Qt::white;
         ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color));
@@ -154,7 +154,7 @@ public:
     RMSPropAnimation(Surface* _graph, QTimer* _timer)
         : Animation(_graph, _timer)
     {
-        name = "RMSProp";
+        name = "RMSprop";
         num_states = 7;
         ball_color = Qt::green;
         ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color));

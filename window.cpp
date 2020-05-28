@@ -249,9 +249,9 @@ QTabWidget *Window::createViewTabs(){
     QTabWidget* tab = new QTabWidget;
     QWidget* container = new QWidget();
     // TODO: say it's scaled down
-    QCheckBox* gradient = new QCheckBox("Gradient");
+    QCheckBox* gradient = new QCheckBox("Gradient Arrows");
     QObject::connect(gradient, &QCheckBox::clicked, plot, &Plot::setShowGradient);
-    QCheckBox* momentum = new QCheckBox("Momentum");
+    QCheckBox* momentum = new QCheckBox("Momentum Arrows");
     QObject::connect(momentum, &QCheckBox::clicked, plot, &Plot::setShowMomentum);
     QCheckBox* squaredGrad = new QCheckBox("Sum of gradient squared");
     QObject::connect(squaredGrad, &QCheckBox::clicked, plot, &Plot::setShowGradientSquared);
@@ -264,11 +264,10 @@ QTabWidget *Window::createViewTabs(){
 
     QComboBox* descentPicker = new QComboBox;
     descentPicker->addItem("Choose a method");
-    descentPicker->addItem("Gradient Descent");
-    descentPicker->addItem("Momentum");
-    descentPicker->addItem("Ada Grad");
-    descentPicker->addItem("RMS Prop");
-    descentPicker->addItem("Adam");
+    for (auto animation : plot->all_animations)
+        descentPicker->addItem(animation->name);
+    QObject::connect(descentPicker, SIGNAL(currentIndexChanged(QString)),
+                     plot, SLOT(setDetailedAnimation(QString)));
     tab->addTab(descentPicker, "Step-by-Step");
     return tab;
 }
