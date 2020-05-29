@@ -21,9 +21,9 @@ PlotArea::PlotArea(Q3DSurface *surface)
       m_surfaceProxy(new QSurfaceDataProxy()),
       m_surfaceSeries(new QSurface3DSeries(m_surfaceProxy.get()))
 {
-    initializeGraph();
-    initializeAnimations();
+    initializeAxes();
     initializeSurface();
+    initializeAnimations();
 
     QObject::connect(&m_timer, &QTimer::timeout, this,
                      &PlotArea::triggerAnimation);
@@ -39,7 +39,7 @@ PlotArea::PlotArea(Q3DSurface *surface)
 
 PlotArea::~PlotArea(){}
 
-void PlotArea::initializeGraph(){
+void PlotArea::initializeAxes(){
     m_graph->setShadowQuality(QAbstract3DGraph::ShadowQualityNone);
     m_graph->activeTheme()->setType(Q3DTheme::Theme(2));
     m_graph->scene()->activeCamera()->setCameraPreset(Q3DCamera::CameraPresetFrontHigh);
@@ -75,6 +75,12 @@ void PlotArea::initializeAnimations(){
         rms_prop.get(),
         adam.get()
     };
+
+    // make sure starting point is within view port
+    for (auto animation : all_animations){
+        animation->descent->setStartingPosition(
+                    (7 * maxX + minX) / 8, (7 * maxZ + minZ) / 8);
+    }
 }
 
 

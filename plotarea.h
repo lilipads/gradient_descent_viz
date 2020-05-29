@@ -62,7 +62,7 @@ private:
     bool show_gradient_squared = false;   
 
     void initializeSurface();
-    void initializeGraph();
+    void initializeAxes();
     void initializeAnimations();
 };
 

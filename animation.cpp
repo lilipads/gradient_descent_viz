@@ -114,6 +114,8 @@ void Animation::setVisible(bool visible){
 
         if (arrowX != nullptr) arrowX->setVisible(visible);
         if (arrowZ != nullptr) arrowZ->setVisible(visible);
+        if (adjustedArrowX != nullptr) adjustedArrowX->setVisible(visible);
+        if (adjustedArrowZ != nullptr) adjustedArrowZ->setVisible(visible);
         if (momentumArrowX != nullptr) momentumArrowX->setVisible(visible);
         if (momentumArrowZ != nullptr) momentumArrowZ->setVisible(visible);
         if (squareX != nullptr) squareX->setVisible(visible);

@@ -8,7 +8,7 @@ const double kConvergenceEpsilon = 1e-2;
 
 
 GradientDescent::GradientDescent()
-    : starting_p(4., 7.),
+    : starting_p(0., 0.),
       m_delta(0., 0.)
 {
     resetPositionAndComputeGradient();
