@@ -125,7 +125,7 @@ void PlotArea::toggleAnimation() {
 void PlotArea::triggerAnimation() {
     if (timer_counter == 0){
         if (detailedView){
-            detailed_descent->triggerDetailedAnimation();
+            detailed_descent->triggerDetailedAnimation(animation_speedup);
         } else{
             for (auto animation : all_animations)
                 animation->triggerSimpleAnimation(animation_speedup,

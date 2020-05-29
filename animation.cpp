@@ -121,13 +121,13 @@ void Animation::setVisible(bool visible){
     }
 }
 
-void Animation::triggerDetailedAnimation(){
+void Animation::triggerDetailedAnimation(int animation_speedup){
     if (!detailed_animation_prepared){
         prepareDetailedAnimation();
     }
     animateStep();
     if (!in_initial_state)
-        timer->setInterval(interval());
+        timer->setInterval(interval() / animation_speedup);
     state = (state + 1) % num_states;
 }
 

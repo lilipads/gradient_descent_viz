@@ -31,7 +31,7 @@ public:
     QString name;
     QColor ball_color;
 
-    void triggerDetailedAnimation();
+    void triggerDetailedAnimation(int animation_speedup);
     virtual void triggerSimpleAnimation(int animation_speedup,
         bool show_gradient, bool show_adjusted_gradient,
         bool show_momentum, bool show_gradient_squared);
