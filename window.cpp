@@ -273,8 +273,11 @@ QTabWidget *Window::createViewTabs(){
     QObject::connect(descentPicker, SIGNAL(currentIndexChanged(QString)),
                      plot_area, SLOT(setDetailedAnimation(QString)));
     QLabel* messageBox = new QLabel;
-    messageBox->setText("hello!");
-    QObject::connect(plot_area, &PlotArea::updateMessage, messageBox, &QLabel::setText);
+    messageBox->setWordWrap(true);
+    messageBox->setMinimumHeight(70);
+    messageBox->setAlignment(Qt::AlignTop);
+    QObject::connect(plot_area, &PlotArea::updateMessage,
+                     messageBox,&QLabel::setText);
 
 
     QWidget* step_by_step_tab = new QWidget();

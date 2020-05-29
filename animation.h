@@ -15,7 +15,7 @@ const auto f = GradientDescent::f;
 const float kBallYOffset = 10.f;
 const float stepX = 4. / 49;
 const float stepZ = 4. / 49;
-const int kInterval = 1000; // seconds in between steps
+const int kInterval = 3000; // seconds in between steps
 const QColor gradient_color = Qt::cyan;
 const QColor momentum_color = Qt::magenta;
 const float simpleAnimationArrowScale = 0.2;
@@ -30,12 +30,13 @@ public:
 
     QString name;
     QColor ball_color;
+    std::unique_ptr<GradientDescent> descent;
 
-    void triggerDetailedAnimation(int animation_speedup);
+    QString triggerDetailedAnimation(int animation_speedup);
     virtual void triggerSimpleAnimation(int animation_speedup,
         bool show_gradient, bool show_adjusted_gradient,
         bool show_momentum, bool show_gradient_squared);
-    std::unique_ptr<GradientDescent> descent;
+
     void cleanupAll();
     void cleanupGradient();
     void cleanupAdjustedGradient();
@@ -53,6 +54,7 @@ protected:
     bool m_visible = true;
     bool detailed_animation_prepared = false;
 
+    // don't own these
     Q3DSurface* m_graph;
     QTimer* timer;
 
@@ -70,7 +72,7 @@ protected:
     std::unique_ptr<Square> squareX = nullptr;
     std::unique_ptr<Square> squareZ = nullptr;
 
-    virtual void animateStep() = 0;
+    virtual QString animateStep() = 0;
     virtual int interval(){return kInterval;}
     virtual void prepareDetailedAnimation();
 
@@ -97,7 +99,7 @@ public:
     };
 
 
-    void animateStep();
+    QString animateStep();
 
 protected:
 
@@ -118,7 +120,7 @@ public:
     };
 
     void prepareDetailedAnimation();
-    void animateStep();
+    QString animateStep();
 
 protected:
     Point momentum(){return Point(-descent->delta().x / descent->learning_rate,
@@ -141,7 +143,7 @@ public:
     };
 
     void prepareDetailedAnimation();
-    void animateStep();
+    QString animateStep();
 
 protected:
     // scale up the arrow, otherwise you can't see because adagrad moves so slow
@@ -167,7 +169,7 @@ public:
     };
 
     void prepareDetailedAnimation();
-    void animateStep();
+    QString animateStep();
 
 protected:
     const float arrowScale = 1;
@@ -193,12 +195,12 @@ public:
     };
 
     void prepareDetailedAnimation();
-    void animateStep();
+    QString animateStep();
 
 protected:
     // scale up the arrow, otherwise you can't see because adagrad moves so slow
     const float arrowScale = 1;
-    int interval() {return 2000;}
+    int interval() {return 5000;}
 
     Point momentum() {
         return dynamic_cast<Adam*> (descent.get())->decayedGradSum();} 

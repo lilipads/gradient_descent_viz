@@ -48,11 +48,11 @@ void PlotArea::initializeAxes(){
     xAxis->setTitleVisible(true);
     m_graph->setAxisX(xAxis);
     QValue3DAxis* yAxis = new QValue3DAxis;
-    yAxis->setTitle("Y");
+    yAxis->setTitle("Z");
     yAxis->setTitleVisible(true);
     m_graph->setAxisY(yAxis);
     QValue3DAxis* zAxis = new QValue3DAxis;
-    zAxis->setTitle("Z");
+    zAxis->setTitle("Y");
     zAxis->setTitleVisible(true);
     m_graph->setAxisZ(zAxis);
 }
@@ -131,8 +131,8 @@ void PlotArea::toggleAnimation() {
 void PlotArea::triggerAnimation() {
     if (timer_counter == 0){
         if (detailedView){
-            detailed_descent->triggerDetailedAnimation(animation_speedup);
-            emit updateMessage("bye!");
+            QString message = detailed_descent->triggerDetailedAnimation(animation_speedup);
+            emit updateMessage(message);
         } else{
             for (auto animation : all_animations)
                 animation->triggerSimpleAnimation(animation_speedup,
