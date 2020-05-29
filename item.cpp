@@ -85,8 +85,8 @@ Ball::Ball(Q3DSurface* graph, QColor color, double (*_f) (double, double))
 
 
 void Ball::setPositionOnSurface(double x, double z){
-    float yOffset = kBallRadiusPerGraph * (
-                m_graph->axisY()->max() - m_graph->axisY()->min());
+    float yOffset =  (m_graph->axisY()->max() - m_graph->axisY()->min()) /
+            kBallRadiusPerGraph;
     setPosition(QVector3D(x, f(x, z) + yOffset, z));
 }
 
@@ -128,7 +128,13 @@ void Arrow::setMagnitude(const float &magnitude){
     float unitPlotPerGraph = (direction * plotScalingVector()).length();
 
     m_magnitude = magnitude;
-    float magnitude_in_unit_arrow = magnitude * kUnitItemPerGraph / unitPlotPerGraph * kItemScale;
+
+    float magnitude_in_unit_arrow = magnitude * kUnitItemPerGraph /
+            unitPlotPerGraph * kItemScale;
+    // if the arrow is really small, make sure its tip still extends outside of the ball
+    float min_magnitude = kBallRadiusPerGraph / (0.1 * kUnitItemPerGraph) * 1.2;
+    if (abs(magnitude_in_unit_arrow) < min_magnitude)
+        magnitude_in_unit_arrow = min_magnitude * magnitude_in_unit_arrow / abs(magnitude_in_unit_arrow);
     setScaling(QVector3D(0.1, 0.1 * magnitude_in_unit_arrow, 0.1));
 }
 

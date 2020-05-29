@@ -15,7 +15,7 @@ const float kItemScale = 1;
 // how many items fits in one side of the graph
 // don't change these. These are based on object size given in the mesh files
 const float kUnitItemPerGraph = 110; // for arrows and squares
-const float kBallRadiusPerGraph = 0.0406;
+const float kBallRadiusPerGraph = 24.63;
 // TODO: if this is absolute, doesn't work when graph is scaled
 const QVector3D kLabelOffset(0, 20, 0); // label's position relative to the object's position
 
