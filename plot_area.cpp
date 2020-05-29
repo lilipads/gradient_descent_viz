@@ -31,13 +31,14 @@ PlotArea::PlotArea(Q3DSurface *surface)
     // restart animation from selected position on mouse click
     QObject::connect(m_surfaceSeries.get(),
                      &QSurface3DSeries::selectedPointChanged,
-                     this, &PlotArea::restartFromNewPosition);
+                     this, &PlotArea::restartFromClickedPosition);
 
     toggleAnimation();
     restartAnimations();
 }
 
 PlotArea::~PlotArea(){}
+
 
 void PlotArea::initializeAxes(){
     m_graph->setShadowQuality(QAbstract3DGraph::ShadowQualityNone);
@@ -55,7 +56,22 @@ void PlotArea::initializeAxes(){
     zAxis->setTitle("Y");
     zAxis->setTitleVisible(true);
     m_graph->setAxisZ(zAxis);
+
+    // surface look
+    m_surfaceSeries->setDrawMode(QSurface3DSeries::DrawSurfaceAndWireframe);
+    m_surfaceSeries->setFlatShadingEnabled(false);
+    m_surfaceSeries->setBaseColor(QColor( 100, 0, 0, 255 ));
+    // surface color gradient
+    QLinearGradient gr;
+    gr.setColorAt(1.0, Qt::darkGreen);
+    gr.setColorAt(0.3, Qt::yellow);
+    gr.setColorAt(0.1, Qt::red);
+    gr.setColorAt(0.0, Qt::darkRed);
+    m_surfaceSeries->setBaseGradient(gr);
+    m_surfaceSeries->setColorStyle(Q3DTheme::ColorStyleRangeGradient);
+    m_graph->addSeries(m_surfaceSeries.get());
 }
+
 
 void PlotArea::initializeAnimations(){
     gradient_descent = std::unique_ptr<GradientDescentAnimation>(
@@ -75,12 +91,6 @@ void PlotArea::initializeAnimations(){
         rms_prop.get(),
         adam.get()
     };
-
-    // make sure starting point is within view port
-    for (auto animation : all_animations){
-        animation->descent->setStartingPosition(
-                    (7 * maxX + minX) / 8, (7 * maxZ + minZ) / 8);
-    }
 }
 
 
@@ -103,23 +113,13 @@ void PlotArea::initializeSurface() {
         }
         *dataArray << newRow;
     }
-
     m_surfaceProxy->resetArray(dataArray);
 
-    // surface look
-    m_surfaceSeries->setDrawMode(QSurface3DSeries::DrawSurfaceAndWireframe);
-    m_surfaceSeries->setFlatShadingEnabled(false);
-    m_surfaceSeries->setBaseColor(QColor( 100, 0, 0, 255 ));
-    //gradient
-    QLinearGradient gr;
-    gr.setColorAt(1.0, Qt::darkGreen);
-    gr.setColorAt(0.3, Qt::yellow);
-    gr.setColorAt(0.1, Qt::red);
-    gr.setColorAt(0.0, Qt::darkRed);
-    m_surfaceSeries->setBaseGradient(gr);
-    m_surfaceSeries->setColorStyle(Q3DTheme::ColorStyleRangeGradient);
-    m_graph->addSeries(m_surfaceSeries.get());
-    m_graph->axisY()->setMin(m_graph->axisY()->min());
+    // make sure starting point is within view port
+    for (auto animation : all_animations){
+        animation->descent->setStartingPosition(
+                    (7 * maxX + minX) / 8, (7 * maxZ + minZ) / 8);
+    }
 }
 
 
@@ -154,7 +154,7 @@ void PlotArea::restartAnimations() {
 }
 
 
-void PlotArea::restartFromNewPosition(QPoint q_pos){
+void PlotArea::restartFromClickedPosition(QPoint q_pos){
     if (q_pos == QSurface3DSeries::invalidSelectionPosition())
         return;
     // convert the 2d Qt internal point for to the 3d point on the series
@@ -274,4 +274,26 @@ void PlotArea::setAnimationMode(const int& view_type){
         restartAnimations();
     }
     m_timer.start(15);
+}
+
+
+void PlotArea::changeSurface(QString name){
+    Function::FunctionName function_name;
+    if (name == "Local Minimum"){
+        function_name = Function::local_minimum;
+    } else if (name == "Global Minimum"){
+        function_name = Function::global_minimum;
+    } else if (name == "Saddle Point"){
+        function_name = Function::saddle_point;
+    } else if (name == "Ecliptic Bowl"){
+        function_name = Function::ecliptic_bowl;
+    } else if (name == "Hills"){
+        function_name = Function::hills;
+    } else{
+        return;
+    }
+
+    GradientDescent::function_name = function_name;
+    initializeSurface();
+    restartAnimations();
 }

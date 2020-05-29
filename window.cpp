@@ -27,7 +27,7 @@ Window::Window(QWidget *parent)
     plot_area = new PlotArea(graph);
 
     vLayout->addWidget(createControlGroup());
-
+    vLayout->addWidget(createFunctionSelector());
     vLayout->addWidget(createViewTabs());
 
     // widgets to tune gradient parameters
@@ -126,6 +126,21 @@ QComboBox *Window::createPlaybackSpeedBox(){
 
     QObject::connect(box, SIGNAL(currentIndexChanged(int)),
                      plot_area, SLOT(setAnimationSpeed(int)));
+    return box;
+}
+
+
+QComboBox *Window::createFunctionSelector(){
+    QComboBox *box = new QComboBox(this);
+    box->addItem("--Choose a surface--");
+    box->addItem("Local Minimum");
+    box->addItem("Global Minimum");
+    box->addItem("Saddle Point");
+    box->addItem("Ecliptic Bowl");
+    box->addItem("Hills");
+
+    QObject::connect(box, SIGNAL(currentIndexChanged(QString)),
+                     plot_area, SLOT(changeSurface(QString)));
     return box;
 }
 

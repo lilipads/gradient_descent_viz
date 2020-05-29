@@ -26,10 +26,6 @@ public:
     std::unique_ptr<Animation> rms_prop;
     std::unique_ptr<Animation> adam;
     std::vector<Animation*> all_animations;
-    void setShowGradient(bool show);
-    void setShowAdjustedGradient(bool show);
-    void setShowMomentum(bool show);
-    void setShowGradientSquared(bool show);
 
 signals:
     void updateMessage(QString message);
@@ -41,11 +37,16 @@ public Q_SLOTS:
     void setAnimationMode(const int& view_type);
     void setDetailedAnimation(QString descent_name);
     void setAnimationSpeed(int index);
-    void setCameraZoom(float zoom);
-    void restartFromNewPosition(QPoint q_pos);
+    void restartFromClickedPosition(QPoint q_pos);
     void moveCamera(int x_direction, int z_direction);
     void cameraZoomIn();
     void cameraZoomOut();
+    void setCameraZoom(float zoom);
+    void setShowGradient(bool show);
+    void setShowAdjustedGradient(bool show);
+    void setShowMomentum(bool show);
+    void setShowGradientSquared(bool show);
+    void changeSurface(QString name);
 
 
 private:

@@ -6,6 +6,8 @@ const double kDivisionEpsilon = 1e-12;
 const double kFiniteDiffEpsilon = 1e-12;
 const double kConvergenceEpsilon = 1e-2;
 
+Function::FunctionName GradientDescent::function_name = Function::local_minimum;
+
 
 GradientDescent::GradientDescent()
     : starting_p(0., 0.),
@@ -14,22 +16,37 @@ GradientDescent::GradientDescent()
     resetPositionAndComputeGradient();
 }
 
+
 double GradientDescent::f(double x, double z){
-    // return x * x + z * z;
-    // local minima. recommended ranage: (-2, 2)
-    z *= 1.4;
-    return -2 * exp(-((x - 1) * (x - 1) + z * z) / .2) -6. * exp(-((x + 1) * (x + 1) + z * z) / .2) + x * x + z * z;
-//    z *= 1.4;
-//    return -2 * exp(-((x - 1) * (x - 1) + z * z) / .2) -6. * exp(-((x + 1) * (x + 1) + z * z) / .2) - 10 * exp(-((x + 1) * (x + 1) + (z+1) * (z+1)) / .2) + x * x + z * z;
-
-    // saddle point. recommended range: (-2, 2)
-    // return 2 * x * x - z * z;
-    // slow and fast direction: ada grad is first
-//    x /= 2;
-//    z /= 2;
-//    return -exp(-(x * x + 5 * z * z)) + x * x + 0.5 * z * z;
-
+    switch (function_name){
+    case Function::local_minimum:{
+        z *= 1.4;
+        return -2 * exp(-((x - 1) * (x - 1) + z * z) / .2) -
+                6. * exp(-((x + 1) * (x + 1) + z * z) / .2) +
+                x * x + z * z;
+    }
+    case Function::global_minimum:{
+        return x * x + z * z;
+    }
+    case Function::saddle_point:{
+        return sin(x) + z * z;
+    }
+    case Function::ecliptic_bowl:{
+        x /= 2.;
+        z /= 2.;
+        return -exp(-(x * x + 5 * z * z)) + x * x + 0.5 * z * z;
+    }
+    case Function::hills:{
+        z *= 1.4;
+        return  2 * exp(-((x - 1) * (x - 1) + z * z) / .2) +
+                6. * exp(-((x + 1) * (x + 1) + z * z) / .2) -
+                2 * exp(-((x - 1) * (x  - 1) + (z + 1) * (z + 1)) / .2) +
+                x * x + z * z;
+    }
+    }
+    return 0.;
 }
+
 
 void GradientDescent::computeGradient(){
     // use finite difference method

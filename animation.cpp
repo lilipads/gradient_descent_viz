@@ -174,10 +174,10 @@ void Animation::prepareDetailedAnimation(){
     QColor color = ball_color;
     color.setAlpha(100);
     temporary_ball = std::unique_ptr<Ball>(new Ball(m_graph, color, f));
-    detailed_animation_prepared = true;
 
     if (has_momentum) initializeMomentumArrows();
     if (has_gradient_squared) initializeSquares();
+    detailed_animation_prepared = true;
     timer->start(15);
 }
 

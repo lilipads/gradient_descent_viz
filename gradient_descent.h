@@ -15,12 +15,20 @@ struct Point {
     Point(double _x, double _z) : x(_x), z(_z) {}
 };
 
+
+namespace Function{
+enum FunctionName {local_minimum, global_minimum, saddle_point, ecliptic_bowl,
+                  hills};
+}
+
+
 class GradientDescent {
 public:
     GradientDescent();
     virtual ~GradientDescent() {}
 
     double learning_rate = 0.01;
+    static Function::FunctionName function_name;
 
     // simple getters and setters
     Point position() {return p;}
@@ -30,8 +38,9 @@ public:
     double gradZ() {return grad.z;};
     Point delta() {return m_delta;}
 
+
     // core methods
-    static double f(double x, double z); 
+    static double f(double x, double z);
     Point takeGradientStep();
     void resetPositionAndComputeGradient();
 
@@ -48,6 +57,7 @@ protected:
     virtual void resetState(){}
 };
 
+
 class VanillaGradientDescent : public GradientDescent {
 public:
     VanillaGradientDescent() {}
@@ -55,6 +65,7 @@ public:
 protected:
      void updateGradientDelta();
 };
+
 
 class Momentum : public GradientDescent {
 public:

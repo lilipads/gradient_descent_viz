@@ -39,6 +39,7 @@ private:
     QSlider* createZoomSlider();
     QComboBox* createPlaybackSpeedBox();
 
+    QComboBox* createFunctionSelector();
     QTabWidget* createViewTabs();
 
     QGroupBox* createDescentGroup(Animation* animation,
