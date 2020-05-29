@@ -247,7 +247,6 @@ QDoubleSpinBox *Window::createDecayBox(double& val){
 
 QTabWidget *Window::createViewTabs(){
     QTabWidget* tab = new QTabWidget;
-    QWidget* container = new QWidget();
     // TODO: say it's scaled down
     QCheckBox* gradient = new QCheckBox("Gradient Arrows");
     QObject::connect(gradient, &QCheckBox::clicked, plot_area, &PlotArea::setShowGradient);
@@ -258,13 +257,14 @@ QTabWidget *Window::createViewTabs(){
     QCheckBox* squaredGrad = new QCheckBox("Sum of Gradient Squared");
     QObject::connect(squaredGrad, &QCheckBox::clicked, plot_area, &PlotArea::setShowGradientSquared);
 
+    QWidget* overview_tab = new QWidget();
     QVBoxLayout* vbox = new QVBoxLayout;
-    container->setLayout(vbox);
+    overview_tab->setLayout(vbox);
     vbox->addWidget(gradient);
     vbox->addWidget(adjusted_gradient);
     vbox->addWidget(momentum);
     vbox->addWidget(squaredGrad);
-    tab->addTab(container, "Overview");
+    tab->addTab(overview_tab, "Overview");
 
     QComboBox* descentPicker = new QComboBox;
     descentPicker->addItem("Choose a method");
@@ -272,7 +272,18 @@ QTabWidget *Window::createViewTabs(){
         descentPicker->addItem(animation->name);
     QObject::connect(descentPicker, SIGNAL(currentIndexChanged(QString)),
                      plot_area, SLOT(setDetailedAnimation(QString)));
-    tab->addTab(descentPicker, "Step-by-Step");
+    QLabel* messageBox = new QLabel;
+    messageBox->setText("hello!");
+    QObject::connect(plot_area, &PlotArea::updateMessage, messageBox, &QLabel::setText);
+
+
+    QWidget* step_by_step_tab = new QWidget();
+    QVBoxLayout* vbox2 = new QVBoxLayout;
+    step_by_step_tab->setLayout(vbox2);
+    vbox2->addWidget(descentPicker);
+    vbox2->addWidget(messageBox);
+    tab->addTab(step_by_step_tab, "Step-by-Step");
+
 
     QObject::connect(tab, &QTabWidget::currentChanged,
                      plot_area, &PlotArea::setAnimationMode);

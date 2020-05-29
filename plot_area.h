@@ -10,7 +10,7 @@
 #include <QtDataVisualization/Q3DSurface>
 #include <QtCore/QTimer>
 
-#include "gradientdescent.h"
+#include "gradient_descent.h"
 #include "animation.h"
 
 
@@ -30,6 +30,9 @@ public:
     void setShowAdjustedGradient(bool show);
     void setShowMomentum(bool show);
     void setShowGradientSquared(bool show);
+
+signals:
+    void updateMessage(QString message);
 
 public Q_SLOTS:
     void toggleAnimation();

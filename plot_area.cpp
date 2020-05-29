@@ -1,4 +1,4 @@
-#include "plotarea.h"
+#include "plot_area.h"
 
 #include <QtDataVisualization/qvalue3daxis.h>
 #include <QtDataVisualization/q3dscene.h>
@@ -132,6 +132,7 @@ void PlotArea::triggerAnimation() {
     if (timer_counter == 0){
         if (detailedView){
             detailed_descent->triggerDetailedAnimation(animation_speedup);
+            emit updateMessage("bye!");
         } else{
             for (auto animation : all_animations)
                 animation->triggerSimpleAnimation(animation_speedup,

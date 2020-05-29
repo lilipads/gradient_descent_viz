@@ -15,7 +15,7 @@
 #include <QtWidgets/QComboBox>
 #include <QtGui/QScreen>
 
-#include "plotarea.h"
+#include "plot_area.h"
 
 QT_BEGIN_NAMESPACE
 class QGroupBox;

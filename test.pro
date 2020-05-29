@@ -17,17 +17,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     animation.cpp \
-    gradientdescent.cpp \
+    gradient_descent.cpp \
     item.cpp \
     main.cpp \
-    plotarea.cpp \
+    plot_area.cpp \
     window.cpp
 
 HEADERS += \
     animation.h \
-    gradientdescent.h \
+    gradient_descent.h \
     item.h \
-    plotarea.h \
+    plot_area.h \
     window.h
 
 RESOURCES += \

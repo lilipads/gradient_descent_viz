@@ -7,7 +7,7 @@
 #include <QtDataVisualization/QCustom3DItem>
 #include <QtDataVisualization/Q3DSurface>
 
-#include "gradientdescent.h"
+#include "gradient_descent.h"
 
 using namespace  QtDataVisualization;
 
