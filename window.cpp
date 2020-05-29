@@ -251,13 +251,17 @@ QTabWidget *Window::createViewTabs(){
     // TODO: say it's scaled down
     QCheckBox* gradient = new QCheckBox("Gradient Arrows");
     QObject::connect(gradient, &QCheckBox::clicked, plot_area, &PlotArea::setShowGradient);
+    QCheckBox* adjusted_gradient = new QCheckBox("Adjusted Gradient Arrows");
+    QObject::connect(adjusted_gradient, &QCheckBox::clicked, plot_area, &PlotArea::setShowAdjustedGradient);
     QCheckBox* momentum = new QCheckBox("Momentum Arrows");
     QObject::connect(momentum, &QCheckBox::clicked, plot_area, &PlotArea::setShowMomentum);
-    QCheckBox* squaredGrad = new QCheckBox("Sum of gradient squared");
+    QCheckBox* squaredGrad = new QCheckBox("Sum of Gradient Squared");
     QObject::connect(squaredGrad, &QCheckBox::clicked, plot_area, &PlotArea::setShowGradientSquared);
+
     QVBoxLayout* vbox = new QVBoxLayout;
     container->setLayout(vbox);
     vbox->addWidget(gradient);
+    vbox->addWidget(adjusted_gradient);
     vbox->addWidget(momentum);
     vbox->addWidget(squaredGrad);
     tab->addTab(container, "Overview");

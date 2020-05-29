@@ -16,8 +16,9 @@ const float kBallYOffset = 10.f;
 const float stepX = 4. / 49;
 const float stepZ = 4. / 49;
 const int kInterval = 1000; // seconds in between steps
+const QColor gradient_color = Qt::cyan;
 const QColor momentum_color = Qt::magenta;
-
+const float simpleAnimationArrowScale = 0.2;
 
 class Animation
 {
@@ -32,10 +33,12 @@ public:
 
     void triggerDetailedAnimation();
     virtual void triggerSimpleAnimation(int animation_speedup,
-        bool show_gradient, bool show_momentum, bool show_gradient_squared);
+        bool show_gradient, bool show_adjusted_gradient,
+        bool show_momentum, bool show_gradient_squared);
     std::unique_ptr<GradientDescent> descent;
     void cleanupAll();
     void cleanupGradient();
+    void cleanupAdjustedGradient();
     void cleanupMomentum();
     void cleanupGradientSquared();
     void setVisible(bool visible);
@@ -58,6 +61,8 @@ protected:
     std::unique_ptr<Ball> temporary_ball = nullptr;
     std::unique_ptr<Arrow> arrowX = nullptr;
     std::unique_ptr<Arrow> arrowZ = nullptr;
+    std::unique_ptr<Arrow> adjustedArrowX = nullptr;
+    std::unique_ptr<Arrow> adjustedArrowZ = nullptr;
     std::unique_ptr<Arrow> total_arrow = nullptr;
     // visual elements (applicable to some descents)
     std::unique_ptr<Arrow> momentumArrowX = nullptr;
@@ -70,6 +75,7 @@ protected:
     virtual void prepareDetailedAnimation();
 
     void animateGradient();
+    void animateAdjustedGradient();
     void animateMomentum();
     void animateGradientSquared();
     virtual Point momentum(){return Point();};
@@ -85,7 +91,7 @@ public:
     {
         name = "Gradient Descent";
         num_states = 4;
-        ball_color = Qt::cyan;
+        ball_color = gradient_color;
         ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color, f));
         descent = std::unique_ptr<GradientDescent>(new VanillaGradientDescent);
     };

@@ -27,6 +27,7 @@ public:
     std::unique_ptr<Animation> adam;
     std::vector<Animation*> all_animations;
     void setShowGradient(bool show);
+    void setShowAdjustedGradient(bool show);
     void setShowMomentum(bool show);
     void setShowGradientSquared(bool show);
 
@@ -56,8 +57,9 @@ private:
     int animation_slowdown = 1; // slow down factor
     int animation_speedup = 1;  // speed up factor
     bool show_gradient = false;
+    bool show_adjusted_gradient = false;
     bool show_momentum = false;
-    bool show_gradient_squared = false;
+    bool show_gradient_squared = false;   
 
     void initializeSurface();
     void initializeGraph();

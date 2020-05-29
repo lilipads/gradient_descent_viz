@@ -129,7 +129,8 @@ void PlotArea::triggerAnimation() {
         } else{
             for (auto animation : all_animations)
                 animation->triggerSimpleAnimation(animation_speedup,
-                    show_gradient, show_momentum, show_gradient_squared);
+                    show_gradient, show_adjusted_gradient, show_momentum,
+                    show_gradient_squared);
 
         }
     }
@@ -208,6 +209,17 @@ void PlotArea::setShowGradient(bool show){
             animation->cleanupGradient();
     }
 }
+
+
+void PlotArea::setShowAdjustedGradient(bool show){
+    if (show == show_adjusted_gradient) return;
+    show_adjusted_gradient = show;
+    if (!show){
+        for (auto animation : all_animations)
+            animation->cleanupAdjustedGradient();
+    }
+}
+
 
 void PlotArea::setShowMomentum(bool show){
     if (show == show_momentum) return;

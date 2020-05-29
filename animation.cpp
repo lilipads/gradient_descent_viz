@@ -1,10 +1,8 @@
 #include "animation.h"
 
-const float simpleAnimationArrowScale = 0.2;
-
-
 void Animation::triggerSimpleAnimation(int animation_speedup,
-     bool show_gradient, bool show_momentum, bool show_gradient_squared){
+     bool show_gradient, bool show_adjusted_gradient,
+     bool show_momentum, bool show_gradient_squared){
     if (descent->isConverged()) return;
     Point p;
     for (int i = 0; i < animation_speedup; i++)
@@ -12,6 +10,7 @@ void Animation::triggerSimpleAnimation(int animation_speedup,
     if (!m_visible) return;
     ball->setPositionOnSurface(p.x, p.z);
     if (show_gradient) animateGradient();
+    if (show_adjusted_gradient) animateAdjustedGradient();
     if (has_momentum && show_momentum) animateMomentum();
     if (has_gradient_squared && show_gradient_squared) animateGradientSquared();
 }
@@ -19,13 +18,25 @@ void Animation::triggerSimpleAnimation(int animation_speedup,
 
 void Animation::animateGradient(){
     if (arrowX == nullptr)
-        arrowX = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(-1, 0, 0), Qt::black));
+        arrowX = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(-1, 0, 0), gradient_color));
     if (arrowZ == nullptr)
-        arrowZ = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(0, 0, -1), Qt::black));
+        arrowZ = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(0, 0, -1), gradient_color));
     arrowX->setMagnitude(descent->gradX() * simpleAnimationArrowScale);
     arrowZ->setMagnitude(descent->gradZ() * simpleAnimationArrowScale);
     arrowX->setPosition(ball->position());
     arrowZ->setPosition(ball->position());
+}
+
+
+void Animation::animateAdjustedGradient(){
+    if (adjustedArrowX == nullptr)
+        adjustedArrowX = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(-1, 0, 0), Qt::black));
+    if (adjustedArrowZ == nullptr)
+        adjustedArrowZ = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(0, 0, -1), Qt::black));
+    adjustedArrowX->setMagnitude(-descent->delta().x / descent->learning_rate * simpleAnimationArrowScale);
+    adjustedArrowZ->setMagnitude(-descent->delta().z / descent->learning_rate * simpleAnimationArrowScale);
+    adjustedArrowX->setPosition(ball->position());
+    adjustedArrowZ->setPosition(ball->position());
 }
 
 
@@ -66,6 +77,12 @@ void Animation::cleanupGradient(){
 }
 
 
+void Animation::cleanupAdjustedGradient(){
+    adjustedArrowX = nullptr;
+    adjustedArrowZ = nullptr;
+}
+
+
 void Animation::cleanupMomentum(){
     momentumArrowX = nullptr;
     momentumArrowZ = nullptr;
@@ -83,6 +100,7 @@ void Animation::cleanupAll(){
     if (temporary_ball != nullptr) temporary_ball = nullptr;
     if (total_arrow != nullptr) total_arrow = nullptr;
     cleanupGradient();
+    cleanupAdjustedGradient();
     cleanupMomentum();
     cleanupGradientSquared();
     detailed_animation_prepared = false;
@@ -117,11 +135,11 @@ void Animation::triggerDetailedAnimation(){
 void Animation::prepareDetailedAnimation(){
     timer->stop();
     ball->setVisible(true);
-    arrowX = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(-1, 0, 0), Qt::black));
+    arrowX = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(-1, 0, 0), gradient_color));
     arrowX->setMagnitude(0);
     arrowX->setLabel("gradient in x");
     arrowX->setVisible(false);
-    arrowZ = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(0, 0, -1), Qt::black));
+    arrowZ = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(0, 0, -1), gradient_color));
     arrowZ->setMagnitude(0);
     arrowZ->setLabel("gradient in z");
     arrowZ->setVisible(false);
