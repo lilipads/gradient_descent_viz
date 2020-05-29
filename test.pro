@@ -20,15 +20,14 @@ SOURCES += \
     gradientdescent.cpp \
     item.cpp \
     main.cpp \
-    plot.cpp \
+    plotarea.cpp \
     window.cpp
 
 HEADERS += \
     animation.h \
     gradientdescent.h \
     item.h \
-    plot.h \
-    surface.h \
+    plotarea.h \
     window.h
 
 RESOURCES += \

@@ -5,8 +5,8 @@
 
 #include <QtCore/QTimer>
 #include <QtDataVisualization/QCustom3DItem>
+#include <QtDataVisualization/Q3DSurface>
 
-#include "surface.h"
 #include "gradientdescent.h"
 
 using namespace  QtDataVisualization;
@@ -26,7 +26,7 @@ void setBallPositionOnSurface(Ball* ball, Point p);
 class Animation
 {
 public:
-    Animation(Surface* _graph, QTimer* _timer)
+    Animation(Q3DSurface* _graph, QTimer* _timer)
         : m_graph(_graph),
           timer(_timer) {}
     virtual ~Animation(){}
@@ -54,7 +54,7 @@ protected:
     bool m_visible = true;
     bool detailed_animation_prepared = false;
 
-    Surface* m_graph;
+    Q3DSurface* m_graph;
     QTimer* timer;
 
     // visual elements (applicable to all descents)
@@ -84,7 +84,7 @@ protected:
 class GradientDescentAnimation : public Animation
 {
 public:
-    GradientDescentAnimation(Surface* _graph, QTimer* _timer)
+    GradientDescentAnimation(Q3DSurface* _graph, QTimer* _timer)
         : Animation(_graph, _timer)
     {
         name = "Gradient Descent";
@@ -104,7 +104,7 @@ protected:
 class MomentumAnimation : public Animation
 {
 public:
-    MomentumAnimation(Surface* _graph, QTimer* _timer)
+    MomentumAnimation(Q3DSurface* _graph, QTimer* _timer)
         : Animation(_graph, _timer)
     {
         name = "Momentum";
@@ -127,7 +127,7 @@ protected:
 class AdaGradAnimation : public Animation
 {
 public:
-    AdaGradAnimation(Surface* _graph, QTimer* _timer)
+    AdaGradAnimation(Q3DSurface* _graph, QTimer* _timer)
         : Animation(_graph, _timer)
     {
         name = "Adagrad";
@@ -153,7 +153,7 @@ protected:
 class RMSPropAnimation : public Animation
 {
 public:
-    RMSPropAnimation(Surface* _graph, QTimer* _timer)
+    RMSPropAnimation(Q3DSurface* _graph, QTimer* _timer)
         : Animation(_graph, _timer)
     {
         name = "RMSprop";
@@ -178,7 +178,7 @@ protected:
 class AdamAnimation : public Animation
 {
 public:
-    AdamAnimation(Surface* _graph, QTimer* _timer)
+    AdamAnimation(Q3DSurface* _graph, QTimer* _timer)
         : Animation(_graph, _timer)
     {
         name = "Adam";

@@ -10,7 +10,7 @@ Window::Window(QWidget *parent)
 {
     setWindowTitle(QStringLiteral("Gradient Descent Visualization"));
 
-    Surface *graph = new Surface();
+    Q3DSurface *graph = new Q3DSurface();
     QWidget *container = QWidget::createWindowContainer(graph);
 
     QSize screenSize = graph->screen()->size();
@@ -24,7 +24,7 @@ Window::Window(QWidget *parent)
     hLayout->addWidget(container, 1);
     hLayout->addLayout(vLayout);
 
-    plot = new Plot(graph);
+    plot_area = new PlotArea(graph);
 
     vLayout->addWidget(createControlGroup());
 
@@ -43,17 +43,17 @@ Window::Window(QWidget *parent)
 
 void Window::setupKeyboardShortcuts(){
     QShortcut* left = new QShortcut(Qt::Key_Left, this);
-    QObject::connect(left, &QShortcut::activated, [=](){plot->moveCamera(-1, 0);});
+    QObject::connect(left, &QShortcut::activated, [=](){plot_area->moveCamera(-1, 0);});
     QShortcut* right = new QShortcut(Qt::Key_Right, this);
-    QObject::connect(right, &QShortcut::activated, [=](){plot->moveCamera(1, 0);});
+    QObject::connect(right, &QShortcut::activated, [=](){plot_area->moveCamera(1, 0);});
     QShortcut* up = new QShortcut(Qt::Key_Up, this);
-    QObject::connect(up, &QShortcut::activated, [=](){plot->moveCamera(0, 1);});
+    QObject::connect(up, &QShortcut::activated, [=](){plot_area->moveCamera(0, 1);});
     QShortcut* down = new QShortcut(Qt::Key_Down, this);
-    QObject::connect(down, &QShortcut::activated, [=](){plot->moveCamera(0, -1);});
+    QObject::connect(down, &QShortcut::activated, [=](){plot_area->moveCamera(0, -1);});
     QShortcut* zoomin = new QShortcut(Qt::CTRL + Qt::Key_Equal, this);
-    QObject::connect(zoomin, &QShortcut::activated, plot, &Plot::cameraZoomIn);
+    QObject::connect(zoomin, &QShortcut::activated, plot_area, &PlotArea::cameraZoomIn);
     QShortcut* zoomout = new QShortcut(Qt::CTRL + Qt::Key_Minus, this);
-    QObject::connect(zoomout, &QShortcut::activated, plot, &Plot::cameraZoomOut);
+    QObject::connect(zoomout, &QShortcut::activated, plot_area, &PlotArea::cameraZoomOut);
 }
 
 
@@ -89,8 +89,8 @@ QPushButton *Window::createToggleAnimationButton(){
                 toggleAnimationButton->setText(QStringLiteral("Paused"));
         });
 
-    QObject::connect(toggleAnimationButton, &QPushButton::clicked, plot,
-                     &Plot::toggleAnimation);
+    QObject::connect(toggleAnimationButton, &QPushButton::clicked, plot_area,
+                     &PlotArea::toggleAnimation);
     return toggleAnimationButton;
 }
 
@@ -99,8 +99,8 @@ QPushButton *Window::createRestartAnimationButton(){
     // restart animation button
     QPushButton *restartAnimationButton = new QPushButton(this);
     restartAnimationButton->setText(QStringLiteral("Restart"));
-    QObject::connect(restartAnimationButton, &QPushButton::clicked, plot,
-                     &Plot::restartAnimations);
+    QObject::connect(restartAnimationButton, &QPushButton::clicked, plot_area,
+                     &PlotArea::restartAnimations);
     return restartAnimationButton;
 }
 
@@ -108,9 +108,9 @@ QSlider *Window::createZoomSlider(){
     QSlider *slider = new QSlider(Qt::Horizontal, this);
     slider->setRange(100, 1000);
     slider->setValue(120);
-    plot->setCameraZoom(120);
-    QObject::connect(slider, &QSlider::valueChanged, plot,
-                     &Plot::setCameraZoom);
+    plot_area->setCameraZoom(120);
+    QObject::connect(slider, &QSlider::valueChanged, plot_area,
+                     &PlotArea::setCameraZoom);
     return slider;
 }
 
@@ -125,7 +125,7 @@ QComboBox *Window::createPlaybackSpeedBox(){
     box->setCurrentIndex(2);
 
     QObject::connect(box, SIGNAL(currentIndexChanged(int)),
-                     plot, SLOT(setAnimationSpeed(int)));
+                     plot_area, SLOT(setAnimationSpeed(int)));
     return box;
 }
 
@@ -151,18 +151,18 @@ QGroupBox *Window::createDescentGroup(Animation* animation,
 
 QGroupBox *Window::createGradientDescentGroup(){
     VanillaGradientDescent* descent = dynamic_cast<VanillaGradientDescent*> (
-                plot->gradient_descent->descent.get());
+                plot_area->gradient_descent->descent.get());
 
     QFormLayout *form = new QFormLayout;
     form->addRow(new QLabel(QStringLiteral("Learning Rate:")),
                  createLearningRateBox(descent));
 
-    return createDescentGroup(plot->gradient_descent.get(), form);
+    return createDescentGroup(plot_area->gradient_descent.get(), form);
 }
 
 
 QGroupBox *Window::createMomentumGroup(){
-    Momentum* descent = dynamic_cast<Momentum*> (plot->momentum->descent.get());
+    Momentum* descent = dynamic_cast<Momentum*> (plot_area->momentum->descent.get());
 
     QFormLayout *form = new QFormLayout;
     form->addRow(new QLabel(QStringLiteral("Learning Rate:")),
@@ -170,23 +170,23 @@ QGroupBox *Window::createMomentumGroup(){
     form->addRow(new QLabel(QStringLiteral("Decay rate:")),
                  createDecayBox(descent->decay_rate));
 
-    return createDescentGroup(plot->momentum.get(), form);
+    return createDescentGroup(plot_area->momentum.get(), form);
 }
 
 
 QGroupBox *Window::createAdaGradGroup(){
-    AdaGrad* descent = dynamic_cast<AdaGrad*> (plot->ada_grad->descent.get());
+    AdaGrad* descent = dynamic_cast<AdaGrad*> (plot_area->ada_grad->descent.get());
 
     QFormLayout *form = new QFormLayout;
     form->addRow(new QLabel(QStringLiteral("Learning Rate:")),
                  createLearningRateBox(descent));
 
-    return createDescentGroup(plot->ada_grad.get(), form);
+    return createDescentGroup(plot_area->ada_grad.get(), form);
 }
 
 
 QGroupBox *Window::createRMSPropGroup(){
-    RMSProp* descent = dynamic_cast<RMSProp*> (plot->rms_prop->descent.get());
+    RMSProp* descent = dynamic_cast<RMSProp*> (plot_area->rms_prop->descent.get());
 
     QFormLayout *form = new QFormLayout;
     form->addRow(new QLabel(QStringLiteral("Learning Rate:")),
@@ -194,12 +194,12 @@ QGroupBox *Window::createRMSPropGroup(){
     form->addRow(new QLabel(QStringLiteral("Decay rate:")),
                  createDecayBox(descent->decay_rate));
 
-    return createDescentGroup(plot->rms_prop.get(), form);
+    return createDescentGroup(plot_area->rms_prop.get(), form);
 }
 
 
 QGroupBox *Window::createAdamGroup(){
-    Adam* descent = dynamic_cast<Adam*> (plot->adam->descent.get());
+    Adam* descent = dynamic_cast<Adam*> (plot_area->adam->descent.get());
 
     QFormLayout *form = new QFormLayout;
     form->addRow(new QLabel(QStringLiteral("Learning Rate:")),
@@ -209,7 +209,7 @@ QGroupBox *Window::createAdamGroup(){
     form->addRow(new QLabel(QStringLiteral("Beta2:")),
                  createDecayBox(descent->beta2));
 
-    return createDescentGroup(plot->adam.get(), form);
+    return createDescentGroup(plot_area->adam.get(), form);
 }
 
 
@@ -250,11 +250,11 @@ QTabWidget *Window::createViewTabs(){
     QWidget* container = new QWidget();
     // TODO: say it's scaled down
     QCheckBox* gradient = new QCheckBox("Gradient Arrows");
-    QObject::connect(gradient, &QCheckBox::clicked, plot, &Plot::setShowGradient);
+    QObject::connect(gradient, &QCheckBox::clicked, plot_area, &PlotArea::setShowGradient);
     QCheckBox* momentum = new QCheckBox("Momentum Arrows");
-    QObject::connect(momentum, &QCheckBox::clicked, plot, &Plot::setShowMomentum);
+    QObject::connect(momentum, &QCheckBox::clicked, plot_area, &PlotArea::setShowMomentum);
     QCheckBox* squaredGrad = new QCheckBox("Sum of gradient squared");
-    QObject::connect(squaredGrad, &QCheckBox::clicked, plot, &Plot::setShowGradientSquared);
+    QObject::connect(squaredGrad, &QCheckBox::clicked, plot_area, &PlotArea::setShowGradientSquared);
     QVBoxLayout* vbox = new QVBoxLayout;
     container->setLayout(vbox);
     vbox->addWidget(gradient);
@@ -264,14 +264,14 @@ QTabWidget *Window::createViewTabs(){
 
     QComboBox* descentPicker = new QComboBox;
     descentPicker->addItem("Choose a method");
-    for (auto animation : plot->all_animations)
+    for (auto animation : plot_area->all_animations)
         descentPicker->addItem(animation->name);
     QObject::connect(descentPicker, SIGNAL(currentIndexChanged(QString)),
-                     plot, SLOT(setDetailedAnimation(QString)));
+                     plot_area, SLOT(setDetailedAnimation(QString)));
     tab->addTab(descentPicker, "Step-by-Step");
 
     QObject::connect(tab, &QTabWidget::currentChanged,
-                     plot, &Plot::setAnimationMode);
+                     plot_area, &PlotArea::setAnimationMode);
     // when switching to overview, clear prevoius selection and reset to "Choose your method"
     QObject::connect(tab, &QTabWidget::currentChanged,
                      [=](int idx){if (idx == 1) descentPicker->setCurrentIndex(0);});

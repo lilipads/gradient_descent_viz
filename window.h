@@ -15,7 +15,7 @@
 #include <QtWidgets/QComboBox>
 #include <QtGui/QScreen>
 
-#include "plot.h"
+#include "plotarea.h"
 
 QT_BEGIN_NAMESPACE
 class QGroupBox;
@@ -29,7 +29,7 @@ public:
     Window(QWidget *parent = nullptr);
 
 private:
-    Plot *plot;
+    PlotArea *plot_area;
 
     void setupKeyboardShortcuts();
 

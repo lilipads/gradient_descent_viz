@@ -1,4 +1,4 @@
-#include "plot.h"
+#include "plotarea.h"
 
 #include <QtDataVisualization/qvalue3daxis.h>
 #include <QtDataVisualization/q3dscene.h>
@@ -11,8 +11,12 @@ const int sampleCountX = 51;
 const int sampleCountZ = 51;
 const float kCameraMoveStepSize = 0.1f;
 const float kCameraZoomStepSize = 10.f;
+const float minX = -2.0f;
+const float maxX = 2.0f;
+const float minZ = -2.0f;
+const float maxZ = 2.0f;
 
-Plot::Plot(Surface *surface)
+PlotArea::PlotArea(Q3DSurface *surface)
     : m_graph(surface),
       m_surfaceProxy(new QSurfaceDataProxy()),
       m_surfaceSeries(new QSurface3DSeries(m_surfaceProxy.get()))
@@ -22,20 +26,20 @@ Plot::Plot(Surface *surface)
     initializeSurface();
 
     QObject::connect(&m_timer, &QTimer::timeout, this,
-                     &Plot::triggerAnimation);
+                     &PlotArea::triggerAnimation);
 
     // restart animation from selected position on mouse click
     QObject::connect(m_surfaceSeries.get(),
                      &QSurface3DSeries::selectedPointChanged,
-                     this, &Plot::restartFromNewPosition);
+                     this, &PlotArea::restartFromNewPosition);
 
     toggleAnimation();
     restartAnimations();
 }
 
-Plot::~Plot(){}
+PlotArea::~PlotArea(){}
 
-void Plot::initializeGraph(){
+void PlotArea::initializeGraph(){
     m_graph->setShadowQuality(QAbstract3DGraph::ShadowQualityNone);
     m_graph->activeTheme()->setType(Q3DTheme::Theme(2));
     m_graph->scene()->activeCamera()->setCameraPreset(Q3DCamera::CameraPresetFrontHigh);
@@ -53,7 +57,7 @@ void Plot::initializeGraph(){
     m_graph->setAxisZ(zAxis);
 }
 
-void Plot::initializeAnimations(){
+void PlotArea::initializeAnimations(){
     gradient_descent = std::unique_ptr<GradientDescentAnimation>(
                 new GradientDescentAnimation(m_graph.get(), &m_timer));
     momentum = std::unique_ptr<Animation>(
@@ -74,9 +78,9 @@ void Plot::initializeAnimations(){
 }
 
 
-void Plot::initializeSurface() {
-    float stepX = (m_graph->maxX - m_graph->minX) / float(sampleCountX - 1);
-    float stepZ = (m_graph->maxZ - m_graph->minZ) / float(sampleCountZ - 1);
+void PlotArea::initializeSurface() {
+    float stepX = (maxX - minX) / float(sampleCountX - 1);
+    float stepZ = (maxZ - minZ) / float(sampleCountZ - 1);
 
     QSurfaceDataArray *dataArray = new QSurfaceDataArray;
     dataArray->reserve(sampleCountZ);
@@ -84,10 +88,10 @@ void Plot::initializeSurface() {
         QSurfaceDataRow *newRow = new QSurfaceDataRow(sampleCountX);
         // Keep values within range bounds, since just adding step can cause minor drift due
         // to the rounding errors.
-        float z = qMin(m_graph->maxZ, (i * stepZ + m_graph->minZ));
+        float z = qMin(maxZ, (i * stepZ + minZ));
         int index = 0;
         for (int j = 0; j < sampleCountX; j++) {
-            float x = qMin(m_graph->maxX, (j * stepX + m_graph->minX));
+            float x = qMin(maxX, (j * stepX + minX));
             float y = GradientDescent::f(x, z);
             (*newRow)[index++].setPosition(QVector3D(x, y, z));
         }
@@ -108,17 +112,16 @@ void Plot::initializeSurface() {
     gr.setColorAt(0.0, Qt::darkRed);
     m_surfaceSeries->setBaseGradient(gr);
     m_surfaceSeries->setColorStyle(Q3DTheme::ColorStyleRangeGradient);
-
     m_graph->addSeries(m_surfaceSeries.get());
 }
 
 
-void Plot::toggleAnimation() {
+void PlotArea::toggleAnimation() {
     m_timer.isActive() ? m_timer.stop() : m_timer.start(15);
 }
 
 
-void Plot::triggerAnimation() {
+void PlotArea::triggerAnimation() {
     if (timer_counter == 0){
         if (detailedView){
             detailed_descent->triggerDetailedAnimation();
@@ -133,7 +136,7 @@ void Plot::triggerAnimation() {
 }
 
 
-void Plot::restartAnimations() {
+void PlotArea::restartAnimations() {
     if (detailedView){
         detailed_descent->restartAnimation();
     } else{
@@ -143,7 +146,7 @@ void Plot::restartAnimations() {
 }
 
 
-void Plot::restartFromNewPosition(QPoint q_pos){
+void PlotArea::restartFromNewPosition(QPoint q_pos){
     if (q_pos == QSurface3DSeries::invalidSelectionPosition())
         return;
     // convert the 2d Qt internal point for to the 3d point on the series
@@ -155,22 +158,22 @@ void Plot::restartFromNewPosition(QPoint q_pos){
 }
 
 
-void Plot::setCameraZoom(float zoom){
+void PlotArea::setCameraZoom(float zoom){
     m_graph->scene()->activeCamera()->setZoomLevel(zoom);
 }
 
-void Plot::cameraZoomIn(){
+void PlotArea::cameraZoomIn(){
     Q3DCamera* camera = m_graph->scene()->activeCamera();
     camera->setZoomLevel(camera->zoomLevel() + kCameraZoomStepSize);
 }
 
-void Plot::cameraZoomOut(){
+void PlotArea::cameraZoomOut(){
     Q3DCamera* camera = m_graph->scene()->activeCamera();
     camera->setZoomLevel(camera->zoomLevel() - kCameraZoomStepSize);
 }
 
 
-void Plot::moveCamera(int x_direction, int z_direction){
+void PlotArea::moveCamera(int x_direction, int z_direction){
     QVector3D target = m_graph->scene()->activeCamera()->target();
     float x_rotation = m_graph->scene()->activeCamera()->xRotation();
     x_rotation = qDegreesToRadians(x_rotation);
@@ -183,7 +186,7 @@ void Plot::moveCamera(int x_direction, int z_direction){
     m_graph->scene()->activeCamera()->setTarget(target);
 }
 
-void Plot::setAnimationSpeed(int index){
+void PlotArea::setAnimationSpeed(int index){
     animation_slowdown = 1;
     animation_speedup = 1;
     switch (index) {
@@ -196,7 +199,7 @@ void Plot::setAnimationSpeed(int index){
 }
 
 
-void Plot::setShowGradient(bool show){
+void PlotArea::setShowGradient(bool show){
     if (show == show_gradient) return;
     show_gradient = show;
     if (!show){
@@ -205,7 +208,7 @@ void Plot::setShowGradient(bool show){
     }
 }
 
-void Plot::setShowMomentum(bool show){
+void PlotArea::setShowMomentum(bool show){
     if (show == show_momentum) return;
     show_momentum = show;
     if (!show){
@@ -215,7 +218,7 @@ void Plot::setShowMomentum(bool show){
 }
 
 
-void Plot::setShowGradientSquared(bool show){
+void PlotArea::setShowGradientSquared(bool show){
     if (show == show_gradient_squared) return;
     show_gradient_squared = show;
     if (!show){
@@ -225,7 +228,7 @@ void Plot::setShowGradientSquared(bool show){
 }
 
 
-void Plot::setDetailedAnimation(QString descent_name){
+void PlotArea::setDetailedAnimation(QString descent_name){
     for (auto animation : all_animations){
         if (animation->name == descent_name){
             detailed_descent = animation;
@@ -242,7 +245,7 @@ void Plot::setDetailedAnimation(QString descent_name){
 
 
 
-void Plot::setAnimationMode(const int& view_type){
+void PlotArea::setAnimationMode(const int& view_type){
     // switch to overview mode
     m_timer.stop();
     if (view_type == 0){

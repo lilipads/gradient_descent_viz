@@ -9,16 +9,23 @@ void Item::setColor(QColor color){
 }
 
 
-void Item::addToGraph(Surface *graph){
+void Item::addToGraph(Q3DSurface *graph){
     if (m_graph == nullptr){
         m_graph = graph;
         m_graph->addCustomItem(this);
     }
 }
 
+
+QVector3D Item::plotScalingVector(){
+    return QVector3D(m_graph->axisX()->max() - m_graph->axisX()->min(), 0,
+                     m_graph->axisZ()->max() - m_graph->axisZ()->min());
+}
+
+
 LabeledItem::~LabeledItem(){
     if (m_label != nullptr){
-        // since QCustom3DLabe is a QObject, it will automatically take care
+        // since QCustom3DLabel is a QObject, it will automatically take care
         // of deleting its child pointers
         m_graph->releaseCustomItem(m_label);
     }
@@ -67,7 +74,7 @@ void LabeledItem::setPosition(const QVector3D & position){
 }
 
 
-Ball::Ball(Surface* graph, QColor color){
+Ball::Ball(Q3DSurface* graph, QColor color){
     setScaling(QVector3D(0.01f, 0.01f, 0.01f));
     setMeshFile(QStringLiteral(":/mesh/largesphere.obj"));
     setColor(color);
@@ -75,19 +82,19 @@ Ball::Ball(Surface* graph, QColor color){
 }
 
 
-Arrow::Arrow(Surface* graph) : LabeledItem(graph){
+Arrow::Arrow(Q3DSurface* graph) : LabeledItem(graph){
     setMeshFile(QStringLiteral(":/mesh/narrowarrow.obj"));
     setMagnitude(0);
     setColor(Qt::black);
 }
 
 
-Arrow::Arrow(Surface* graph, QVector3D vector): Arrow(graph) {
+Arrow::Arrow(Q3DSurface* graph, QVector3D vector): Arrow(graph) {
     setVector(vector);
 }
 
 
-Arrow::Arrow(Surface* graph, QVector3D vector, QColor color) {
+Arrow::Arrow(Q3DSurface* graph, QVector3D vector, QColor color) {
     m_graph = graph;
     setMeshFile(QStringLiteral(":/mesh/narrowarrow.obj"));
     setMagnitude(0);
@@ -110,9 +117,7 @@ void Arrow::setVector(QVector3D vector){
 
 void Arrow::setMagnitude(const float &magnitude){
     // if magnitude is negative, arrow extends in the other direction
-    float unitPlotPerGraph = (direction *
-        QVector3D(m_graph->maxX - m_graph->minX, 0, m_graph->maxZ - m_graph->minZ)
-        ).length();
+    float unitPlotPerGraph = (direction * plotScalingVector()).length();
 
     m_magnitude = magnitude;
     float magnitude_in_unit_arrow = magnitude * kUnitItemPerGraph / unitPlotPerGraph * kItemScale;
@@ -120,7 +125,7 @@ void Arrow::setMagnitude(const float &magnitude){
 }
 
 
-Square::Square(Surface* graph) : LabeledItem(){
+Square::Square(Q3DSurface* graph) : LabeledItem(){
     setMeshFile(QStringLiteral(":/mesh/plane.obj"));
     setScaling(QVector3D(0.1, 0.1, 0.1));
     QColor color = Qt::white;
@@ -131,8 +136,7 @@ Square::Square(Surface* graph) : LabeledItem(){
 }
 
 void Square::setArea(const float &area){
-    float unitPlotPerGraph = QVector3D(m_graph->maxX - m_graph->minX, 0,
-                                       m_graph->maxZ - m_graph->minZ).length();
+    float unitPlotPerGraph = plotScalingVector().length();
     float scale = sqrt(area) * kUnitItemPerGraph / unitPlotPerGraph * kItemScale;
     setScaling(QVector3D(scale, 1, scale) * 0.1);
     m_area = area;

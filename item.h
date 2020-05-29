@@ -3,8 +3,7 @@
 
 #include <QtDataVisualization/QCustom3DItem>
 #include <QtDataVisualization/QCustom3DLabel>
-
-#include "surface.h"
+#include <QtDataVisualization/Q3DSurface>
 
 using namespace QtDataVisualization;
 
@@ -20,24 +19,25 @@ const QVector3D kLabelOffset(0, 20, 0); // label's position relative to the obje
 
 class Item : public QCustom3DItem{
 public:
-    Item(Surface* graph) : m_graph(graph){
+    Item(Q3DSurface* graph) : m_graph(graph){
         m_graph->addCustomItem(this);
     }
     ~Item(){m_graph->releaseCustomItem(this);}
 
 protected:
     Item(){}
-    Surface* m_graph = nullptr;
+    Q3DSurface* m_graph = nullptr;
 
     void setColor(QColor color);
-    void addToGraph(Surface* graph);
+    void addToGraph(Q3DSurface* graph);
+    QVector3D plotScalingVector();
 };
 
 
 class LabeledItem : public Item
 {
 public:
-    LabeledItem(Surface* graph) : Item(graph){};
+    LabeledItem(Q3DSurface* graph) : Item(graph){};
     ~LabeledItem();
 
     void setLabel(const QString &text);
@@ -57,15 +57,15 @@ protected:
 class Ball : public Item
 {
 public:
-    Ball(Surface* graph, QColor color);
+    Ball(Q3DSurface* graph, QColor color);
 };
 
 
 class Arrow : public LabeledItem{
 public:
-    Arrow(Surface* graph);
-    Arrow(Surface* graph, QVector3D vector);
-    Arrow(Surface* graph, QVector3D vector, QColor color);
+    Arrow(Q3DSurface* graph);
+    Arrow(Q3DSurface* graph, QVector3D vector);
+    Arrow(Q3DSurface* graph, QVector3D vector, QColor color);
     void setVector(QVector3D vector);
     void setMagnitude(const float &magnitude);
 
@@ -87,7 +87,7 @@ private:
 
 class Square : public LabeledItem{
 public:
-    Square(Surface* graph);
+    Square(Q3DSurface* graph);
     void setArea(const float &area);
     float area(){return m_area;}
 

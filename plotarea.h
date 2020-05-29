@@ -7,19 +7,19 @@
 #include <QtDataVisualization/QSurfaceDataProxy>
 #include <QtDataVisualization/QHeightMapSurfaceDataProxy>
 #include <QtDataVisualization/QSurface3DSeries>
+#include <QtDataVisualization/Q3DSurface>
 #include <QtCore/QTimer>
 
-#include "surface.h"
 #include "gradientdescent.h"
 #include "animation.h"
 
 
-class Plot : public QObject
+class PlotArea : public QObject
 {
     Q_OBJECT
 public:
-    explicit Plot(Surface *surface);
-    ~Plot();
+    explicit PlotArea(Q3DSurface *surface);
+    ~PlotArea();
     std::unique_ptr<Animation> gradient_descent;
     std::unique_ptr<Animation> momentum;
     std::unique_ptr<Animation> ada_grad;
@@ -46,7 +46,7 @@ public Q_SLOTS:
 
 private:
     QTimer m_timer;
-    std::unique_ptr<Surface> m_graph;
+    std::unique_ptr<Q3DSurface> m_graph;
     std::unique_ptr<QSurfaceDataProxy> m_surfaceProxy;
     std::unique_ptr<QSurface3DSeries> m_surfaceSeries;
     bool detailedView = false;
