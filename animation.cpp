@@ -13,6 +13,10 @@ void Animation::triggerSimpleAnimation(int animation_speedup,
     if (show_adjusted_gradient) animateAdjustedGradient();
     if (has_momentum && show_momentum) animateMomentum();
     if (has_gradient_squared && show_gradient_squared) animateGradientSquared();
+    if (descent->isConverged()) {
+        cleanupAll();
+        ball->setVisible(true);
+    }
 }
 
 

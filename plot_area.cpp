@@ -138,7 +138,6 @@ void PlotArea::triggerAnimation() {
                 animation->triggerSimpleAnimation(animation_speedup,
                     show_gradient, show_adjusted_gradient, show_momentum,
                     show_gradient_squared);
-
         }
     }
     timer_counter = (timer_counter + 1) % animation_slowdown;
