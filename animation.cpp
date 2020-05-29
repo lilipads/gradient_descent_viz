@@ -2,24 +2,6 @@
 
 const float simpleAnimationArrowScale = 0.2;
 
-void AnimationHelper::setBallPositionOnSurface(Ball* ball, Point p){
-//    const float cutoff = 15;
-    float y = f(p.x, p.z);
-//    // hack: if the graph has a hole that's too deep, we can't see the ball
-//    // hardcode to lift the ball up
-//    if (f(p.x + stepX, p.z) - y > cutoff ||
-//        f(p.x, p.z + stepZ) - y > cutoff){
-//        y = std::max(f(p.x + stepX, p.z),
-//                f(p.x, p.z + stepZ) - y) - cutoff - 10;
-//    }
-//    else{
-//        // to make the ball look like it's above the surface
-//        y += kBallYOffset;
-//    }
-//    y += kBallYOffset;
-    ball->setPosition(QVector3D(p.x, y, p.z));
-}
-
 
 void Animation::triggerSimpleAnimation(int animation_speedup,
      bool show_gradient, bool show_momentum, bool show_gradient_squared){
@@ -28,11 +10,10 @@ void Animation::triggerSimpleAnimation(int animation_speedup,
     for (int i = 0; i < animation_speedup; i++)
         p = descent->takeGradientStep();
     if (!m_visible) return;
-    AnimationHelper::setBallPositionOnSurface(ball.get(), p);
+    ball->setPositionOnSurface(p.x, p.z);
     if (show_gradient) animateGradient();
     if (has_momentum && show_momentum) animateMomentum();
     if (has_gradient_squared && show_gradient_squared) animateGradientSquared();
-
 }
 
 
@@ -149,7 +130,7 @@ void Animation::prepareDetailedAnimation(){
     total_arrow->setVisible(false);
     QColor color = ball_color;
     color.setAlpha(100);
-    temporary_ball = std::unique_ptr<Ball>(new Ball(m_graph, color));
+    temporary_ball = std::unique_ptr<Ball>(new Ball(m_graph, color, f));
     detailed_animation_prepared = true;
     timer->start(15);
 }
@@ -173,7 +154,7 @@ void GradientDescentAnimation::animateStep(){
         arrowZ->setVisible(false);
         total_arrow->setVisible(false);
         Point p = descent->position();
-        AnimationHelper::setBallPositionOnSurface(ball.get(), p);
+        ball->setPositionOnSurface(p.x, p.z);;
         break;
     }
     case 1: // show the x and z direction gradients
@@ -200,8 +181,7 @@ void GradientDescentAnimation::animateStep(){
     }
     case 3: // draw an imaginary ball of the future position
     {
-        AnimationHelper::setBallPositionOnSurface(temporary_ball.get(),
-                                         descent->position());
+        ball->setPositionOnSurface(descent->position().x, descent->position().z);
         temporary_ball->setPosition(QVector3D(
                                         descent->position().x,
                                         ball->position().y(),
@@ -237,7 +217,7 @@ void MomentumAnimation::animateStep(){
     case 0: // the ball and momentum arrows
     {
         Point p = descent->position();
-        AnimationHelper::setBallPositionOnSurface(ball.get(), p);
+        ball->setPositionOnSurface(p.x, p.z);
 
         momentumArrowX->setLabel("momentum x");
         momentumArrowZ->setLabel("momentum z");
@@ -317,8 +297,7 @@ void MomentumAnimation::animateStep(){
     }
     case 5: // draw an imaginary ball of the future position
     {
-        AnimationHelper::setBallPositionOnSurface(temporary_ball.get(),
-                                         descent->position());
+        ball->setPositionOnSurface(descent->position().x, descent->position().z);
         temporary_ball->setPosition(QVector3D(
                                         descent->position().x,
                                         ball->position().y(),
@@ -353,7 +332,7 @@ void AdaGradAnimation::animateStep(){
     case 0: // just show the ball and sum of squares
     {
         Point p = descent->position();
-        AnimationHelper::setBallPositionOnSurface(ball.get(), p);
+        ball->setPositionOnSurface(p.x, p.z);
 
         squareX->setLabel("sum of gradient_x^2");
         squareZ->setLabel("sum of gradient_z^2");
@@ -417,8 +396,7 @@ void AdaGradAnimation::animateStep(){
     }
     case 5: // draw an imaginary ball of the future position
     {
-        AnimationHelper::setBallPositionOnSurface(temporary_ball.get(),
-                                         descent->position());
+        ball->setPositionOnSurface(descent->position().x, descent->position().z);
         temporary_ball->setPosition(QVector3D(
                                         descent->position().x,
                                         ball->position().y(),
@@ -454,7 +432,7 @@ void RMSPropAnimation::animateStep(){
     case 0: // just show the ball and sum of squares
     {
         Point p = descent->position();
-        AnimationHelper::setBallPositionOnSurface(ball.get(), p);
+        ball->setPositionOnSurface(p.x, p.z);
 
         squareX->setLabel("sum of gradient_x^2");
         squareZ->setLabel("sum of gradient_z^2");
@@ -527,8 +505,7 @@ void RMSPropAnimation::animateStep(){
     }
     case 6: // draw an imaginary ball of the future position
     {
-        AnimationHelper::setBallPositionOnSurface(temporary_ball.get(),
-                                         descent->position());
+        ball->setPositionOnSurface(descent->position().x, descent->position().z);
         temporary_ball->setPosition(QVector3D(
                                         descent->position().x,
                                         ball->position().y(),
@@ -570,7 +547,7 @@ void AdamAnimation::animateStep(){
     case 0: // the ball and momentum arrows
     {
         Point p = descent->position();
-        AnimationHelper::setBallPositionOnSurface(ball.get(), p);
+        ball->setPositionOnSurface(p.x, p.z);
 
         momentumArrowZ->setLabel("momentum z");
         momentumArrowX->setPosition(ball->position());
@@ -591,7 +568,7 @@ void AdamAnimation::animateStep(){
     case 1: // decay the momentum
     {
         Point p = descent->position();
-        AnimationHelper::setBallPositionOnSurface(ball.get(), p);
+        ball->setPositionOnSurface(p.x, p.z);
 
         momentumArrowX->setMagnitude(momentumArrowX->magnitude() *
                                      dynamic_cast<Adam*> (descent.get()) ->beta1);
@@ -687,8 +664,7 @@ void AdamAnimation::animateStep(){
     }
     case 8: // draw an imaginary ball of the future position
     {
-        AnimationHelper::setBallPositionOnSurface(temporary_ball.get(),
-                                         descent->position());
+        ball->setPositionOnSurface(descent->position().x, descent->position().z);
         temporary_ball->setPosition(QVector3D(
                                         descent->position().x,
                                         ball->position().y(),

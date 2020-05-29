@@ -113,6 +113,7 @@ void PlotArea::initializeSurface() {
     m_surfaceSeries->setBaseGradient(gr);
     m_surfaceSeries->setColorStyle(Q3DTheme::ColorStyleRangeGradient);
     m_graph->addSeries(m_surfaceSeries.get());
+    m_graph->axisY()->setMin(m_graph->axisY()->min());
 }
 
 

@@ -18,10 +18,6 @@ const float stepZ = 4. / 49;
 const int kInterval = 1000; // seconds in between steps
 const QColor momentum_color = Qt::magenta;
 
-namespace AnimationHelper {
-void setBallPositionOnSurface(Ball* ball, Point p);
-}
-
 
 class Animation
 {
@@ -90,7 +86,7 @@ public:
         name = "Gradient Descent";
         num_states = 4;
         ball_color = Qt::cyan;
-        ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color));
+        ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color, f));
         descent = std::unique_ptr<GradientDescent>(new VanillaGradientDescent);
     };
 
@@ -110,7 +106,7 @@ public:
         name = "Momentum";
         num_states = 6;
         ball_color = Qt::magenta;
-        ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color));
+        ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color, f));
         descent = std::unique_ptr<GradientDescent>(new Momentum);
         has_momentum = true;
     };
@@ -133,7 +129,7 @@ public:
         name = "Adagrad";
         num_states = 6;
         ball_color = Qt::white;
-        ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color));
+        ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color, f));
         descent = std::unique_ptr<GradientDescent>(new AdaGrad);
         has_gradient_squared = true;
     };
@@ -159,7 +155,7 @@ public:
         name = "RMSprop";
         num_states = 7;
         ball_color = Qt::green;
-        ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color));
+        ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color, f));
         descent = std::unique_ptr<GradientDescent>(new RMSProp);
         has_gradient_squared = true;
     };
@@ -184,7 +180,7 @@ public:
         name = "Adam";
         num_states = 9;
         ball_color = Qt::blue;
-        ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color));
+        ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color, f));
         descent = std::unique_ptr<GradientDescent>(new Adam);
         has_momentum = true;
         has_gradient_squared = true;

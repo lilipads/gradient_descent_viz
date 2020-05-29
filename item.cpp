@@ -74,13 +74,21 @@ void LabeledItem::setPosition(const QVector3D & position){
 }
 
 
-Ball::Ball(Q3DSurface* graph, QColor color){
+Ball::Ball(Q3DSurface* graph, QColor color, double (*_f) (double, double))
+    : f(_f)
+{
     setScaling(QVector3D(0.01f, 0.01f, 0.01f));
     setMeshFile(QStringLiteral(":/mesh/largesphere.obj"));
     setColor(color);
     addToGraph(graph);
 }
 
+
+void Ball::setPositionOnSurface(double x, double z){
+    float yOffset = kBallRadiusPerGraph * (
+                m_graph->axisY()->max() - m_graph->axisY()->min());
+    setPosition(QVector3D(x, f(x, z) + yOffset, z));
+}
 
 Arrow::Arrow(Q3DSurface* graph) : LabeledItem(graph){
     setMeshFile(QStringLiteral(":/mesh/narrowarrow.obj"));

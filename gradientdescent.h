@@ -68,9 +68,7 @@ protected:
 
 class AdaGrad : public GradientDescent {
 public:
-    AdaGrad() : grad_sum_of_squared(0., 0.){
-        learning_rate = 1.;
-    }
+    AdaGrad() : grad_sum_of_squared(0., 0.){}
     Point gradSumOfSquared(){return grad_sum_of_squared;}
 
 protected:

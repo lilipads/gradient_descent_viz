@@ -5,14 +5,17 @@
 #include <QtDataVisualization/QCustom3DLabel>
 #include <QtDataVisualization/Q3DSurface>
 
+
 using namespace QtDataVisualization;
 
 // for 1 unit of magnitude, the rendered item spans this many units on the graph
 // one might want to change this if gradient arrows rendered in 1:1 ratio is too
 // big / small to see.
 const float kItemScale = 1;
-// how many unit arrows in one side of the graph
-const float kUnitItemPerGraph = 110;
+// how many items fits in one side of the graph
+// don't change these. These are based on object size given in the mesh files
+const float kUnitItemPerGraph = 110; // for arrows and squares
+const float kBallRadiusPerGraph = 0.0406;
 // TODO: if this is absolute, doesn't work when graph is scaled
 const QVector3D kLabelOffset(0, 20, 0); // label's position relative to the object's position
 
@@ -57,7 +60,12 @@ protected:
 class Ball : public Item
 {
 public:
-    Ball(Q3DSurface* graph, QColor color);
+    // _f: function that defines the 3d surface the ball rolls on
+    Ball(Q3DSurface* graph, QColor color, double (*_f) (double, double));
+    void setPositionOnSurface(double x, double z);
+
+protected:
+    double (*f) (double, double);
 };
 
 
