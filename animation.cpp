@@ -139,14 +139,11 @@ void Animation::prepareDetailedAnimation(){
     ball->setVisible(true);
     arrowX = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(-1, 0, 0), gradient_color));
     arrowX->setMagnitude(0);
-    arrowX->setLabel("gradient in x");
     arrowX->setVisible(false);
     arrowZ = std::unique_ptr<Arrow>(new Arrow(m_graph, QVector3D(0, 0, -1), gradient_color));
     arrowZ->setMagnitude(0);
-    arrowZ->setLabel("gradient in z");
     arrowZ->setVisible(false);
     total_arrow = std::unique_ptr<Arrow>(new Arrow(m_graph));
-    total_arrow->setLabel("gradient step");
     total_arrow->setVisible(false);
     QColor color = ball_color;
     color.setAlpha(100);
@@ -218,17 +215,13 @@ void MomentumAnimation::prepareDetailedAnimation(){
     Animation::prepareDetailedAnimation();
     momentumArrowX = std::unique_ptr<Arrow>(
                 new Arrow(m_graph, QVector3D(-1, 0, 0), ball_color));
-    momentumArrowX->setLabel("momentum x");
     momentumArrowX->setMagnitude(0);
     momentumArrowX->setPosition(ball->position());
-    momentumArrowX->setLabelVisibility(false);
 
     momentumArrowZ = std::unique_ptr<Arrow>(
                 new Arrow(m_graph, QVector3D(0, 0, -1), ball_color));
-    momentumArrowZ->setLabel("momentum z");
     momentumArrowZ->setMagnitude(0);
     momentumArrowZ->setPosition(ball->position());
-    momentumArrowZ->setLabelVisibility(false);
 }
 
 
@@ -239,15 +232,11 @@ void MomentumAnimation::animateStep(){
         Point p = descent->position();
         ball->setPositionOnSurface(p.x, p.z);
 
-        momentumArrowX->setLabel("momentum x");
-        momentumArrowZ->setLabel("momentum z");
         momentumArrowX->setPosition(ball->position());
         momentumArrowZ->setPosition(ball->position());
 
         temporary_ball->setVisible(false);
         total_arrow->setVisible(false);
-        momentumArrowX->setLabelVisibility(!in_initial_state);
-        momentumArrowZ->setLabelVisibility(!in_initial_state);
 
         break;
     }
@@ -257,12 +246,9 @@ void MomentumAnimation::animateStep(){
                                      dynamic_cast<Momentum*> (descent.get()) ->decay_rate);
         momentumArrowZ->setMagnitude(momentumArrowZ->magnitude() *
                                      dynamic_cast<Momentum*> (descent.get()) ->decay_rate);
-        momentumArrowX->setLabel("decay momentum");
 
         temporary_ball->setVisible(false);
         total_arrow->setVisible(false);
-        momentumArrowX->setLabelVisibility(!in_initial_state);
-        momentumArrowZ->setLabelVisibility(false);
 
         in_initial_state = false;
 
@@ -288,8 +274,6 @@ void MomentumAnimation::animateStep(){
             arrowZ->setPosition(ball->position());
         }
 
-        momentumArrowX->setLabelVisibility(false);
-        momentumArrowZ->setLabelVisibility(false);
         arrowX->setVisible(true);
         arrowZ->setVisible(true);
         break;
@@ -309,7 +293,6 @@ void MomentumAnimation::animateStep(){
         Point delta = descent->delta();
         momentumArrowX->setMagnitude(-delta.x / descent->learning_rate);
         momentumArrowZ->setMagnitude(-delta.z / descent->learning_rate);
-        momentumArrowX->setLabel("momentum for next iteration");
 
         arrowX->setVisible(false);
         arrowZ->setVisible(false);
@@ -333,7 +316,6 @@ void MomentumAnimation::animateStep(){
 void AdaGradAnimation::prepareDetailedAnimation(){
     Animation::prepareDetailedAnimation();
     squareX = std::unique_ptr<Square>(new Square(m_graph));
-    squareX->setLabel("sum of gradient squared in x");
     squareX->setArea(0);
     QQuaternion z_rotation = QQuaternion::fromAxisAndAngle(0, 0, 1, 90);
     QQuaternion y_rotation = QQuaternion::fromAxisAndAngle(1, 0, 0, -90);
@@ -341,7 +323,6 @@ void AdaGradAnimation::prepareDetailedAnimation(){
     squareX->setVisible(false);
 
     squareZ = std::unique_ptr<Square>(new Square(m_graph));
-    squareZ->setLabel("sum of gradient squared in z");
     squareZ->setArea(0);
     squareZ->setVisible(false);
 }
@@ -354,8 +335,6 @@ void AdaGradAnimation::animateStep(){
         Point p = descent->position();
         ball->setPositionOnSurface(p.x, p.z);
 
-        squareX->setLabel("sum of gradient_x^2");
-        squareZ->setLabel("sum of gradient_z^2");
         squareX->setPosition(ball->position());
         squareZ->setPosition(ball->position());
 
@@ -363,8 +342,6 @@ void AdaGradAnimation::animateStep(){
         total_arrow->setVisible(false);
         arrowX->setVisible(false);
         arrowZ->setVisible(false);
-        squareX->setLabelVisibility(!in_initial_state);
-        squareZ->setLabelVisibility(!in_initial_state);
         break;
     }
     case 1: // show the x and z direction gradients
@@ -372,12 +349,9 @@ void AdaGradAnimation::animateStep(){
         Point grad(descent->gradX(), descent->gradZ());
         arrowX->setMagnitude(grad.x * arrowScale);
         arrowZ->setMagnitude(grad.z * arrowScale);
-        arrowX->setLabel("gradient in X");
         arrowX->setPosition(ball->position());
         arrowZ->setPosition(ball->position());
 
-        squareX->setLabelVisibility(false);
-        squareZ->setLabelVisibility(false);
         arrowX->setVisible(true);
         arrowZ->setVisible(true);
         in_initial_state = false;
@@ -388,18 +362,14 @@ void AdaGradAnimation::animateStep(){
         descent->takeGradientStep();
         squareX->setArea(dynamic_cast<AdaGrad*> (descent.get())->gradSumOfSquared().x);
         squareZ->setArea(dynamic_cast<AdaGrad*> (descent.get())->gradSumOfSquared().z);
-        squareX->setLabel("add onto current gradient^2");
         squareX->setVisible(true);
         squareZ->setVisible(true);
-        arrowX->setLabelVisibility(false);
-        arrowZ->setLabelVisibility(false);
         break;
     }
     case 3: // show delta arrows shrink wrt gradient arrows
     {
         arrowX->setMagnitude(-descent->delta().x / descent->learning_rate * arrowScale);
         arrowZ->setMagnitude(-descent->delta().z / descent->learning_rate * arrowScale);
-        arrowX->setLabel("divide by the side of the square");
         break;
     }
     case 4: // show the composite of gradients
@@ -409,8 +379,6 @@ void AdaGradAnimation::animateStep(){
                                descent->learning_rate * arrowScale);
         total_arrow->setPosition(ball->position());
         total_arrow->setVisible(true);
-        squareX->setLabelVisibility(false);
-        arrowX->setLabelVisibility(false);
 
         break;
     }
@@ -433,7 +401,6 @@ void AdaGradAnimation::animateStep(){
 void RMSPropAnimation::prepareDetailedAnimation(){
     Animation::prepareDetailedAnimation();
     squareX = std::unique_ptr<Square>(new Square(m_graph));
-    squareX->setLabel("sum of gradient squared in x");
     squareX->setArea(0);
     QQuaternion z_rotation = QQuaternion::fromAxisAndAngle(0, 0, 1, 90);
     QQuaternion y_rotation = QQuaternion::fromAxisAndAngle(1, 0, 0, -90);
@@ -441,7 +408,6 @@ void RMSPropAnimation::prepareDetailedAnimation(){
     squareX->setVisible(false);
 
     squareZ = std::unique_ptr<Square>(new Square(m_graph));
-    squareZ->setLabel("sum of gradient squared in z");
     squareZ->setArea(0);
     squareZ->setVisible(false);
 }
@@ -454,8 +420,6 @@ void RMSPropAnimation::animateStep(){
         Point p = descent->position();
         ball->setPositionOnSurface(p.x, p.z);
 
-        squareX->setLabel("sum of gradient_x^2");
-        squareZ->setLabel("sum of gradient_z^2");
         squareX->setPosition(ball->position());
         squareZ->setPosition(ball->position());
 
@@ -463,8 +427,6 @@ void RMSPropAnimation::animateStep(){
         total_arrow->setVisible(false);
         arrowX->setVisible(false);
         arrowZ->setVisible(false);
-        squareX->setLabelVisibility(!in_initial_state);
-        squareZ->setLabelVisibility(!in_initial_state);
         break;
     }
     case 1: // show the x and z direction gradients
@@ -472,12 +434,9 @@ void RMSPropAnimation::animateStep(){
         Point grad(descent->gradX(), descent->gradZ());
         arrowX->setMagnitude(grad.x * arrowScale);
         arrowZ->setMagnitude(grad.z * arrowScale);
-        arrowX->setLabel("gradient in X");
         arrowX->setPosition(ball->position());
         arrowZ->setPosition(ball->position());
 
-        squareX->setLabelVisibility(false);
-        squareZ->setLabelVisibility(false);
         arrowX->setVisible(true);
         arrowZ->setVisible(true);
 
@@ -487,12 +446,8 @@ void RMSPropAnimation::animateStep(){
     {
         squareX->setArea(squareX->area() * dynamic_cast<RMSProp*> (descent.get())->decay_rate);
         squareZ->setArea(squareZ->area() * dynamic_cast<RMSProp*> (descent.get())->decay_rate);
-        squareX->setLabel("decay gradient^2");
-        squareX->setLabelVisibility(!in_initial_state);
         squareX->setVisible(true);
         squareZ->setVisible(true);
-        arrowX->setLabelVisibility(false);
-        arrowZ->setLabelVisibility(false);
         in_initial_state = false;
         break;
     }
@@ -501,14 +456,12 @@ void RMSPropAnimation::animateStep(){
         descent->takeGradientStep();
         squareX->setArea(dynamic_cast<RMSProp*> (descent.get())->decayedGradSumOfSquared().x);
         squareZ->setArea(dynamic_cast<RMSProp*> (descent.get())->decayedGradSumOfSquared().z);
-        squareX->setLabel("add on current gradient^2");
         break;
     }
     case 4: // show delta arrows shrink wrt gradient arrows
     {
         arrowX->setMagnitude(-descent->delta().x / descent->learning_rate * arrowScale);
         arrowZ->setMagnitude(-descent->delta().z / descent->learning_rate * arrowScale);
-        arrowX->setLabel("divide by the side of the square");
         break;
     }
     case 5: // show the composite of gradients
@@ -518,9 +471,6 @@ void RMSPropAnimation::animateStep(){
                                descent->learning_rate * arrowScale);
         total_arrow->setPosition(ball->position());
         total_arrow->setVisible(true);
-        squareX->setLabelVisibility(false);
-        arrowX->setLabelVisibility(false);
-
         break;
     }
     case 6: // draw an imaginary ball of the future position
@@ -569,20 +519,15 @@ void AdamAnimation::animateStep(){
         Point p = descent->position();
         ball->setPositionOnSurface(p.x, p.z);
 
-        momentumArrowZ->setLabel("momentum z");
         momentumArrowX->setPosition(ball->position());
         momentumArrowZ->setPosition(ball->position());
-        squareZ->setLabel("sum of gradient_z^2");
         squareX->setPosition(ball->position());
         squareZ->setPosition(ball->position());
 
         temporary_ball->setVisible(false);
         total_arrow->setVisible(false);
-        momentumArrowZ->setLabelVisibility(!in_initial_state);
         arrowX->setVisible(false);
         arrowZ->setVisible(false);
-        squareZ->setLabelVisibility(!in_initial_state);
-
         break;
     }
     case 1: // decay the momentum
@@ -594,27 +539,20 @@ void AdamAnimation::animateStep(){
                                      dynamic_cast<Adam*> (descent.get()) ->beta1);
         momentumArrowZ->setMagnitude(momentumArrowZ->magnitude() *
                                      dynamic_cast<Adam*> (descent.get()) ->beta1);
-        momentumArrowZ->setLabel("decay momentum");
         momentumArrowX->setPosition(ball->position());
         momentumArrowZ->setPosition(ball->position());
 
         temporary_ball->setVisible(false);
         total_arrow->setVisible(false);
-        momentumArrowZ->setLabelVisibility(!in_initial_state);
-        squareZ->setLabelVisibility(false);
-
         break;
     }
     case 2: // show sum of squares decaying
     {
         squareX->setArea(squareX->area() * dynamic_cast<Adam*> (descent.get())->beta2);
         squareZ->setArea(squareZ->area() * dynamic_cast<Adam*> (descent.get())->beta2);
-        squareZ->setLabel("decay gradient^2");
 
-        squareZ->setLabelVisibility(!in_initial_state);
         squareX->setVisible(true);
         squareZ->setVisible(true);
-        momentumArrowZ->setLabelVisibility(false);
         in_initial_state = false;
         break;
     }
@@ -638,11 +576,8 @@ void AdamAnimation::animateStep(){
             arrowZ->setPosition(ball->position());
         }
 
-        squareZ->setLabelVisibility(false);
-        momentumArrowZ->setLabelVisibility(false);
         arrowX->setVisible(true);
         arrowZ->setVisible(true);
-        arrowZ->setLabelVisibility(true);
         break;
     }
     case 4: // update momentum
@@ -650,7 +585,6 @@ void AdamAnimation::animateStep(){
         descent->takeGradientStep();
         momentumArrowX->setMagnitude(dynamic_cast<Adam*> (descent.get())->decayedGradSum().x);
         momentumArrowZ->setMagnitude(dynamic_cast<Adam*> (descent.get())->decayedGradSum().z);
-        momentumArrowZ->setLabel("add gradient to momentum");
 
         arrowX->setVisible(false);
         arrowZ->setVisible(false);
@@ -660,16 +594,12 @@ void AdamAnimation::animateStep(){
     {
         squareX->setArea(dynamic_cast<Adam*> (descent.get())->decayedGradSumOfSquared().x);
         squareZ->setArea(dynamic_cast<Adam*> (descent.get())->decayedGradSumOfSquared().z);
-        squareZ->setLabel("add on current gradient^2");
-        momentumArrowZ->setLabelVisibility(false);
         break;
     }
     case 6: // show delta arrows shrink wrt gradient arrows
     {
         momentumArrowX->setMagnitude(-descent->delta().x / descent->learning_rate * arrowScale);
         momentumArrowZ->setMagnitude(-descent->delta().z / descent->learning_rate * arrowScale);
-        momentumArrowZ->setLabel("divide momentum by the side of the square");
-        squareZ->setLabelVisibility(false);
         break;
     }
     case 7: // show the composite of gradients
@@ -678,7 +608,6 @@ void AdamAnimation::animateStep(){
         total_arrow->setVector(QVector3D(delta.x, 0, delta.z) / descent->learning_rate);
         total_arrow->setPosition(ball->position());
 
-        momentumArrowZ->setLabelVisibility(false);
         total_arrow->setVisible(true);
         break;
     }

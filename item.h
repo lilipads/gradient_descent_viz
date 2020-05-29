@@ -16,8 +16,6 @@ const float kItemScale = 1;
 // don't change these. These are based on object size given in the mesh files
 const float kUnitItemPerGraph = 110; // for arrows and squares
 const float kBallRadiusPerGraph = 24.63;
-// TODO: if this is absolute, doesn't work when graph is scaled
-const QVector3D kLabelOffset(0, 20, 0); // label's position relative to the object's position
 
 
 class Item : public QCustom3DItem{
@@ -37,26 +35,6 @@ protected:
 };
 
 
-class LabeledItem : public Item
-{
-public:
-    LabeledItem(Q3DSurface* graph) : Item(graph){};
-    ~LabeledItem();
-
-    void setLabel(const QString &text);
-    void setLabelVisibility(bool visible);
-    void setVisible(bool visible);
-    void setPosition(const QVector3D& position);
-
-protected:
-    QCustom3DLabel* m_label = nullptr;
-    bool label_visibility = false;
-
-    LabeledItem(){}
-    virtual QVector3D label_offset() {return kLabelOffset;}
-};
-
-
 class Ball : public Item
 {
 public:
@@ -69,7 +47,7 @@ protected:
 };
 
 
-class Arrow : public LabeledItem{
+class Arrow : public Item{
 public:
     Arrow(Q3DSurface* graph);
     Arrow(Q3DSurface* graph, QVector3D vector);
@@ -89,11 +67,9 @@ public:
 private:
     QVector3D direction = QVector3D(0, 1, 0);
     float m_magnitude = 1.0;
-    QVector3D label_offset() {return
-                LabeledItem::label_offset() + renderedVectorInPlotUnit() / 2;}
 };
 
-class Square : public LabeledItem{
+class Square : public Item{
 public:
     Square(Q3DSurface* graph);
     void setArea(const float &area);
@@ -101,8 +77,6 @@ public:
 
 private:
     float m_area;
-    QVector3D label_offset(){return QVector3D(0, 1, -1) * sqrt(area()) * kItemScale
-                + LabeledItem::label_offset();}
 };
 
 #endif // ITEM_H

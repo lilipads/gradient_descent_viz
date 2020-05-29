@@ -23,57 +23,6 @@ QVector3D Item::plotScalingVector(){
 }
 
 
-LabeledItem::~LabeledItem(){
-    if (m_label != nullptr){
-        // since QCustom3DLabel is a QObject, it will automatically take care
-        // of deleting its child pointers
-        m_graph->releaseCustomItem(m_label);
-    }
-}
-
-void LabeledItem::setLabel(const QString &text){
-    // the graph somehow doesn't update the text on its own
-    // so we need this roundabout way of removing the label
-    // and reinitializing it
-    if (m_label != nullptr){
-        m_graph->removeCustomItem(m_label);
-    }
-
-    m_label = new QCustom3DLabel;
-    m_label->setFacingCamera(true);
-    m_label->setScaling(QVector3D(1., 1., 1.));
-    m_label->setVisible(label_visibility && this->isVisible());
-
-    m_label->setText(text);
-    label_visibility = true;
-    m_label->setVisible(label_visibility && this->isVisible());
-    m_label->setPosition(position() + label_offset());
-
-    m_graph->addCustomItem(m_label);
-}
-
-
-void LabeledItem::setVisible(bool visible){
-    QCustom3DItem::setVisible(visible);
-    if (m_label != nullptr)
-        m_label->setVisible(label_visibility && isVisible());
-}
-
-
-void LabeledItem::setLabelVisibility(bool visible){
-    label_visibility = visible;
-    if (m_label != nullptr)
-        m_label->setVisible(visible && this->isVisible());
-}
-
-
-void LabeledItem::setPosition(const QVector3D & position){
-    QCustom3DItem::setPosition(position);
-    if (m_label != nullptr)
-        m_label->setPosition(position + label_offset());
-}
-
-
 Ball::Ball(Q3DSurface* graph, QColor color, double (*_f) (double, double))
     : f(_f)
 {
@@ -90,7 +39,7 @@ void Ball::setPositionOnSurface(double x, double z){
     setPosition(QVector3D(x, f(x, z) + yOffset, z));
 }
 
-Arrow::Arrow(Q3DSurface* graph) : LabeledItem(graph){
+Arrow::Arrow(Q3DSurface* graph) : Item(graph){
     setMeshFile(QStringLiteral(":/mesh/narrowarrow.obj"));
     setMagnitude(0);
     setColor(Qt::black);
@@ -139,7 +88,7 @@ void Arrow::setMagnitude(const float &magnitude){
 }
 
 
-Square::Square(Q3DSurface* graph) : LabeledItem(){
+Square::Square(Q3DSurface* graph) : Item(){
     setMeshFile(QStringLiteral(":/mesh/plane.obj"));
     setScaling(QVector3D(0.1, 0.1, 0.1));
     QColor color = Qt::white;
