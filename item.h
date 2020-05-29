@@ -72,11 +72,13 @@ private:
 class Square : public Item{
 public:
     Square(Q3DSurface* graph);
+    Square(Q3DSurface* graph, QString direction);
     void setArea(const float &area);
     float area(){return m_area;}
 
 private:
     float m_area;
+    float is_x_direction = false;
 };
 
 #endif // ITEM_H

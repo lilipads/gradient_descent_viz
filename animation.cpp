@@ -55,14 +55,10 @@ void Animation::animateMomentum(){
 
 
 void Animation::animateGradientSquared(){
-    if (squareX == nullptr){
-        squareX = std::unique_ptr<Square>(new Square(m_graph));
-        QQuaternion z_rotation = QQuaternion::fromAxisAndAngle(0, 0, 1, 90);
-        QQuaternion y_rotation = QQuaternion::fromAxisAndAngle(1, 0, 0, -90);
-        squareX->setRotation(z_rotation * y_rotation);
-    }
+    if (squareX == nullptr)
+        squareX = std::unique_ptr<Square>(new Square(m_graph, "x"));
     if (squareZ == nullptr)
-        squareZ = std::unique_ptr<Square>(new Square(m_graph));
+        squareZ = std::unique_ptr<Square>(new Square(m_graph, "z"));
 
     squareX->setArea(gradSumOfSquared().x * pow(simpleAnimationArrowScale, 2));
     squareZ->setArea(gradSumOfSquared().z * pow(simpleAnimationArrowScale, 2));
@@ -107,6 +103,28 @@ void Animation::cleanupAll(){
 }
 
 
+void Animation::initializeMomentumArrows(){
+    momentumArrowX = std::unique_ptr<Arrow>(
+                new Arrow(m_graph, QVector3D(-1, 0, 0), momentum_color));
+    momentumArrowX->setMagnitude(0);
+
+    momentumArrowZ = std::unique_ptr<Arrow>(
+                new Arrow(m_graph, QVector3D(0, 0, -1), momentum_color));
+    momentumArrowZ->setMagnitude(0);
+}
+
+
+void Animation::initializeSquares(){
+    squareX = std::unique_ptr<Square>(new Square(m_graph, "x"));
+    squareX->setArea(0);
+    squareX->setVisible(false);
+
+    squareZ = std::unique_ptr<Square>(new Square(m_graph, "z"));
+    squareZ->setArea(0);
+    squareZ->setVisible(false);
+}
+
+
 void Animation::setVisible(bool visible){ 
     if (visible != m_visible){
         m_visible = visible;
@@ -122,6 +140,7 @@ void Animation::setVisible(bool visible){
         if (squareZ != nullptr) squareZ->setVisible(visible);
     }
 }
+
 
 QString Animation::triggerDetailedAnimation(int animation_speedup){
     if (!detailed_animation_prepared){
@@ -150,6 +169,9 @@ void Animation::prepareDetailedAnimation(){
     color.setAlpha(100);
     temporary_ball = std::unique_ptr<Ball>(new Ball(m_graph, color, f));
     detailed_animation_prepared = true;
+
+    if (has_momentum) initializeMomentumArrows();
+    if (has_gradient_squared) initializeSquares();
     timer->start(15);
 }
 
@@ -199,7 +221,6 @@ QString GradientDescentAnimation::animateStep(){
     }
     case 3: // draw an imaginary ball of the future position
     {
-        ball->setPositionOnSurface(descent->position().x, descent->position().z);
         temporary_ball->setPosition(QVector3D(
                                         descent->position().x,
                                         ball->position().y(),
@@ -210,20 +231,6 @@ QString GradientDescentAnimation::animateStep(){
     }
     }
     return "";
-}
-
-
-void MomentumAnimation::prepareDetailedAnimation(){
-    Animation::prepareDetailedAnimation();
-    momentumArrowX = std::unique_ptr<Arrow>(
-                new Arrow(m_graph, QVector3D(-1, 0, 0), ball_color));
-    momentumArrowX->setMagnitude(0);
-    momentumArrowX->setPosition(ball->position());
-
-    momentumArrowZ = std::unique_ptr<Arrow>(
-                new Arrow(m_graph, QVector3D(0, 0, -1), ball_color));
-    momentumArrowZ->setMagnitude(0);
-    momentumArrowZ->setPosition(ball->position());
 }
 
 
@@ -303,7 +310,6 @@ QString MomentumAnimation::animateStep(){
 
     case 5: // draw an imaginary ball of the future position
     {
-        ball->setPositionOnSurface(descent->position().x, descent->position().z);
         temporary_ball->setPosition(QVector3D(
                                         descent->position().x,
                                         ball->position().y(),
@@ -314,21 +320,6 @@ QString MomentumAnimation::animateStep(){
     }
     }
     return "";
-}
-
-
-void AdaGradAnimation::prepareDetailedAnimation(){
-    Animation::prepareDetailedAnimation();
-    squareX = std::unique_ptr<Square>(new Square(m_graph));
-    squareX->setArea(0);
-    QQuaternion z_rotation = QQuaternion::fromAxisAndAngle(0, 0, 1, 90);
-    QQuaternion y_rotation = QQuaternion::fromAxisAndAngle(1, 0, 0, -90);
-    squareX->setRotation(z_rotation * y_rotation);
-    squareX->setVisible(false);
-
-    squareZ = std::unique_ptr<Square>(new Square(m_graph));
-    squareZ->setArea(0);
-    squareZ->setVisible(false);
 }
 
 
@@ -390,7 +381,6 @@ QString AdaGradAnimation::animateStep(){
     }
     case 5: // draw an imaginary ball of the future position
     {
-        ball->setPositionOnSurface(descent->position().x, descent->position().z);
         temporary_ball->setPosition(QVector3D(
                                         descent->position().x,
                                         ball->position().y(),
@@ -401,22 +391,6 @@ QString AdaGradAnimation::animateStep(){
     }
     }
     return "";
-}
-
-
-
-void RMSPropAnimation::prepareDetailedAnimation(){
-    Animation::prepareDetailedAnimation();
-    squareX = std::unique_ptr<Square>(new Square(m_graph));
-    squareX->setArea(0);
-    QQuaternion z_rotation = QQuaternion::fromAxisAndAngle(0, 0, 1, 90);
-    QQuaternion y_rotation = QQuaternion::fromAxisAndAngle(1, 0, 0, -90);
-    squareX->setRotation(z_rotation * y_rotation);
-    squareX->setVisible(false);
-
-    squareZ = std::unique_ptr<Square>(new Square(m_graph));
-    squareZ->setArea(0);
-    squareZ->setVisible(false);
 }
 
 
@@ -485,7 +459,6 @@ QString RMSPropAnimation::animateStep(){
     }
     case 6: // draw an imaginary ball of the future position
     {
-        ball->setPositionOnSurface(descent->position().x, descent->position().z);
         temporary_ball->setPosition(QVector3D(
                                         descent->position().x,
                                         ball->position().y(),
@@ -497,30 +470,6 @@ QString RMSPropAnimation::animateStep(){
     }
     return "";
 }
-
-
-void AdamAnimation::prepareDetailedAnimation(){
-    Animation::prepareDetailedAnimation();
-    momentumArrowX = std::unique_ptr<Arrow>(
-                new Arrow(m_graph, QVector3D(-1, 0, 0), momentum_color));
-    momentumArrowX->setMagnitude(0);
-
-    momentumArrowZ = std::unique_ptr<Arrow>(
-                new Arrow(m_graph, QVector3D(0, 0, -1), momentum_color));
-    momentumArrowZ->setMagnitude(0);
-
-    squareX = std::unique_ptr<Square>(new Square(m_graph));
-    squareX->setArea(0);
-    QQuaternion z_rotation = QQuaternion::fromAxisAndAngle(0, 0, 1, 90);
-    QQuaternion y_rotation = QQuaternion::fromAxisAndAngle(1, 0, 0, -90);
-    squareX->setRotation(z_rotation * y_rotation);
-    squareX->setVisible(false);
-
-    squareZ = std::unique_ptr<Square>(new Square(m_graph));
-    squareZ->setArea(0);
-    squareZ->setVisible(false);
-}
-
 
 
 QString AdamAnimation::animateStep(){
@@ -625,7 +574,6 @@ QString AdamAnimation::animateStep(){
     }
     case 8: // draw an imaginary ball of the future position
     {
-        ball->setPositionOnSurface(descent->position().x, descent->position().z);
         temporary_ball->setPosition(QVector3D(
                                         descent->position().x,
                                         ball->position().y(),

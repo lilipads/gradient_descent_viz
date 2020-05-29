@@ -74,14 +74,16 @@ protected:
 
     virtual QString animateStep() = 0;
     virtual int interval(){return kInterval;}
-    virtual void prepareDetailedAnimation();
+    virtual Point momentum(){return Point();};
+    virtual Point gradSumOfSquared(){return Point();};
 
     void animateGradient();
     void animateAdjustedGradient();
     void animateMomentum();
     void animateGradientSquared();
-    virtual Point momentum(){return Point();};
-    virtual Point gradSumOfSquared(){return Point();};
+    void initializeMomentumArrows();
+    void initializeSquares();
+    void prepareDetailedAnimation();
 };
 
 
@@ -119,7 +121,6 @@ public:
         has_momentum = true;
     };
 
-    void prepareDetailedAnimation();
     QString animateStep();
 
 protected:
@@ -142,7 +143,6 @@ public:
         has_gradient_squared = true;
     };
 
-    void prepareDetailedAnimation();
     QString animateStep();
 
 protected:
@@ -168,7 +168,6 @@ public:
         has_gradient_squared = true;
     };
 
-    void prepareDetailedAnimation();
     QString animateStep();
 
 protected:
@@ -194,7 +193,6 @@ public:
         has_gradient_squared = true;
     };
 
-    void prepareDetailedAnimation();
     QString animateStep();
 
 protected:

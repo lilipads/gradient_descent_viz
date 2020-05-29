@@ -98,6 +98,17 @@ Square::Square(Q3DSurface* graph) : Item(){
     addToGraph(graph);
 }
 
+
+Square::Square(Q3DSurface* graph, QString direction) : Square(graph){
+    if (direction == "x"){
+        is_x_direction = true;
+        QQuaternion z_rotation = QQuaternion::fromAxisAndAngle(0, 0, 1, 90);
+        QQuaternion y_rotation = QQuaternion::fromAxisAndAngle(1, 0, 0, -90);
+        setRotation(z_rotation * y_rotation);
+    }
+}
+
+
 void Square::setArea(const float &area){
     float unitPlotPerGraph = plotScalingVector().length();
     float scale = sqrt(area) * kUnitItemPerGraph / unitPlotPerGraph * kItemScale;
