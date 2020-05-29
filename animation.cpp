@@ -156,7 +156,7 @@ QString Animation::triggerDetailedAnimation(int animation_speedup){
     if (!in_initial_state)
         timer->setInterval(interval() / animation_speedup);
     state = (state + 1) % num_states;
-    return message;
+    return in_initial_state ? "" :message;
 }
 
 
@@ -253,9 +253,7 @@ QString MomentumAnimation::animateStep(){
 
         temporary_ball->setVisible(false);
         total_arrow->setVisible(false);
-
-        if (!in_initial_state)
-            return "Magenta arrows show momentum in x and y directions.";
+        return "Magenta arrows show momentum in x and y directions.";
     }
     case 1: // decay the momentum
     {
@@ -266,12 +264,11 @@ QString MomentumAnimation::animateStep(){
         temporary_ball->setVisible(false);
         total_arrow->setVisible(false);
 
-        in_initial_state = false;
-        if (!in_initial_state) return QString("Momentum decays by x %1.").arg(decay_rate);
-        break;
+        return QString("Momentum decays by x %1.").arg(decay_rate);
     }
     case 2: // show the x and z direction gradients
     {
+        in_initial_state = false;
         Point grad(descent->gradX(), descent->gradZ());
         arrowX->setMagnitude(grad.x);
         arrowZ->setMagnitude(grad.z);
@@ -344,12 +341,12 @@ QString AdaGradAnimation::animateStep(){
         total_arrow->setVisible(false);
         arrowX->setVisible(false);
         arrowZ->setVisible(false);
-        if (!in_initial_state)
-            return "The squares represent the accumulated sum of gradient^2.";
-        break;
+        return "The squares represent the accumulated sum of gradient^2.";
     }
     case 1: // show the x and z direction gradients
     {
+        in_initial_state = false;
+
         Point grad(descent->gradX(), descent->gradZ());
         arrowX->setMagnitude(grad.x * arrowScale);
         arrowZ->setMagnitude(grad.z * arrowScale);
@@ -358,7 +355,7 @@ QString AdaGradAnimation::animateStep(){
 
         arrowX->setVisible(true);
         arrowZ->setVisible(true);
-        in_initial_state = false;
+
         return "The cyan arrows show gradients in x and y directions.";
     }
     case 2: // show sum of squares updating
@@ -417,9 +414,7 @@ QString RMSPropAnimation::animateStep(){
         total_arrow->setVisible(false);
         arrowX->setVisible(false);
         arrowZ->setVisible(false);
-        if (!in_initial_state)
-            return "The squares represent the decayed sum of gradient^2.";
-        break;
+        return "The squares represent the decayed sum of gradient^2.";
     }
     case 1: // show the x and z direction gradients
     {
@@ -440,11 +435,11 @@ QString RMSPropAnimation::animateStep(){
         squareZ->setArea(squareZ->area() * decay_rate, signbit(descent->gradZ()));
         squareX->setVisible(true);
         squareZ->setVisible(true);
-        in_initial_state = false;
         return QString("Shrink the squares by x %1").arg(decay_rate);
     }
     case 3:
     {
+        in_initial_state = false;
         descent->takeGradientStep();
         squareX->setArea(dynamic_cast<RMSProp*> (descent.get())->decayedGradSumOfSquared().x,
                          signbit(descent->gradX()));
@@ -499,9 +494,7 @@ QString AdamAnimation::animateStep(){
         total_arrow->setVisible(false);
         arrowX->setVisible(false);
         arrowZ->setVisible(false);
-        if (!in_initial_state)
-            return "Arrows are momentum; squares are decayed sum of gradient^2.";
-        break;
+        return "Arrows are momentum; squares are decayed sum of gradient^2.";
     }
     case 1: // decay the momentum
     {
@@ -525,11 +518,12 @@ QString AdamAnimation::animateStep(){
 
         squareX->setVisible(true);
         squareZ->setVisible(true);
-        in_initial_state = false;
+
         return QString("Decay the squares by beta2 (%1).").arg(beta2);
     }
     case 3: // show the x and z direction gradients
     {
+        in_initial_state = false;
         Point grad(descent->gradX(), descent->gradZ());
         arrowX->setMagnitude(grad.x);
         arrowZ->setMagnitude(grad.z);

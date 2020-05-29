@@ -272,13 +272,13 @@ QTabWidget *Window::createViewTabs(){
         descentPicker->addItem(animation->name);
     QObject::connect(descentPicker, SIGNAL(currentIndexChanged(QString)),
                      plot_area, SLOT(setDetailedAnimation(QString)));
+
     QLabel* messageBox = new QLabel;
     messageBox->setWordWrap(true);
     messageBox->setMinimumHeight(70);
     messageBox->setAlignment(Qt::AlignTop);
     QObject::connect(plot_area, &PlotArea::updateMessage,
                      messageBox,&QLabel::setText);
-
 
     QWidget* step_by_step_tab = new QWidget();
     QVBoxLayout* vbox2 = new QVBoxLayout;
@@ -292,6 +292,9 @@ QTabWidget *Window::createViewTabs(){
                      plot_area, &PlotArea::setAnimationMode);
     // when switching to overview, clear prevoius selection and reset to "Choose your method"
     QObject::connect(tab, &QTabWidget::currentChanged,
-                     [=](int idx){if (idx == 1) descentPicker->setCurrentIndex(0);});
+                     [=](int idx){if (idx == 1) {
+            descentPicker->setCurrentIndex(0);
+            messageBox->setText("");
+        }});
     return tab;
 }

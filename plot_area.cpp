@@ -248,6 +248,7 @@ void PlotArea::setShowGradientSquared(bool show){
 
 
 void PlotArea::setDetailedAnimation(QString descent_name){
+    emit updateMessage("");
     for (auto animation : all_animations){
         if (animation->name == descent_name){
             detailed_descent = animation;
@@ -261,7 +262,6 @@ void PlotArea::setDetailedAnimation(QString descent_name){
         }
     }
 }
-
 
 
 void PlotArea::setAnimationMode(const int& view_type){
