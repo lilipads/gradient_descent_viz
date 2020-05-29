@@ -74,11 +74,16 @@ public:
     Square(Q3DSurface* graph);
     Square(Q3DSurface* graph, QString direction);
     void setArea(const float &area);
+    // if sign is negative, flip the square 180 degree
+    void setArea(const float &area, const bool &is_positive);
     float area(){return m_area;}
 
 private:
     float m_area;
-    float is_x_direction = false;
+    float m_is_x_direction = false;
+    float m_is_positive = false;
+
+    void flipDirection();
 };
 
 #endif // ITEM_H

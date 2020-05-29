@@ -94,18 +94,19 @@ Square::Square(Q3DSurface* graph) : Item(){
     QColor color = Qt::white;
     color.setAlpha(150);
     setColor(color);
-    setRotationAxisAndAngle(QVector3D(0, 0, 1), 90);
     addToGraph(graph);
 }
 
 
 Square::Square(Q3DSurface* graph, QString direction) : Square(graph){
-    if (direction == "x"){
-        is_x_direction = true;
-        QQuaternion z_rotation = QQuaternion::fromAxisAndAngle(0, 0, 1, 90);
-        QQuaternion y_rotation = QQuaternion::fromAxisAndAngle(1, 0, 0, -90);
-        setRotation(z_rotation * y_rotation);
+    QQuaternion z_rotation = QQuaternion::fromAxisAndAngle(0, 0, 1, 90);
+    if (direction == "x"){  
+        QQuaternion x_rotation = QQuaternion::fromAxisAndAngle(1, 0, 0, -90);
+        setRotation(z_rotation * x_rotation);
+    } else{
+        setRotation(z_rotation);
     }
+    m_is_x_direction = (direction == "x");
 }
 
 
@@ -116,3 +117,32 @@ void Square::setArea(const float &area){
     m_area = area;
 }
 
+
+void Square::setArea(const float &area, const bool &is_positive){
+    setArea(area);
+    if (area != 0 && is_positive != m_is_positive){
+        m_is_positive = is_positive;
+        flipDirection();
+    }
+}
+
+
+void Square::flipDirection(){
+    QQuaternion z_rotation = QQuaternion::fromAxisAndAngle(0, 0, 1, 90);
+    QQuaternion x_rotation = QQuaternion::fromAxisAndAngle(1, 0, 0, 180);
+    if (m_is_positive){
+        if (m_is_x_direction){
+            QQuaternion x_rotation2 = QQuaternion::fromAxisAndAngle(1, 0, 0, 90);
+            setRotation(z_rotation * x_rotation2);
+        } else{
+            setRotation(z_rotation * x_rotation);
+        }
+    } else{
+        if (m_is_x_direction){
+            QQuaternion x_rotation3 = QQuaternion::fromAxisAndAngle(1, 0, 0, -90);
+            setRotation(z_rotation * x_rotation3);
+        } else{
+            setRotation(z_rotation);
+        }
+    }
+}
