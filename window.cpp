@@ -281,12 +281,23 @@ QTabWidget *Window::createViewTabs(){
     QTabWidget* tab = new QTabWidget;
     // TODO: say it's scaled down
     QCheckBox* gradient = new QCheckBox("Gradient Arrows");
+    gradient->setToolTip("Gradient at that point on the surface (only depends on position;\n"
+                         "independent of the gradient descent method");
     QObject::connect(gradient, &QCheckBox::clicked, plot_area, &PlotArea::setShowGradient);
     QCheckBox* adjusted_gradient = new QCheckBox("Adjusted Gradient Arrows");
+    adjusted_gradient->setToolTip("Some methods adjust the gradient by adding on momentum or\n"
+                                  "dividing by some numbers (e.g. sum of squares). The adjusted\n"
+                                  "gradient shows the calculation result of each gradient method\n"
+                                  "for a gradient step.");
     QObject::connect(adjusted_gradient, &QCheckBox::clicked, plot_area, &PlotArea::setShowAdjustedGradient);
     QCheckBox* momentum = new QCheckBox("Momentum Arrows");
+    momentum->setToolTip("Momentum is some form of decayed sum of gradients.\n"
+                         "Momentum Descent and Adam Descent use momentum.");
     QObject::connect(momentum, &QCheckBox::clicked, plot_area, &PlotArea::setShowMomentum);
     QCheckBox* squaredGrad = new QCheckBox("Sum of Gradient Squared");
+    squaredGrad->setToolTip("AdaGrad sums up the square of gradients in each direction across\n"
+                            "all steps. RMSProp and Adam do the summing with some decay factor.\n"
+                            "The area of the squares represent the magnitude of the sum.");
     QObject::connect(squaredGrad, &QCheckBox::clicked, plot_area, &PlotArea::setShowGradientSquared);
 
     QWidget* overview_tab = new QWidget();
