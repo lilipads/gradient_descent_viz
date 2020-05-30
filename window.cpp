@@ -83,14 +83,16 @@ QPushButton *Window::createToggleAnimationButton(){
 
     QObject::connect(toggleAnimationButton, &QPushButton::toggled,
         [=](bool is_checked){
-            if (is_checked)
+            if (is_checked){
                 toggleAnimationButton->setText(QStringLiteral("Pause "));
-            else
+                plot_area->playAnimation();
+            }
+            else{
                 toggleAnimationButton->setText(QStringLiteral("Paused"));
+                plot_area->pauseAnimation();
+            }
         });
 
-    QObject::connect(toggleAnimationButton, &QPushButton::clicked, plot_area,
-                     &PlotArea::toggleAnimation);
     return toggleAnimationButton;
 }
 
@@ -100,7 +102,7 @@ QPushButton *Window::createRestartAnimationButton(){
     QPushButton *restartAnimationButton = new QPushButton(this);
     restartAnimationButton->setText(QStringLiteral("Restart"));
     QObject::connect(restartAnimationButton, &QPushButton::clicked, plot_area,
-                     &PlotArea::restartAnimations);
+                     &PlotArea::resetAnimations);
     return restartAnimationButton;
 }
 
@@ -138,6 +140,7 @@ QComboBox *Window::createFunctionSelector(){
     box->addItem("Saddle Point");
     box->addItem("Ecliptic Bowl");
     box->addItem("Hills");
+    box->addItem("Plateau");
 
     QObject::connect(box, SIGNAL(currentIndexChanged(QString)),
                      plot_area, SLOT(changeSurface(QString)));

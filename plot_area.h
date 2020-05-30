@@ -31,9 +31,10 @@ signals:
     void updateMessage(QString message);
 
 public Q_SLOTS:
-    void toggleAnimation();
+    void pauseAnimation();
+    void playAnimation();
     void triggerAnimation();
-    void restartAnimations();
+    void resetAnimations();
     void setAnimationMode(const int& view_type);
     void setDetailedAnimation(QString descent_name);
     void setAnimationSpeed(int index);

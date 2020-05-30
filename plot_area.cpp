@@ -33,8 +33,8 @@ PlotArea::PlotArea(Q3DSurface *surface)
                      &QSurface3DSeries::selectedPointChanged,
                      this, &PlotArea::restartFromClickedPosition);
 
-    toggleAnimation();
-    restartAnimations();
+    resetAnimations();
+    playAnimation();
 }
 
 PlotArea::~PlotArea(){}
@@ -123,8 +123,10 @@ void PlotArea::initializeSurface() {
 }
 
 
-void PlotArea::toggleAnimation() {
-    m_timer.isActive() ? m_timer.stop() : m_timer.start(15);
+void PlotArea::pauseAnimation() {m_timer.stop();}
+
+void PlotArea::playAnimation(){
+    if (!m_timer.isActive()) m_timer.start(15);
 }
 
 
@@ -144,12 +146,12 @@ void PlotArea::triggerAnimation() {
 }
 
 
-void PlotArea::restartAnimations() {
+void PlotArea::resetAnimations() {
     if (detailedView){
-        detailed_descent->restartAnimation();
+        detailed_descent->resetAnimation();
     } else{
         for (auto& animation : all_animations)
-            animation->restartAnimation();
+            animation->resetAnimation();
     }
 }
 
@@ -162,7 +164,7 @@ void PlotArea::restartFromClickedPosition(QPoint q_pos){
     for (auto animation : all_animations){
         animation->descent->setStartingPosition(p.x(), p.z());
     }
-    restartAnimations();
+    resetAnimations();
 }
 
 
@@ -252,7 +254,7 @@ void PlotArea::setDetailedAnimation(QString descent_name){
     for (auto animation : all_animations){
         if (animation->name == descent_name){
             detailed_descent = animation;
-            detailed_descent->restartAnimation();
+            detailed_descent->resetAnimation();
             for (auto animation : all_animations){
                 if (animation != detailed_descent)
                     animation->cleanupAll();
@@ -271,7 +273,7 @@ void PlotArea::setAnimationMode(const int& view_type){
         if (detailed_descent != nullptr)
             detailed_descent->cleanupAll();
         detailedView = false;
-        restartAnimations();
+        resetAnimations();
     }
     m_timer.start(15);
 }
@@ -289,11 +291,13 @@ void PlotArea::changeSurface(QString name){
         function_name = Function::ecliptic_bowl;
     } else if (name == "Hills"){
         function_name = Function::hills;
-    } else{
+    } else if (name == "Plateau"){
+        function_name = Function::plateau;
+    }else{
         return;
     }
 
     GradientDescent::function_name = function_name;
     initializeSurface();
-    restartAnimations();
+    resetAnimations();
 }

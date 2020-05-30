@@ -182,7 +182,7 @@ void Animation::prepareDetailedAnimation(){
 }
 
 
-void Animation::restartAnimation(){
+void Animation::resetAnimation(){
     descent->resetPositionAndComputeGradient();
     state = 0;
     ball->setVisible(m_visible);

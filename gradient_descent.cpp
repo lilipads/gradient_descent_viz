@@ -43,6 +43,12 @@ double GradientDescent::f(double x, double z){
                 2 * exp(-((x - 1) * (x  - 1) + (z + 1) * (z + 1)) / .2) +
                 x * x + z * z;
     }
+    case Function::plateau:{
+        x *= 10;
+        z *= 10;
+        double r = sqrt(z * z + x * x) + 0.01;
+        return -sin(r) / r + 0.01 * r * r;
+    }
     }
     return 0.;
 }

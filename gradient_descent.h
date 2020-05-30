@@ -18,7 +18,7 @@ struct Point {
 
 namespace Function{
 enum FunctionName {local_minimum, global_minimum, saddle_point, ecliptic_bowl,
-                  hills};
+                  hills, plateau};
 }
 
 

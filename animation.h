@@ -43,7 +43,7 @@ public:
     void cleanupMomentum();
     void cleanupGradientSquared();
     void setVisible(bool visible);
-    void restartAnimation();
+    void resetAnimation();
 
 protected:
     int num_states;
