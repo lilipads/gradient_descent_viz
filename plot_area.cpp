@@ -22,8 +22,10 @@ PlotArea::PlotArea(Q3DSurface *surface)
       m_surfaceSeries(new QSurface3DSeries(m_surfaceProxy.get()))
 {
     initializeAxes();
-    initializeSurface();
     initializeAnimations();
+    // should be called after animations are initialized because it needs
+    // to reset the starting points
+    initializeSurface();
 
     QObject::connect(&m_timer, &QTimer::timeout, this,
                      &PlotArea::triggerAnimation);
@@ -32,7 +34,6 @@ PlotArea::PlotArea(Q3DSurface *surface)
     QObject::connect(m_surfaceSeries.get(),
                      &QSurface3DSeries::selectedPointChanged,
                      this, &PlotArea::restartFromClickedPosition);
-
     resetAnimations();
     playAnimation();
 }
@@ -139,7 +140,7 @@ void PlotArea::triggerAnimation() {
             for (auto animation : all_animations)
                 animation->triggerSimpleAnimation(animation_speedup,
                     show_gradient, show_adjusted_gradient, show_momentum,
-                    show_gradient_squared);
+                    show_gradient_squared, show_path);
         }
     }
     timer_counter = (timer_counter + 1) % animation_slowdown;
@@ -245,6 +246,16 @@ void PlotArea::setShowGradientSquared(bool show){
     if (!show){
         for (auto animation : all_animations)
             animation->cleanupGradientSquared();
+    }
+}
+
+
+void PlotArea::setShowPath(bool show){
+    if (show == show_path) return;
+    show_path = show;
+    if (!show){
+        for (auto animation : all_animations)
+            animation->cleanupPath();
     }
 }
 

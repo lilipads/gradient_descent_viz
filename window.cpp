@@ -251,7 +251,8 @@ QLayout *Window::createLearningRateBox(GradientDescent* descent){
 
     QSpinBox *learningRateBox = new QSpinBox(this);
     learningRateBox->setRange(-10, 10);
-    learningRateBox->setValue(int(log(descent->learning_rate) / log(10)));
+    double x = log(descent->learning_rate) / log(10.);
+    learningRateBox->setValue(nearbyint(x));
     QObject::connect(learningRateBox,
         QOverload<int>::of(&QSpinBox::valueChanged),
         [=](const int &newValue) {
@@ -299,6 +300,9 @@ QTabWidget *Window::createViewTabs(){
                             "all steps. RMSProp and Adam do the summing with some decay factor.\n"
                             "The area of the squares represent the magnitude of the sum.");
     QObject::connect(squaredGrad, &QCheckBox::clicked, plot_area, &PlotArea::setShowGradientSquared);
+    QCheckBox* path = new QCheckBox("Path");
+    QObject::connect(path, &QCheckBox::clicked, plot_area, &PlotArea::setShowPath);
+
 
     QWidget* overview_tab = new QWidget();
     QVBoxLayout* vbox = new QVBoxLayout;
@@ -307,6 +311,7 @@ QTabWidget *Window::createViewTabs(){
     vbox->addWidget(adjusted_gradient);
     vbox->addWidget(momentum);
     vbox->addWidget(squaredGrad);
+    vbox->addWidget(path);
     tab->addTab(overview_tab, "Overview");
 
     QComboBox* descentPicker = new QComboBox;

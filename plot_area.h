@@ -47,6 +47,7 @@ public Q_SLOTS:
     void setShowAdjustedGradient(bool show);
     void setShowMomentum(bool show);
     void setShowGradientSquared(bool show);
+    void setShowPath(bool show);
     void changeSurface(QString name);
 
 
@@ -64,7 +65,8 @@ private:
     bool show_gradient = false;
     bool show_adjusted_gradient = false;
     bool show_momentum = false;
-    bool show_gradient_squared = false;   
+    bool show_gradient_squared = false;
+    bool show_path = false;
 
     void initializeSurface();
     void initializeAxes();

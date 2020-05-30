@@ -8,6 +8,7 @@
 #include <QtDataVisualization/Q3DSurface>
 
 #include "gradient_descent.h"
+#include "item.h"
 
 using namespace  QtDataVisualization;
 
@@ -35,13 +36,15 @@ public:
     QString triggerDetailedAnimation(int animation_speedup);
     virtual void triggerSimpleAnimation(int animation_speedup,
         bool show_gradient, bool show_adjusted_gradient,
-        bool show_momentum, bool show_gradient_squared);
+        bool show_momentum, bool show_gradient_squared,
+        bool show_path);
 
     void cleanupAll();
     void cleanupGradient();
     void cleanupAdjustedGradient();
     void cleanupMomentum();
     void cleanupGradientSquared();
+    void cleanupPath();
     void setVisible(bool visible);
     void resetAnimation();
 
@@ -66,6 +69,7 @@ protected:
     std::unique_ptr<Arrow> adjustedArrowX = nullptr;
     std::unique_ptr<Arrow> adjustedArrowZ = nullptr;
     std::unique_ptr<Arrow> total_arrow = nullptr;
+    std::unique_ptr<Line> path = nullptr;
     // visual elements (applicable to some descents)
     std::unique_ptr<Arrow> momentumArrowX = nullptr;
     std::unique_ptr<Arrow> momentumArrowZ = nullptr;
@@ -84,6 +88,7 @@ protected:
     void initializeMomentumArrows();
     void initializeSquares();
     void prepareDetailedAnimation();
+    void cleanupAllButPath();
 };
 
 

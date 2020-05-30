@@ -2,20 +2,45 @@
 
 void Animation::triggerSimpleAnimation(int animation_speedup,
      bool show_gradient, bool show_adjusted_gradient,
-     bool show_momentum, bool show_gradient_squared){
-    if (descent->isConverged()) return;
+     bool show_momentum, bool show_gradient_squared, bool show_path){
+    if (descent->isConverged()) {
+        if (m_visible) path->setVisible(show_path);
+        return;
+    }
     Point p;
     for (int i = 0; i < animation_speedup; i++)
         p = descent->takeGradientStep();
+    path->addPoint(descent->position());
+
     if (!m_visible) return;
+
     ball->setPositionOnSurface(p.x, p.z);
+    if (show_path) path->render();
     if (show_gradient) animateGradient();
     if (show_adjusted_gradient) animateAdjustedGradient();
     if (has_momentum && show_momentum) animateMomentum();
     if (has_gradient_squared && show_gradient_squared) animateGradientSquared();
     if (descent->isConverged()) {
-        cleanupAll();
+        cleanupAllButPath();
         ball->setVisible(true);
+    }
+}
+
+
+void Animation::setVisible(bool visible){
+    if (visible != m_visible){
+        m_visible = visible;
+        ball->setVisible(visible);
+
+        if (path != nullptr) path->setVisible(visible);
+        if (arrowX != nullptr) arrowX->setVisible(visible);
+        if (arrowZ != nullptr) arrowZ->setVisible(visible);
+        if (adjustedArrowX != nullptr) adjustedArrowX->setVisible(visible);
+        if (adjustedArrowZ != nullptr) adjustedArrowZ->setVisible(visible);
+        if (momentumArrowX != nullptr) momentumArrowX->setVisible(visible);
+        if (momentumArrowZ != nullptr) momentumArrowZ->setVisible(visible);
+        if (squareX != nullptr) squareX->setVisible(visible);
+        if (squareZ != nullptr) squareZ->setVisible(visible);
     }
 }
 
@@ -97,7 +122,12 @@ void Animation::cleanupGradientSquared(){
 }
 
 
-void Animation::cleanupAll(){
+void Animation::cleanupPath(){
+    path->setVisible(false);
+}
+
+
+void Animation::cleanupAllButPath(){
     ball->setVisible(false);
     if (temporary_ball != nullptr) temporary_ball = nullptr;
     if (total_arrow != nullptr) total_arrow = nullptr;
@@ -108,6 +138,11 @@ void Animation::cleanupAll(){
     detailed_animation_prepared = false;
 }
 
+
+void Animation::cleanupAll(){
+    cleanupAllButPath();
+    cleanupPath();
+}
 
 void Animation::initializeMomentumArrows(){
     momentumArrowX = std::unique_ptr<Arrow>(
@@ -128,23 +163,6 @@ void Animation::initializeSquares(){
     squareZ = std::unique_ptr<Square>(new Square(m_graph, "z"));
     squareZ->setArea(0);
     squareZ->setVisible(false);
-}
-
-
-void Animation::setVisible(bool visible){ 
-    if (visible != m_visible){
-        m_visible = visible;
-        ball->setVisible(visible);
-
-        if (arrowX != nullptr) arrowX->setVisible(visible);
-        if (arrowZ != nullptr) arrowZ->setVisible(visible);
-        if (adjustedArrowX != nullptr) adjustedArrowX->setVisible(visible);
-        if (adjustedArrowZ != nullptr) adjustedArrowZ->setVisible(visible);
-        if (momentumArrowX != nullptr) momentumArrowX->setVisible(visible);
-        if (momentumArrowZ != nullptr) momentumArrowZ->setVisible(visible);
-        if (squareX != nullptr) squareX->setVisible(visible);
-        if (squareZ != nullptr) squareZ->setVisible(visible);
-    }
 }
 
 
@@ -186,8 +204,12 @@ void Animation::resetAnimation(){
     descent->resetPositionAndComputeGradient();
     state = 0;
     ball->setVisible(m_visible);
+    if (path != nullptr) path->erase();
+    else path = std::unique_ptr<Line>(new Line(m_graph, ball_color, f));
+    path->addPoint(descent->position());
     in_initial_state = true;
     detailed_animation_prepared = false;
+
 }
 
 

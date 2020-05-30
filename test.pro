@@ -28,6 +28,7 @@ HEADERS += \
     gradient_descent.h \
     item.h \
     plot_area.h \
+    point.h \
     window.h
 
 RESOURCES += \

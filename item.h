@@ -5,6 +5,7 @@
 #include <QtDataVisualization/QCustom3DLabel>
 #include <QtDataVisualization/Q3DSurface>
 
+#include "point.h"
 
 using namespace QtDataVisualization;
 
@@ -16,6 +17,9 @@ const float kItemScale = 1;
 // don't change these. These are based on object size given in the mesh files
 const float kUnitItemPerGraph = 110; // for arrows and squares
 const float kBallRadiusPerGraph = 24.63;
+const float kLineHalfWidth = 1. / 200.;
+const float kLineLayerHeight = 0.003;
+const float kLineStepSize = 1. / 50.;
 
 
 class Item : public QCustom3DItem{
@@ -75,6 +79,7 @@ public:
     Square(Q3DSurface* graph, QString direction);
     void setArea(const float &area);
     // if sign is negative, flip the square 180 degree
+    // (presumably to align with the gradient)
     void setArea(const float &area, const bool &is_positive);
     float area(){return m_area;}
 
@@ -84,6 +89,46 @@ private:
     float m_is_positive = false;
 
     void flipDirection();
+};
+
+
+class Line : public QSurface3DSeries{
+public:
+   Line(Q3DSurface* graph, QColor color, double (*_f) (double, double));
+   void addPoint(Point p);
+   void render();
+   void erase();
+   void setVisible(bool visible);
+   // hack: render the lines with slightly different y offsets
+   // so the colors don't mix
+   static int layer;
+
+private:
+   Q3DSurface* m_graph = nullptr;
+   QSurfaceDataProxy* line_proxy = nullptr;
+   double (*f) (double, double);
+   bool m_visible = true;
+   int this_layer = 0;
+   bool need_to_replace_last_row = false;
+   float x_range;
+   float y_range;
+   float z_range;
+   // the cross section of a line. The line, which is really a ribbon
+   // is drawn by connecting these little crosslines (left connect left,
+   // right connect right)
+   struct CrossLine{
+       Point center;
+       Point left;
+       Point right;
+       CrossLine(Point p) :center(p), left(p), right(p){}
+   };
+   std::vector<CrossLine> crosslines;
+
+   // make data array for all point in points
+   QSurfaceDataArray* getDataArray();
+   QSurfaceDataRow* getDataRow(int idx);
+   // if no index is specified, return the last row by default
+   QSurfaceDataRow* getDataRow();
 };
 
 #endif // ITEM_H

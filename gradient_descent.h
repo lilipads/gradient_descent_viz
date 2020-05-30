@@ -6,14 +6,7 @@
 #include <QtDataVisualization/QCustom3DItem>
 #include <QColor>
 
-#include "item.h"
-
-struct Point {
-    double x = 0.;
-    double z = 0.;
-    Point() : x(0.), z(0.) {}
-    Point(double _x, double _z) : x(_x), z(_z) {}
-};
+#include "point.h"
 
 
 namespace Function{
@@ -27,7 +20,7 @@ public:
     GradientDescent();
     virtual ~GradientDescent() {}
 
-    double learning_rate = 0.01;
+    double learning_rate = 0.001;
     static Function::FunctionName function_name;
 
     // simple getters and setters
