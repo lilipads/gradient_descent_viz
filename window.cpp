@@ -12,24 +12,26 @@ Window::Window(QWidget *parent)
 
     Q3DSurface *graph = new Q3DSurface();
     plot_area = new PlotArea(graph);
-    QWidget *container = QWidget::createWindowContainer(graph);
+    QWidget *graph_container = QWidget::createWindowContainer(graph);
 
     QSize screenSize = graph->screen()->size();
-    container->setMinimumSize(QSize(screenSize.width() / 2, screenSize.height() / 1.5));
-    container->setMaximumSize(screenSize);
-    container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    container->setFocusPolicy(Qt::StrongFocus);
+    graph_container->setMinimumSize(QSize(screenSize.width() / 2, screenSize.height() / 1.5));
+    graph_container->setMaximumSize(screenSize);
+    graph_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    graph_container->setFocusPolicy(Qt::StrongFocus);
 
 
     QHBoxLayout *hLayout = new QHBoxLayout(this);
     QVBoxLayout *vLayoutLeft = new QVBoxLayout();
     QVBoxLayout *vLayout = new QVBoxLayout();
+
+    // things on the left
     hLayout->addLayout(vLayoutLeft);
-    vLayoutLeft->addWidget(container, 1);
+    vLayoutLeft->addWidget(graph_container, 1);
     vLayoutLeft->addWidget(createControlGroup());
     hLayout->addLayout(vLayout);
 
-    // panel on the right
+    // things on the right
     vLayout->addWidget(createFunctionSelector());
     vLayout->addWidget(createViewTabs());
     // widgets to tune gradient parameters
@@ -64,22 +66,34 @@ QGroupBox *Window::createControlGroup(){
     QHBoxLayout *layout= new QHBoxLayout;
     groupBox->setLayout(layout);
 
-    QPushButton* zoomout = new QPushButton("-");
-    QPushButton* zoomin = new QPushButton("+");
-    QObject::connect(zoomout, &QPushButton::clicked, plot_area, &PlotArea::cameraZoomOut);
-    QObject::connect(zoomin, &QPushButton::clicked, plot_area, &PlotArea::cameraZoomIn);
-
     layout->addWidget(createToggleAnimationButton());
     layout->addWidget(createRestartAnimationButton());
-    layout->addWidget(new QLabel(QStringLiteral("Zoom:")));
-    layout->addWidget(zoomout);
-    layout->addWidget(zoomin);
     layout->addWidget(new QLabel(QStringLiteral("Playback speed:")));
     layout->addWidget(createPlaybackSpeedBox());
+    layout->addWidget(createZoomButton(1));
+    layout->addWidget(createZoomButton(0));
 
     layout->setAlignment(Qt::AlignHCenter);
-
+    groupBox->setFocusPolicy(Qt::NoFocus);
     return groupBox;
+}
+
+
+QPushButton *Window::createZoomButton(int is_zoomout){
+    // is_zoomout: 1 for zoomout; 0 for zoom in.
+    QPushButton* zoom = new QPushButton();
+    if (is_zoomout)
+        zoom->setIcon(QIcon(QPixmap(":/icons/zoomout.png")));
+    else
+        zoom->setIcon(QIcon(QPixmap(":/icons/zoomin.png")));
+    zoom->setIconSize(QSize(20, 20));
+    zoom->setFlat(true);
+    zoom->setStyleSheet("QPushButton {background-color:transparent; border-radius: 2px;"
+                        "padding-left: 2px; padding-right: 2px;}");
+    zoom->setCursor(Qt::PointingHandCursor);
+    auto slot = is_zoomout? &PlotArea::cameraZoomOut : &PlotArea::cameraZoomIn;
+    QObject::connect(zoom, &QPushButton::clicked, plot_area, slot);
+    return zoom;
 }
 
 

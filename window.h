@@ -34,6 +34,7 @@ private:
     void setupKeyboardShortcuts();
 
     QGroupBox* createControlGroup();
+    QPushButton *createZoomButton(int is_zoomout);
     QPushButton* createToggleAnimationButton();
     QPushButton* createRestartAnimationButton();
     QComboBox* createPlaybackSpeedBox();
