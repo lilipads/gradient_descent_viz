@@ -11,6 +11,7 @@ Window::Window(QWidget *parent)
     setWindowTitle(QStringLiteral("Gradient Descent Visualization"));
 
     Q3DSurface *graph = new Q3DSurface();
+    plot_area = new PlotArea(graph);
     QWidget *container = QWidget::createWindowContainer(graph);
 
     QSize screenSize = graph->screen()->size();
@@ -19,17 +20,18 @@ Window::Window(QWidget *parent)
     container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     container->setFocusPolicy(Qt::StrongFocus);
 
+
     QHBoxLayout *hLayout = new QHBoxLayout(this);
+    QVBoxLayout *vLayoutLeft = new QVBoxLayout();
     QVBoxLayout *vLayout = new QVBoxLayout();
-    hLayout->addWidget(container, 1);
+    hLayout->addLayout(vLayoutLeft);
+    vLayoutLeft->addWidget(container, 1);
+    vLayoutLeft->addWidget(createControlGroup());
     hLayout->addLayout(vLayout);
 
-    plot_area = new PlotArea(graph);
-
-    vLayout->addWidget(createControlGroup());
+    // panel on the right
     vLayout->addWidget(createFunctionSelector());
     vLayout->addWidget(createViewTabs());
-
     // widgets to tune gradient parameters
     vLayout->addWidget(createGradientDescentGroup());
     vLayout->addWidget(createMomentumGroup());
@@ -59,15 +61,23 @@ void Window::setupKeyboardShortcuts(){
 
 QGroupBox *Window::createControlGroup(){
     QGroupBox *groupBox = new QGroupBox();
-    QGridLayout *controlGrid= new QGridLayout;
-    groupBox->setLayout(controlGrid);
+    QHBoxLayout *layout= new QHBoxLayout;
+    groupBox->setLayout(layout);
 
-    controlGrid->addWidget(createToggleAnimationButton(),0, 0);
-    controlGrid->addWidget(createRestartAnimationButton(), 0, 1);
-    controlGrid->addWidget(new QLabel(QStringLiteral("Zoom:")), 1, 0);
-    controlGrid->addWidget(createZoomSlider(), 2, 0);
-    controlGrid->addWidget(new QLabel(QStringLiteral("Playback speed:")), 1, 1);
-    controlGrid->addWidget(createPlaybackSpeedBox(), 2, 1);
+    QPushButton* zoomout = new QPushButton("-");
+    QPushButton* zoomin = new QPushButton("+");
+    QObject::connect(zoomout, &QPushButton::clicked, plot_area, &PlotArea::cameraZoomOut);
+    QObject::connect(zoomin, &QPushButton::clicked, plot_area, &PlotArea::cameraZoomIn);
+
+    layout->addWidget(createToggleAnimationButton());
+    layout->addWidget(createRestartAnimationButton());
+    layout->addWidget(new QLabel(QStringLiteral("Zoom:")));
+    layout->addWidget(zoomout);
+    layout->addWidget(zoomin);
+    layout->addWidget(new QLabel(QStringLiteral("Playback speed:")));
+    layout->addWidget(createPlaybackSpeedBox());
+
+    layout->setAlignment(Qt::AlignHCenter);
 
     return groupBox;
 }
@@ -79,16 +89,16 @@ QPushButton *Window::createToggleAnimationButton(){
 
     toggleAnimationButton->setCheckable(true);
     toggleAnimationButton->setChecked(true);
-    toggleAnimationButton->setText(QStringLiteral("Pause "));
+    toggleAnimationButton->setText(QString(" Pause "));
 
     QObject::connect(toggleAnimationButton, &QPushButton::toggled,
         [=](bool is_checked){
             if (is_checked){
-                toggleAnimationButton->setText(QStringLiteral("Pause "));
+                toggleAnimationButton->setText(QString(" Pause "));
                 plot_area->playAnimation();
             }
             else{
-                toggleAnimationButton->setText(QStringLiteral("Paused"));
+                toggleAnimationButton->setText(QString("Paused"));
                 plot_area->pauseAnimation();
             }
         });
@@ -104,16 +114,6 @@ QPushButton *Window::createRestartAnimationButton(){
     QObject::connect(restartAnimationButton, &QPushButton::clicked, plot_area,
                      &PlotArea::resetAnimations);
     return restartAnimationButton;
-}
-
-QSlider *Window::createZoomSlider(){
-    QSlider *slider = new QSlider(Qt::Horizontal, this);
-    slider->setRange(100, 1000);
-    slider->setValue(120);
-    plot_area->setCameraZoom(120);
-    QObject::connect(slider, &QSlider::valueChanged, plot_area,
-                     &PlotArea::setCameraZoom);
-    return slider;
 }
 
 

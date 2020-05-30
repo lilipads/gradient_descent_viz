@@ -36,7 +36,6 @@ private:
     QGroupBox* createControlGroup();
     QPushButton* createToggleAnimationButton();
     QPushButton* createRestartAnimationButton();
-    QSlider* createZoomSlider();
     QComboBox* createPlaybackSpeedBox();
 
     QComboBox* createFunctionSelector();

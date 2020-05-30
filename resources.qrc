@@ -3,5 +3,7 @@
         <file>mesh/narrowarrow.obj</file>
         <file>mesh/largesphere.obj</file>
         <file>mesh/plane.obj</file>
+        <file>icons/zoomin.png</file>
+        <file>icons/zoomout.png</file>
     </qresource>
 </RCC>
