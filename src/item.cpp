@@ -33,10 +33,10 @@ Ball::Ball(Q3DSurface* graph, QColor color, double (*_f) (double, double))
 }
 
 
-void Ball::setPositionOnSurface(double x, double z){
+void Ball::setPositionOnSurface(Point p){
     float yOffset =  (m_graph->axisY()->max() - m_graph->axisY()->min()) /
             kBallRadiusPerGraph;
-    setPosition(QVector3D(x, f(x, z) + yOffset, z));
+    setPosition(QVector3D(p.x, f(p.x, p.z) + yOffset, p.z));
 }
 
 Arrow::Arrow(Q3DSurface* graph) : Item(graph){

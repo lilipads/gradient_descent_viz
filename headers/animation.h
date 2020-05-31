@@ -17,9 +17,9 @@ const float kBallYOffset = 10.f;
 const float stepX = 4. / 49;
 const float stepZ = 4. / 49;
 const int kInterval = 3000; // seconds in between steps
-const QColor gradient_color = Qt::cyan;
-const QColor momentum_color = Qt::magenta;
-const float simpleAnimationArrowScale = 0.2;
+const QColor kGradientColor = Qt::cyan;
+const QColor kMomentumColor = Qt::magenta;
+const float kSimpleAnimationArrowScale = 0.2;
 
 class Animation
 {
@@ -100,7 +100,7 @@ public:
     {
         name = "Gradient Descent";
         num_states = 4;
-        ball_color = gradient_color;
+        ball_color = kGradientColor;
         ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color, f));
         descent = std::unique_ptr<GradientDescent>(new VanillaGradientDescent);
     };

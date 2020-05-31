@@ -44,7 +44,7 @@ class Ball : public Item
 public:
     // _f: function that defines the 3d surface the ball rolls on
     Ball(Q3DSurface* graph, QColor color, double (*_f) (double, double));
-    void setPositionOnSurface(double x, double z);
+    void setPositionOnSurface(Point p);
 
 protected:
     double (*f) (double, double);
