@@ -5,6 +5,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 CONFIG += c++11
 DEFINES += QT_DEPRECATED_WARNINGS
 
+INCLUDEPATH += $$PWD/headers
 HEADERS += $$files($$PWD/headers/*.h, true)
 SOURCES += $$files($$PWD/src/*.cpp, true)
 RESOURCES += resources/resources.qrc
