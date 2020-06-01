@@ -1,8 +1,7 @@
 # Gradient Descent Visualization
 
 Gradient Descent Viz is a desktop app that visualizes some popular [gradient descent methods](https://en.wikipedia.org/wiki/Stochastic_gradient_descent)
-in machine learning, including (vanilla) gradient descent, momentum, AdaGrad, RMSProp and Adam. By playing around the different settings
-oneself, everyone -- beginners or experts -- hopefully can take away some new intuitive understanding of these methods.
+in machine learning, including (vanilla) gradient descent, momentum, AdaGrad, RMSProp and Adam. My hope is that by playing around with the different settings, anyone -- beginner or expert -- can come away with new intuitive understanding of these methods.
 
 ![demo](resources/screenshots/demo-overview.gif)
 
@@ -24,8 +23,8 @@ solves the issue. Play around with the other parameters too and see what you fin
 ![demo](resources/screenshots/demo-step-by-step.gif)
 
 
-* Use visual elements to track things such as the gradient, the momentum, sum of squared gradient (visualized by squares whose size
-corresponds to the magnitude of the term), adjusted gradient (after dividing by the sum of squared gradient or adding on momentum, depending
+* Use visual elements to track things such as the gradient, the momentum, sum of squared gradient (visualized by squares whose sizes
+correspond to the magnitude of the term), adjusted gradient (after dividing by the sum of squared gradient or adding on momentum, depending
 on the method), and the path. In the example below, you can see that after adjusted by the sum of squared gradient, RMSProp
 takes a very different direction. Comparing that with AdaGrad, one will visually see that the sum of squared gradient for AdaGrad 
 is much bigger in scale (because it doesn't decay). You can use this feature to understand what makes each method work or not work under different circumstances.
