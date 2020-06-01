@@ -2,7 +2,6 @@
 #define ITEM_H
 
 #include <QtDataVisualization/QCustom3DItem>
-#include <QtDataVisualization/QCustom3DLabel>
 #include <QtDataVisualization/Q3DSurface>
 
 #include "point.h"
