@@ -40,9 +40,7 @@ is much bigger in scale (because it doesn't decay). You can use this feature to 
 
 This is a C++ app written in Qt, using the free Qt open-source licensed version. It works cross platform.
 
-For pre-built app for MacOS-64bits, download [gradient_descent_visualization.zip](gradient_descent_visualization.zip) from this repository. Decompress and run the app (you may need to right click -> open to grant permission to open an app from an unknown developer).
-
-To build the project from the source, download and install Qt 5.10 or above (https://www.qt.io/download) for your platform. This app uses the Qt Data Visualization package; make sure
+Download and install Qt 5.10 or above (https://www.qt.io/download) for your platform. This app uses the Qt Data Visualization package; make sure
 to include that in your installation as well.
 Checkout this repository, and build and run gradient_descent_visualization.pro within the Qt Creator IDE.
 
