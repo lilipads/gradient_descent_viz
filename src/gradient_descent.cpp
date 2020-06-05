@@ -116,8 +116,8 @@ void AdaGrad::updateGradientDelta(){
 
     grad_sum_of_squared.x += pow(grad.x, 2);
     grad_sum_of_squared.z += pow(grad.z, 2);
-    m_delta.x = -learning_rate * grad.x / (sqrt(grad_sum_of_squared.x) + 1e-8);
-    m_delta.z = -learning_rate * grad.z / (sqrt(grad_sum_of_squared.z) + 1e-8);
+    m_delta.x = -learning_rate * grad.x / (sqrt(grad_sum_of_squared.x) + kDivisionEpsilon);
+    m_delta.z = -learning_rate * grad.z / (sqrt(grad_sum_of_squared.z) + kDivisionEpsilon);
 }
 
 
