@@ -15,6 +15,7 @@ void Animation::triggerSimpleAnimation(int animation_speedup,
     if (!m_visible) return;
 
     ball->setPositionOnSurface(p);
+    this->show_path = show_path;
     if (show_path) path->render();
     if (show_gradient) animateGradient();
     if (show_adjusted_gradient) animateAdjustedGradient();
@@ -32,7 +33,7 @@ void Animation::setVisible(bool visible){
         m_visible = visible;
         ball->setVisible(visible);
 
-        if (path != nullptr) path->setVisible(visible);
+        if (path != nullptr) path->setVisible(visible && show_path);
         if (arrowX != nullptr) arrowX->setVisible(visible);
         if (arrowZ != nullptr) arrowZ->setVisible(visible);
         if (adjustedArrowX != nullptr) adjustedArrowX->setVisible(visible);

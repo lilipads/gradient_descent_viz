@@ -56,6 +56,7 @@ protected:
     bool has_gradient_squared = false;
     bool m_visible = true;
     bool detailed_animation_prepared = false;
+    bool show_path = false;
 
     // don't own these
     Q3DSurface* m_graph;
