@@ -169,6 +169,11 @@ Line::Line(Q3DSurface* graph, QColor color, double (*_f) (double, double))
 
 
 void Line::addPoint(Point p){
+    // don't include points that are out of the bound. need to change
+    // this hacky fix if the axes range can dynamically change during rendering
+    if (p.x > m_graph->axisX()->max() || p.x < m_graph->axisX()->min() ||
+        p.z > m_graph->axisZ()->max() || p.z < m_graph->axisZ()->min())
+        return;
     // to make it computationally efficient, don't add crosslines
     // when they are too close to each other
     if (crosslines.size() >= 2){
