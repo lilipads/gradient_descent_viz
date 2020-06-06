@@ -207,6 +207,7 @@ void Animation::prepareDetailedAnimation(){
 void Animation::resetAnimation(){
     descent->resetPositionAndComputeGradient();
     state = 0;
+    ball->setPositionOnSurface(descent->position());
     ball->setVisible(m_visible);
     if (path != nullptr) path->erase();
     else path = std::unique_ptr<Line>(new Line(m_graph, ball_color, f));
