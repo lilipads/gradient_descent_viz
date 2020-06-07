@@ -1,7 +1,7 @@
 # Gradient Descent Visualization
 
 Gradient Descent Viz is a desktop app that visualizes some popular [gradient descent methods](https://en.wikipedia.org/wiki/Stochastic_gradient_descent)
-in machine learning, including (vanilla) gradient descent, momentum, AdaGrad, RMSProp and Adam. My hope is that by playing around with the different settings, anyone -- beginner or expert -- can come away with new intuitive understanding of these methods.
+in machine learning, including (vanilla) gradient descent, momentum, AdaGrad, RMSProp and Adam. My hope is that by playing around with the different settings, anyone -- beginner or expert -- can come away with new intuitive understanding of these methods. Read here for the [accompanying blog post](https://towardsdatascience.com/a-visual-explanation-of-gradient-descent-methods-momentum-adagrad-rmsprop-adam-f898b102325c) that explains these methods in detail.
 
 ![demo](resources/screenshots/demo-overview.gif)
 
@@ -63,4 +63,6 @@ squares, the path (which is really just a 3D surface), etc.
 ![code structure](resources/screenshots/code_structure_diagram.png)
 ![code strucutre](resources/screenshots/code_structure_visual.png)
 
+## Contribution
 
+Contributions are welcome. Looking for help to turn this project into a webapp.
