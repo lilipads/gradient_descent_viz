@@ -79,19 +79,19 @@ void PlotArea::initializeAnimations(){
                 new GradientDescentAnimation(m_graph.get(), &m_timer));
     momentum = std::unique_ptr<Animation>(
                 new MomentumAnimation(m_graph.get(), &m_timer));
+    qhm = std::unique_ptr<Animation>(
+            new QHMAnimation( m_graph.get(), &m_timer ) );
     ada_grad = std::unique_ptr<Animation>(
-                new AdaGradAnimation(m_graph.get(), &m_timer));
+            new AdaGradAnimation( m_graph.get(), &m_timer ) );
     rms_prop = std::unique_ptr<Animation>(
                 new RMSPropAnimation(m_graph.get(), &m_timer));
     adam = std::unique_ptr<Animation>(
                 new AdamAnimation(m_graph.get(), &m_timer));
-    all_animations = {
-        gradient_descent.get(),
-        momentum.get(),
-        ada_grad.get(),
-        rms_prop.get(),
-        adam.get()
-    };
+    qhadam = std::unique_ptr<Animation>(
+            new QHAdamAnimation( m_graph.get(), &m_timer ) );
+    all_animations
+            = { gradient_descent.get(), momentum.get(), qhm.get(),
+                    ada_grad.get(), rms_prop.get(), adam.get(), qhadam.get() };
 }
 
 

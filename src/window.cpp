@@ -37,9 +37,11 @@ Window::Window(QWidget *parent)
     // widgets to tune gradient parameters
     vLayout->addWidget(createGradientDescentGroup());
     vLayout->addWidget(createMomentumGroup());
+    vLayout->addWidget(createQHMGroup());
     vLayout->addWidget(createAdaGradGroup());
     vLayout->addWidget(createRMSPropGroup());
-    vLayout->addWidget(createAdamGroup(), 1, Qt::AlignTop);
+    vLayout->addWidget(createAdamGroup());
+    vLayout->addWidget( createQHAdamGroup(), 1, Qt::AlignTop );
 
     setupKeyboardShortcuts();
 }
@@ -205,6 +207,23 @@ QGroupBox *Window::createMomentumGroup(){
     return createDescentGroup(plot_area->momentum.get(), form);
 }
 
+QGroupBox *Window::createQHMGroup()
+{
+    QHM *descent = dynamic_cast<QHM *>( plot_area->qhm->descent.get() );
+
+    QFormLayout *form = new QFormLayout;
+    form->addRow(
+            new QLabel( QStringLiteral( "Learning Rate:" ) ),
+            createLearningRateBox( descent ) );
+    form->addRow(
+            new QLabel( QStringLiteral( "Decay rate:" ) ),
+            createDecayBox( descent->decay_rate ) );
+    form->addRow(
+            new QLabel( QStringLiteral( "Discount factor:" ) ),
+            createDecayBox( descent->discount_factor ) );
+
+    return createDescentGroup( plot_area->qhm.get(), form );
+}
 
 QGroupBox *Window::createAdaGradGroup(){
     AdaGrad* descent = dynamic_cast<AdaGrad*> (plot_area->ada_grad->descent.get());
@@ -241,9 +260,49 @@ QGroupBox *Window::createAdamGroup(){
     form->addRow(new QLabel(QStringLiteral("Beta2:")),
                  createDecayBox(descent->beta2));
 
+    QCheckBox *scaled = new QCheckBox( "Use Bias Correction" );
+    auto &bias_val = descent->use_bias_correction;
+    scaled->setChecked( bias_val );
+    QObject::connect( scaled, &QCheckBox::clicked, [&]( bool clicked ) {
+                bias_val = clicked;
+            } );
+    form->addRow( scaled );
+
     return createDescentGroup(plot_area->adam.get(), form);
 }
 
+
+QGroupBox *Window::createQHAdamGroup()
+{
+    QHAdam *descent = dynamic_cast<QHAdam *>( plot_area->qhadam->descent.get() );
+
+    QFormLayout *form = new QFormLayout;
+    form->addRow(
+            new QLabel( QStringLiteral( "Learning Rate:" ) ),
+            createLearningRateBox( descent ) );
+    form->addRow(
+            new QLabel( QStringLiteral( "Beta1:" ) ),
+            createDecayBox( descent->beta1 ) );
+    form->addRow(
+            new QLabel( QStringLiteral( "Beta2:" ) ),
+            createDecayBox( descent->beta2 ) );
+    form->addRow(
+            new QLabel( QStringLiteral( "Discount Factor:" ) ),
+            createDecayBox( descent->discount_factor ) );
+    form->addRow(
+            new QLabel( QStringLiteral( "Sq Discount Factor:" ) ),
+            createDecayBox( descent->squared_discount_factor ) );
+
+    QCheckBox *scaled = new QCheckBox( "Use Bias Correction" );
+    auto &bias_val = descent->use_bias_correction;
+    scaled->setChecked( bias_val );
+    QObject::connect( scaled, &QCheckBox::clicked, [&]( bool clicked ) {
+                bias_val = clicked;
+            } );
+    form->addRow( scaled );
+
+    return createDescentGroup( plot_area->qhadam.get(), form );
+}
 
 QLayout *Window::createLearningRateBox(GradientDescent* descent){
     // learning rate spin box

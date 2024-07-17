@@ -22,10 +22,12 @@ public:
     ~PlotArea();
     std::unique_ptr<Animation> gradient_descent;
     std::unique_ptr<Animation> momentum;
+    std::unique_ptr<Animation> qhm;
     std::unique_ptr<Animation> ada_grad;
     std::unique_ptr<Animation> rms_prop;
     std::unique_ptr<Animation> adam;
-    std::vector<Animation*> all_animations;
+    std::unique_ptr<Animation> qhadam;
+    std::vector<Animation *> all_animations;
 
 signals:
     void updateMessage(QString message);

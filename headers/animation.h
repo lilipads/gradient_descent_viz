@@ -101,7 +101,7 @@ public:
     {
         name = "Gradient Descent";
         num_states = 4;
-        ball_color = kGradientColor;
+        ball_color = Qt::cyan;
         ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color, f));
         descent = std::unique_ptr<GradientDescent>(new VanillaGradientDescent);
     };
@@ -134,6 +134,30 @@ protected:
                                   -descent->delta().z / descent->learning_rate);}
 };
 
+class QHMAnimation : public Animation {
+public:
+    QHMAnimation( Q3DSurface *_graph, QTimer *_timer )
+        : Animation( _graph, _timer )
+    {
+        name = "QHM";
+        num_states = 6;
+        ball_color = Qt::red;
+        ball = std::unique_ptr<Ball>( new Ball( m_graph, ball_color, f ) );
+        descent = std::unique_ptr<GradientDescent>( new QHM );
+        has_momentum = true;
+    };
+
+    QString animateStep();
+
+protected:
+    Point momentum()
+    {
+        return Point(
+                -descent->delta().x / descent->learning_rate,
+                -descent->delta().z / descent->learning_rate );
+    }
+};
+
 
 class AdaGradAnimation : public Animation
 {
@@ -143,7 +167,7 @@ public:
     {
         name = "Adagrad";
         num_states = 6;
-        ball_color = Qt::white;
+        ball_color = Qt::gray;
         ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color, f));
         descent = std::unique_ptr<GradientDescent>(new AdaGrad);
         has_gradient_squared = true;
@@ -207,10 +231,43 @@ protected:
     int interval() {return 5000;}
 
     Point momentum() {
-        return dynamic_cast<Adam*> (descent.get())->decayedGradSum();} 
+        return dynamic_cast<Adam*> (descent.get())->decayedGradSum();}
     Point gradSumOfSquared(){
         return dynamic_cast<Adam*> (descent.get())->decayedGradSumOfSquared();}
 
 };
 
+class QHAdamAnimation : public Animation {
+public:
+    QHAdamAnimation( Q3DSurface *_graph, QTimer *_timer )
+        : Animation( _graph, _timer )
+    {
+        name = "QHAdam";
+        num_states = 9;
+        ball_color = Qt::darkCyan;
+        ball = std::unique_ptr<Ball>( new Ball( m_graph, ball_color, f ) );
+        descent = std::unique_ptr<GradientDescent>( new QHAdam );
+        has_momentum = true;
+        has_gradient_squared = true;
+    };
+
+    QString animateStep();
+
+protected:
+    // scale up the arrow, otherwise you can't see because adagrad moves so slow
+    const float arrowScale = 1;
+    int interval()
+    {
+        return 5000;
+    }
+
+    Point momentum()
+    {
+        return dynamic_cast<QHAdam *>( descent.get() )->decayedGradSum();
+    }
+    Point gradSumOfSquared()
+    {
+        return dynamic_cast<QHAdam *>( descent.get() )->decayedGradSumOfSquared();
+    }
+};
 #endif // ANIMATION_H
