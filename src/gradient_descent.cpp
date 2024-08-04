@@ -110,6 +110,28 @@ void Momentum::updateGradientDelta(){
     m_delta.z = decay_rate * m_delta.z - learning_rate * grad.z;
 }
 
+void QHM::updateGradientDelta()
+{
+    /* https://arxiv.org/abs/1810.06801v4 - paper on QHM and QHADAM */
+
+    momentum.x = decay_rate * momentum.x + ( 1 - decay_rate ) * grad.x;
+    momentum.z = decay_rate * momentum.z + (1 - decay_rate) * grad.z;
+
+    // we need to denormalize the learning rate by 1/(1-decay_rate) to correct
+    // for the fact that the momentum term is scaled by decay_rate here, but not
+    // in the momentum implementation. see section 7.1 of the paper.
+    auto adjusted_learning_rate = learning_rate / ( 1 - decay_rate );
+
+    m_delta.x = -adjusted_learning_rate
+            * ( ( 1 - discount_factor ) * grad.x + discount_factor * momentum.x );
+    m_delta.z = -adjusted_learning_rate
+            * ( ( 1 - discount_factor ) * grad.z + discount_factor * momentum.z );
+}
+
+void QHM::resetState()
+{
+    momentum = Point( 0, 0 );
+}
 
 void AdaGrad::updateGradientDelta(){
     /* https://en.wikipedia.org/wiki/Stochastic_gradient_descent#AdaGrad */
@@ -142,29 +164,70 @@ void RMSProp::resetState(){
     decayed_grad_sum_of_squared = Point(0, 0);
 }
 
-
-void Adam::updateGradientDelta(){
-    /* https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Adam */
-
+void Adam::baseCompute( Point &scaled_decayed_grad_sum, Point &scaled_decayed_grad_sum_sq )
+{
     // first moment (momentum)
     decayed_grad_sum.x *= beta1;
     decayed_grad_sum.x += (1 - beta1) * grad.x;
     decayed_grad_sum.z *= beta1;
     decayed_grad_sum.z += (1 - beta1) * grad.z;
+
     // second moment (rmsprop)
     decayed_grad_sum_of_squared.x *= beta2;
     decayed_grad_sum_of_squared.x += (1 - beta2) * pow(grad.x, 2);
     decayed_grad_sum_of_squared.z *= beta2;
     decayed_grad_sum_of_squared.z += (1 - beta2) * pow(grad.z, 2);
 
-    m_delta.x = -learning_rate * decayed_grad_sum.x /
-            (sqrt(decayed_grad_sum_of_squared.x) + kDivisionEpsilon);
-    m_delta.z = -learning_rate * decayed_grad_sum.z /
-            (sqrt(decayed_grad_sum_of_squared.z) + kDivisionEpsilon);
+    if (use_bias_correction) {
+        scaled_decayed_grad_sum.x = decayed_grad_sum.x / ( 1 - beta1_pow );
+        scaled_decayed_grad_sum.z = decayed_grad_sum.z / ( 1 - beta1_pow );
+        scaled_decayed_grad_sum_sq.x = decayed_grad_sum_of_squared.x / ( 1 - beta2_pow );
+        scaled_decayed_grad_sum_sq.z = decayed_grad_sum_of_squared.z / ( 1 - beta2_pow );
+        beta1_pow *= beta1;
+        beta2_pow *= beta2;
+    } else {
+        scaled_decayed_grad_sum.x = decayed_grad_sum.x;
+        scaled_decayed_grad_sum.z = decayed_grad_sum.z;
+        scaled_decayed_grad_sum_sq.x = decayed_grad_sum_of_squared.x;
+        scaled_decayed_grad_sum_sq.z = decayed_grad_sum_of_squared.z;
+    }
+}
+
+void Adam::updateGradientDelta()
+{
+    /* https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Adam */
+
+    Point grad_sum, grad_sum_sq;
+    baseCompute( grad_sum, grad_sum_sq );
+
+    m_delta.x = -learning_rate * grad_sum.x
+            / ( sqrt( grad_sum_sq.x ) + kDivisionEpsilon );
+    m_delta.z = -learning_rate * grad_sum.z
+            / ( sqrt( grad_sum_sq.z ) + kDivisionEpsilon );
 }
 
 
 void Adam::resetState(){
     decayed_grad_sum_of_squared = Point(0, 0);
     decayed_grad_sum = Point(0, 0);
+    beta1_pow = beta1;
+    beta2_pow = beta2;
+}
+
+void QHAdam::updateGradientDelta()
+{
+    /* https://arxiv.org/abs/1810.06801v4 - paper on QHM and QHADAM */
+    Point grad_sum, grad_sum_sq;
+    baseCompute( grad_sum, grad_sum_sq );
+
+    m_delta.x = -learning_rate
+            * ( ( 1 - discount_factor ) * grad.x + discount_factor * grad_sum.x )
+            / ( sqrt( ( 1 - squared_discount_factor ) * pow( grad.x, 2 )
+                      + squared_discount_factor * grad_sum_sq.x )
+                + kDivisionEpsilon );
+    m_delta.z = -learning_rate
+            * ( ( 1 - discount_factor ) * grad.z + discount_factor * grad_sum.z )
+            / ( sqrt( ( 1 - squared_discount_factor ) * pow( grad.z, 2 )
+                      + squared_discount_factor * grad_sum_sq.z )
+                + kDivisionEpsilon );
 }

@@ -46,9 +46,11 @@ private:
         QFormLayout* layout);
     QGroupBox* createGradientDescentGroup();
     QGroupBox* createMomentumGroup();
-    QGroupBox* createAdaGradGroup();
+    QGroupBox *createQHMGroup();
+    QGroupBox *createAdaGradGroup();
     QGroupBox* createRMSPropGroup();
     QGroupBox* createAdamGroup();
+    QGroupBox *createQHAdamGroup();
 
     QLayout* createLearningRateBox(GradientDescent* descent);
     QDoubleSpinBox* createDecayBox(double& val);
@@ -56,4 +58,3 @@ private:
 };
 
 #endif
-

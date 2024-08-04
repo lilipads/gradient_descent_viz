@@ -64,10 +64,24 @@ class Momentum : public GradientDescent {
 public:
     Momentum() {}
 
-    double decay_rate = 0.8;
+    double decay_rate = 0.9;
 
 protected:
     void updateGradientDelta();
+};
+
+class QHM : public GradientDescent {
+public:
+    QHM(): momentum( 0., 0.) { }
+
+    double decay_rate = 0.990;     // beta
+    double discount_factor = 0.7;  // v
+
+protected:
+    void updateGradientDelta() override;
+    void resetState() override;
+private:
+    Point momentum;
 };
 
 class AdaGrad : public GradientDescent {
@@ -100,22 +114,41 @@ private:
 
 class Adam : public GradientDescent {
 public:
-    Adam() : decayed_grad_sum(0., 0.),
-        decayed_grad_sum_of_squared(0., 0.)
-    {}
+    Adam()
+        : decayed_grad_sum( 0., 0. )
+        , decayed_grad_sum_of_squared( 0., 0. )
+        , beta1_pow( beta1 )
+        , beta2_pow( beta2 )
+    { }
 
     double beta1 = 0.9;
     double beta2 = 0.999;
+    bool use_bias_correction = true;
+
     Point decayedGradSum(){return decayed_grad_sum;}
     Point decayedGradSumOfSquared(){return decayed_grad_sum_of_squared;}
 
 protected:
-    void updateGradientDelta();
-    void resetState();
+    void baseCompute( Point &scaled_decayed_grad_sum, Point &scaled_decayed_grad_sum_sq );
+    void updateGradientDelta() override;
+    void resetState() override;
 
 private:
     Point decayed_grad_sum;
     Point decayed_grad_sum_of_squared;
+    double beta1_pow;
+    double beta2_pow;
+};
+
+class QHAdam : public Adam {
+public:
+    QHAdam() {}
+
+    double discount_factor = 0.7;         // v1
+    double squared_discount_factor = 1.0; // v2
+
+protected:
+    void updateGradientDelta() override;
 };
 
 #endif // GRADIENTDESCENT_H

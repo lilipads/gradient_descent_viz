@@ -231,7 +231,7 @@ QString GradientDescentAnimation::animateStep(){
         break;
     }
     case 1: // show the x and z direction gradients
-    { 
+    {
         Point grad(descent->gradX(), descent->gradZ());
         arrowX->setMagnitude(grad.x * kSimpleAnimationArrowScale);
         arrowZ->setMagnitude(grad.z * kSimpleAnimationArrowScale);
@@ -346,6 +346,103 @@ QString MomentumAnimation::animateStep(){
                                         descent->position().z));
 
         temporary_ball->setVisible(true);
+        return "The ball takes a step in the direction of the black arrow, scaled by the learning rate.";
+    }
+    }
+    return "";
+}
+
+
+QString QHMAnimation::animateStep()
+{
+    switch ( state ) {
+    case 0: // the ball and momentum arrows
+    {
+        ball->setPositionOnSurface( descent->position() );
+
+        momentumArrowX->setPosition( ball->position() );
+        momentumArrowZ->setPosition( ball->position() );
+
+        temporary_ball->setVisible( false );
+        total_arrow->setVisible( false );
+        return "Magenta arrows show momentum in x and y directions.";
+    }
+    case 1: // decay the momentum
+    {
+        float decay_rate
+                = dynamic_cast<QHM *>( descent.get() )->decay_rate;
+        momentumArrowX->setMagnitude(
+                momentumArrowX->magnitude() * decay_rate );
+        momentumArrowZ->setMagnitude(
+                momentumArrowZ->magnitude() * decay_rate );
+
+        temporary_ball->setVisible( false );
+        total_arrow->setVisible( false );
+
+        return QString( "Momentum decays by x %1." ).arg( decay_rate );
+    }
+    case 2: // show the x and z direction gradients
+    {
+        in_initial_state = false;
+        Point grad( descent->gradX(), descent->gradZ() );
+        arrowX->setMagnitude( grad.x * kSimpleAnimationArrowScale );
+        arrowZ->setMagnitude( grad.z * kSimpleAnimationArrowScale );
+        // if in the same direction, then start the arrow at the tip of the
+        // momentum arrow
+        if ( momentumArrowX->magnitude() * grad.x > 0 ) {
+            arrowX->setPosition(
+                    ball->position()
+                    + momentumArrowX->renderedVectorInPlotUnit() );
+        } else {
+            arrowX->setPosition( ball->position() );
+        }
+
+        if ( momentumArrowZ->magnitude() * grad.z > 0 ) {
+            arrowZ->setPosition(
+                    ball->position()
+                    + momentumArrowZ->renderedVectorInPlotUnit() );
+        } else {
+            arrowZ->setPosition( ball->position() );
+        }
+
+        arrowX->setVisible( true );
+        arrowZ->setVisible( true );
+        return "The cyan arrows show gradients in x and y directions.";
+    }
+    case 3: // add the gradient to the momentum
+    {
+        descent->takeGradientStep();
+        Point delta = descent->delta();
+        momentumArrowX->setMagnitude(
+                -delta.x / descent->learning_rate
+                * kSimpleAnimationArrowScale );
+        momentumArrowZ->setMagnitude(
+                -delta.z / descent->learning_rate
+                * kSimpleAnimationArrowScale );
+
+        arrowX->setVisible( false );
+        arrowZ->setVisible( false );
+        return "Add the gradient (cyan) onto the momentum (magenta).";
+    }
+    case 4: // show the composite of gradients
+    {
+        Point delta = descent->delta();
+        total_arrow->setVector(
+                QVector3D( delta.x, 0, delta.z ) / descent->learning_rate
+                * kSimpleAnimationArrowScale );
+        total_arrow->setPosition( ball->position() );
+
+        total_arrow->setVisible( true );
+        return "The black arrow shows the total adjusted gradient (composite of the x & y momentum).";
+    }
+
+    case 5: // draw an imaginary ball of the future position
+    {
+        temporary_ball->setPosition( QVector3D(
+                descent->position().x, ball->position().y(),
+                descent->position().z ) );
+
+        temporary_ball->setVisible( true );
         return "The ball takes a step in the direction of the black arrow, scaled by the learning rate.";
     }
     }
@@ -615,3 +712,132 @@ QString AdamAnimation::animateStep(){
     return "";
 }
 
+
+QString QHAdamAnimation::animateStep()
+{
+    switch ( state ) {
+    case 0: // the ball and momentum arrows
+    {
+        ball->setPositionOnSurface( descent->position() );
+
+        momentumArrowX->setPosition( ball->position() );
+        momentumArrowZ->setPosition( ball->position() );
+        squareX->setPosition( ball->position() );
+        squareZ->setPosition( ball->position() );
+
+        temporary_ball->setVisible( false );
+        total_arrow->setVisible( false );
+        arrowX->setVisible( false );
+        arrowZ->setVisible( false );
+        return "Arrows are momentum; squares are decayed sum of gradient^2.";
+    }
+    case 1: // decay the momentum
+    {
+        ball->setPositionOnSurface( descent->position() );
+        float beta1 = dynamic_cast<QHAdam *>( descent.get() )->beta1;
+        momentumArrowX->setMagnitude( momentumArrowX->magnitude() * beta1 );
+        momentumArrowZ->setMagnitude( momentumArrowZ->magnitude() * beta1 );
+        momentumArrowX->setPosition( ball->position() );
+        momentumArrowZ->setPosition( ball->position() );
+
+        temporary_ball->setVisible( false );
+        total_arrow->setVisible( false );
+        return QString( "Decay the momentum by beta1 (%1)." ).arg( beta1 );
+    }
+    case 2: // show sum of squares decaying
+    {
+        float beta2 = dynamic_cast<QHAdam *>( descent.get() )->beta2;
+        squareX->setArea(
+                squareX->area() * beta2, signbit( descent->gradX() ) );
+        squareZ->setArea(
+                squareZ->area() * beta2, signbit( descent->gradZ() ) );
+
+        squareX->setVisible( true );
+        squareZ->setVisible( true );
+
+        return QString( "Decay the squares by beta2 (%1)." ).arg( beta2 );
+    }
+    case 3: // show the x and z direction gradients
+    {
+        in_initial_state = false;
+        Point grad( descent->gradX(), descent->gradZ() );
+        arrowX->setMagnitude( grad.x );
+        arrowZ->setMagnitude( grad.z );
+        // if in the same direction, then start the arrow at the tip of the
+        // momentum arrow
+        if ( momentumArrowX->magnitude() * grad.x > 0 ) {
+            arrowX->setPosition(
+                    ball->position()
+                    + momentumArrowX->renderedVectorInPlotUnit() );
+        } else {
+            arrowX->setPosition( ball->position() );
+        }
+
+        if ( momentumArrowZ->magnitude() * grad.z > 0 ) {
+            arrowZ->setPosition(
+                    ball->position()
+                    + momentumArrowZ->renderedVectorInPlotUnit() );
+        } else {
+            arrowZ->setPosition( ball->position() );
+        }
+
+        arrowX->setVisible( true );
+        arrowZ->setVisible( true );
+        return "The cyan arrows show gradients in x and y directions.";
+    }
+    case 4: // update momentum
+    {
+        descent->takeGradientStep();
+        momentumArrowX->setMagnitude(
+                dynamic_cast<QHAdam *>( descent.get() )->decayedGradSum().x );
+        momentumArrowZ->setMagnitude(
+                dynamic_cast<QHAdam *>( descent.get() )->decayedGradSum().z );
+
+        arrowX->setVisible( false );
+        arrowZ->setVisible( false );
+        return "Momentums grow by (1 - beta1) x gradient.";
+    }
+    case 5: // update sum of squares
+    {
+        squareX->setArea(
+                dynamic_cast<QHAdam *>( descent.get() )
+                        ->decayedGradSumOfSquared()
+                        .x,
+                signbit( descent->gradX() ) );
+        squareZ->setArea(
+                dynamic_cast<QHAdam *>( descent.get() )
+                        ->decayedGradSumOfSquared()
+                        .z,
+                signbit( descent->gradZ() ) );
+        return "Squares grow by (1 - beta2) x gradient^2.";
+    }
+    case 6: // show delta arrows shrink wrt gradient arrows
+    {
+        momentumArrowX->setMagnitude(
+                -descent->delta().x / descent->learning_rate * arrowScale );
+        momentumArrowZ->setMagnitude(
+                -descent->delta().z / descent->learning_rate * arrowScale );
+        return "Divide the momentum by the length of the side of the square in each direction.";
+    }
+    case 7: // show the composite of gradients
+    {
+        Point delta = descent->delta();
+        total_arrow->setVector(
+                QVector3D( delta.x, 0, delta.z ) / descent->learning_rate );
+        total_arrow->setPosition( ball->position() );
+
+        total_arrow->setVisible( true );
+        return "The black arrow shows the total adjusted gradient.";
+    }
+    case 8: // draw an imaginary ball of the future position
+    {
+        temporary_ball->setPosition( QVector3D(
+                descent->position().x, ball->position().y(),
+                descent->position().z ) );
+
+        temporary_ball->setVisible( true );
+        return "The ball takes a step in the direction of the black arrow, scaled by the learning rate.";
+    }
+    }
+    return "";
+}
