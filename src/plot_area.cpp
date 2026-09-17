@@ -5,7 +5,9 @@
 #include <QtDataVisualization/q3dcamera.h>
 #include <QtCore/qmath.h>
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 using namespace QtDataVisualization;
+#endif
 
 const int sampleCountX = 51;
 const int sampleCountZ = 51;
@@ -87,11 +89,14 @@ void PlotArea::initializeAnimations(){
                 new RMSPropAnimation(m_graph.get(), &m_timer));
     adam = std::unique_ptr<Animation>(
                 new AdamAnimation(m_graph.get(), &m_timer));
+    adamw = std::unique_ptr<Animation>(
+                new AdamWAnimation(m_graph.get(), &m_timer));
     qhadam = std::unique_ptr<Animation>(
             new QHAdamAnimation( m_graph.get(), &m_timer ) );
     all_animations
             = { gradient_descent.get(), momentum.get(), qhm.get(),
-                    ada_grad.get(), rms_prop.get(), adam.get(), qhadam.get() };
+                    ada_grad.get(), rms_prop.get(), adam.get(), adamw.get(),
+                    qhadam.get() };
 }
 
 

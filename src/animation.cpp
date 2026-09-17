@@ -91,9 +91,9 @@ void Animation::animateGradientSquared(){
         squareZ = std::unique_ptr<Square>(new Square(m_graph, "z"));
 
     squareX->setArea(gradSumOfSquared().x * pow(kSimpleAnimationArrowScale, 2),
-                     signbit(descent->gradX()));
+                     std::signbit(descent->gradX()));
     squareZ->setArea(gradSumOfSquared().z * pow(kSimpleAnimationArrowScale, 2),
-                     signbit(descent->gradZ()));
+                     std::signbit(descent->gradZ()));
     squareX->setPosition(ball->position());
     squareZ->setPosition(ball->position());
 }
@@ -484,9 +484,9 @@ QString AdaGradAnimation::animateStep(){
     {
         descent->takeGradientStep();
         squareX->setArea(dynamic_cast<AdaGrad*> (descent.get())->gradSumOfSquared().x,
-                         signbit(descent->gradX()));
+                         std::signbit(descent->gradX()));
         squareZ->setArea(dynamic_cast<AdaGrad*> (descent.get())->gradSumOfSquared().z,
-                         signbit(descent->gradZ()));
+                         std::signbit(descent->gradZ()));
         squareX->setVisible(true);
         squareZ->setVisible(true);
         return "Square the gradient and add on to the square in each direction.";
@@ -552,8 +552,8 @@ QString RMSPropAnimation::animateStep(){
     case 2: // show sum of squares decaying
     {
         float decay_rate =  dynamic_cast<RMSProp*> (descent.get())->decay_rate;
-        squareX->setArea(squareX->area() * decay_rate, signbit(descent->gradX()));
-        squareZ->setArea(squareZ->area() * decay_rate, signbit(descent->gradZ()));
+        squareX->setArea(squareX->area() * decay_rate, std::signbit(descent->gradX()));
+        squareZ->setArea(squareZ->area() * decay_rate, std::signbit(descent->gradZ()));
         squareX->setVisible(true);
         squareZ->setVisible(true);
         return QString("Shrink the squares by x %1").arg(decay_rate);
@@ -563,9 +563,9 @@ QString RMSPropAnimation::animateStep(){
         in_initial_state = false;
         descent->takeGradientStep();
         squareX->setArea(dynamic_cast<RMSProp*> (descent.get())->decayedGradSumOfSquared().x,
-                         signbit(descent->gradX()));
+                         std::signbit(descent->gradX()));
         squareZ->setArea(dynamic_cast<RMSProp*> (descent.get())->decayedGradSumOfSquared().z,
-                         signbit(descent->gradZ()));
+                         std::signbit(descent->gradZ()));
         return QString("Squares grow by %1 x gradient^2").arg(
                     1-dynamic_cast<RMSProp*> (descent.get())->decay_rate);
     }
@@ -632,8 +632,8 @@ QString AdamAnimation::animateStep(){
     case 2: // show sum of squares decaying
     {
         float beta2 = dynamic_cast<Adam*> (descent.get())->beta2;
-        squareX->setArea(squareX->area() * beta2, signbit(descent->gradX()));
-        squareZ->setArea(squareZ->area() * beta2, signbit(descent->gradZ()));
+        squareX->setArea(squareX->area() * beta2, std::signbit(descent->gradX()));
+        squareZ->setArea(squareZ->area() * beta2, std::signbit(descent->gradZ()));
 
         squareX->setVisible(true);
         squareZ->setVisible(true);
@@ -678,9 +678,9 @@ QString AdamAnimation::animateStep(){
     case 5: // update sum of squares
     {
         squareX->setArea(dynamic_cast<Adam*> (descent.get())->decayedGradSumOfSquared().x,
-                         signbit(descent->gradX()));
+                         std::signbit(descent->gradX()));
         squareZ->setArea(dynamic_cast<Adam*> (descent.get())->decayedGradSumOfSquared().z,
-                         signbit(descent->gradZ()));
+                         std::signbit(descent->gradZ()));
         return "Squares grow by (1 - beta2) x gradient^2.";
     }
     case 6: // show delta arrows shrink wrt gradient arrows
@@ -710,6 +710,17 @@ QString AdamAnimation::animateStep(){
         }
     }
     return "";
+}
+
+
+QString AdamWAnimation::animateStep()
+{
+    QString message = AdamAnimation::animateStep();
+    if (state == 6)
+        return "Combine Adam's adjusted gradient with decoupled weight decay.";
+    if (state == 8)
+        return "The ball takes an AdamW step, scaled by the learning rate.";
+    return message;
 }
 
 
@@ -748,9 +759,9 @@ QString QHAdamAnimation::animateStep()
     {
         float beta2 = dynamic_cast<QHAdam *>( descent.get() )->beta2;
         squareX->setArea(
-                squareX->area() * beta2, signbit( descent->gradX() ) );
+                squareX->area() * beta2, std::signbit( descent->gradX() ) );
         squareZ->setArea(
-                squareZ->area() * beta2, signbit( descent->gradZ() ) );
+                squareZ->area() * beta2, std::signbit( descent->gradZ() ) );
 
         squareX->setVisible( true );
         squareZ->setVisible( true );
@@ -803,12 +814,12 @@ QString QHAdamAnimation::animateStep()
                 dynamic_cast<QHAdam *>( descent.get() )
                         ->decayedGradSumOfSquared()
                         .x,
-                signbit( descent->gradX() ) );
+                std::signbit( descent->gradX() ) );
         squareZ->setArea(
                 dynamic_cast<QHAdam *>( descent.get() )
                         ->decayedGradSumOfSquared()
                         .z,
-                signbit( descent->gradZ() ) );
+                std::signbit( descent->gradZ() ) );
         return "Squares grow by (1 - beta2) x gradient^2.";
     }
     case 6: // show delta arrows shrink wrt gradient arrows

@@ -26,6 +26,7 @@ public:
     std::unique_ptr<Animation> ada_grad;
     std::unique_ptr<Animation> rms_prop;
     std::unique_ptr<Animation> adam;
+    std::unique_ptr<Animation> adamw;
     std::unique_ptr<Animation> qhadam;
     std::vector<Animation *> all_animations;
 

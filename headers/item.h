@@ -6,7 +6,9 @@
 
 #include "point.h"
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 using namespace QtDataVisualization;
+#endif
 
 // for 1 unit of magnitude, the rendered item spans this many units on the graph
 // one might want to change this if gradient arrows rendered in 1:1 ratio is too
