@@ -56,11 +56,22 @@ double GradientDescent::f(double x, double z){
 
 void GradientDescent::computeGradient(){
     // use finite difference method
-    grad.x = (f(p.x + kFiniteDiffEpsilon, p.z) -
-            f(p.x - kFiniteDiffEpsilon, p.z)) / (2 * kFiniteDiffEpsilon);
+    grad.x = (evaluateObjective(p.x + kFiniteDiffEpsilon, p.z) -
+            evaluateObjective(p.x - kFiniteDiffEpsilon, p.z)) / (2 * kFiniteDiffEpsilon);
 
-    grad.z = (f(p.x, p.z + kFiniteDiffEpsilon) -
-            f(p.x, p.z - kFiniteDiffEpsilon)) / (2 * kFiniteDiffEpsilon);
+    grad.z = (evaluateObjective(p.x, p.z + kFiniteDiffEpsilon) -
+            evaluateObjective(p.x, p.z - kFiniteDiffEpsilon)) / (2 * kFiniteDiffEpsilon);
+}
+
+double GradientDescent::evaluateObjective(double x, double z) const
+{
+    return objective_function ? objective_function(x, z) : f(x, z);
+}
+
+void GradientDescent::setObjective(ObjectiveFunction objective)
+{
+    objective_function = objective;
+    computeGradient();
 }
 
 void GradientDescent::resetPositionAndComputeGradient(){
@@ -212,6 +223,13 @@ void Adam::resetState(){
     decayed_grad_sum = Point(0, 0);
     beta1_pow = beta1;
     beta2_pow = beta2;
+}
+
+void AdamW::updateGradientDelta()
+{
+    Adam::updateGradientDelta();
+    m_delta.x -= learning_rate * weight_decay * p.x;
+    m_delta.z -= learning_rate * weight_decay * p.z;
 }
 
 void QHAdam::updateGradientDelta()

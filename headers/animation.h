@@ -10,7 +10,9 @@
 #include "gradient_descent.h"
 #include "item.h"
 
-using namespace  QtDataVisualization;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+using namespace QtDataVisualization;
+#endif
 
 const auto f = GradientDescent::f;
 const float kBallYOffset = 10.f;
@@ -235,6 +237,21 @@ protected:
     Point gradSumOfSquared(){
         return dynamic_cast<Adam*> (descent.get())->decayedGradSumOfSquared();}
 
+};
+
+class AdamWAnimation : public AdamAnimation
+{
+public:
+    AdamWAnimation(Q3DSurface* _graph, QTimer* _timer)
+        : AdamAnimation(_graph, _timer)
+    {
+        name = "AdamW";
+        ball_color = QColor(255, 140, 0);
+        ball = std::unique_ptr<Ball>(new Ball(m_graph, ball_color, f));
+        descent = std::unique_ptr<GradientDescent>(new AdamW);
+    };
+
+    QString animateStep() override;
 };
 
 class QHAdamAnimation : public Animation {

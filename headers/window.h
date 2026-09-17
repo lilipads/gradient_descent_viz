@@ -19,6 +19,7 @@
 
 QT_BEGIN_NAMESPACE
 class QGroupBox;
+class QScrollArea;
 QT_END_NAMESPACE
 
 class Window : public QWidget
@@ -30,11 +31,19 @@ public:
 
 private:
     PlotArea *plot_area;
+    QWidget *graph_container;
+    QGroupBox *control_group;
+    QScrollArea *settings_scroll_area;
+    QTabWidget *workspace_tabs;
+    Qt::WindowStates previous_window_state;
+    bool visualization_fullscreen = false;
 
     void setupKeyboardShortcuts();
+    void toggleVisualizationFullscreen();
 
     QGroupBox* createControlGroup();
     QPushButton *createZoomButton(int is_zoomout);
+    QPushButton *createFullscreenButton();
     QPushButton* createToggleAnimationButton();
     QPushButton* createRestartAnimationButton();
     QComboBox* createPlaybackSpeedBox();
@@ -50,6 +59,7 @@ private:
     QGroupBox *createAdaGradGroup();
     QGroupBox* createRMSPropGroup();
     QGroupBox* createAdamGroup();
+    QGroupBox* createAdamWGroup();
     QGroupBox *createQHAdamGroup();
 
     QLayout* createLearningRateBox(GradientDescent* descent);

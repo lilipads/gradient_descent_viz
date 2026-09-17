@@ -2,46 +2,81 @@
 
 #include <QtWidgets>
 
+#include "learning_rate_schedule.h"
 #include "window.h"
 
 
 Window::Window(QWidget *parent)
- : QWidget(parent)
+ : QWidget(parent),
+   graph_container(nullptr),
+   control_group(nullptr),
+   settings_scroll_area(nullptr),
+   workspace_tabs(nullptr)
 {
     setWindowTitle(QStringLiteral("Gradient Descent Visualization"));
+    setMinimumSize(560, 420);
 
     Q3DSurface *graph = new Q3DSurface();
     plot_area = new PlotArea(graph);
-    QWidget *graph_container = QWidget::createWindowContainer(graph);
-
-    QSize screenSize = graph->screen()->size();
-    graph_container->setMinimumSize(QSize(screenSize.width() / 2, screenSize.height() / 1.5));
-    graph_container->setMaximumSize(screenSize);
+    graph_container = QWidget::createWindowContainer(graph);
+    graph_container->setMinimumSize(280, 210);
     graph_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     graph_container->setFocusPolicy(Qt::StrongFocus);
 
+    QWidget *visualization_panel = new QWidget;
+    QVBoxLayout *visualization_layout = new QVBoxLayout(visualization_panel);
+    visualization_layout->setContentsMargins(0, 0, 0, 0);
+    visualization_layout->addWidget(graph_container, 1);
+    control_group = createControlGroup();
+    visualization_layout->addWidget(control_group);
 
-    QHBoxLayout *hLayout = new QHBoxLayout(this);
-    QVBoxLayout *vLayoutLeft = new QVBoxLayout();
-    QVBoxLayout *vLayout = new QVBoxLayout();
+    QWidget *settings = new QWidget;
+    QVBoxLayout *settings_layout = new QVBoxLayout(settings);
+    settings_layout->addWidget(createFunctionSelector());
+    settings_layout->addWidget(createViewTabs());
+    settings_layout->addWidget(createGradientDescentGroup());
+    settings_layout->addWidget(createMomentumGroup());
+    settings_layout->addWidget(createQHMGroup());
+    settings_layout->addWidget(createAdaGradGroup());
+    settings_layout->addWidget(createRMSPropGroup());
+    settings_layout->addWidget(createAdamGroup());
+    settings_layout->addWidget(createAdamWGroup());
+    settings_layout->addWidget(createQHAdamGroup());
+    settings_layout->addStretch();
 
-    // things on the left
-    hLayout->addLayout(vLayoutLeft);
-    vLayoutLeft->addWidget(graph_container, 1);
-    vLayoutLeft->addWidget(createControlGroup());
-    hLayout->addLayout(vLayout);
+    settings_scroll_area = new QScrollArea;
+    settings_scroll_area->setWidget(settings);
+    settings_scroll_area->setWidgetResizable(true);
+    settings_scroll_area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    settings_scroll_area->setFrameShape(QFrame::NoFrame);
+    settings_scroll_area->setMinimumWidth(260);
+    settings_scroll_area->setMaximumWidth(460);
 
-    // things on the right
-    vLayout->addWidget(createFunctionSelector());
-    vLayout->addWidget(createViewTabs());
-    // widgets to tune gradient parameters
-    vLayout->addWidget(createGradientDescentGroup());
-    vLayout->addWidget(createMomentumGroup());
-    vLayout->addWidget(createQHMGroup());
-    vLayout->addWidget(createAdaGradGroup());
-    vLayout->addWidget(createRMSPropGroup());
-    vLayout->addWidget(createAdamGroup());
-    vLayout->addWidget( createQHAdamGroup(), 1, Qt::AlignTop );
+    QSplitter *splitter = new QSplitter(Qt::Horizontal);
+    splitter->addWidget(visualization_panel);
+    splitter->addWidget(settings_scroll_area);
+    splitter->setStretchFactor(0, 1);
+    splitter->setStretchFactor(1, 0);
+    splitter->setCollapsible(0, false);
+    splitter->setCollapsible(1, false);
+
+    workspace_tabs = new QTabWidget;
+    workspace_tabs->addTab(splitter, QStringLiteral("Optimizer Visualization"));
+    LearningRateScheduleWidget *schedule_workspace = new LearningRateScheduleWidget;
+    workspace_tabs->addTab(schedule_workspace,
+                           QStringLiteral("Learning Rate Schedules"));
+    QObject::connect(workspace_tabs, &QTabWidget::currentChanged,
+                     [schedule_workspace](int index) {
+        schedule_workspace->setActive(index == 1);
+    });
+    schedule_workspace->setActive(false);
+
+    QHBoxLayout *window_layout = new QHBoxLayout(this);
+    window_layout->addWidget(workspace_tabs);
+
+    const QRect available = graph->screen()->availableGeometry();
+    resize(available.width() * 9 / 10, available.height() * 9 / 10);
+    splitter->setSizes({available.width() * 3 / 4, available.width() / 4});
 
     setupKeyboardShortcuts();
 }
@@ -56,28 +91,65 @@ void Window::setupKeyboardShortcuts(){
     QObject::connect(up, &QShortcut::activated, [=](){plot_area->moveCamera(0, 1);});
     QShortcut* down = new QShortcut(Qt::Key_Down, this);
     QObject::connect(down, &QShortcut::activated, [=](){plot_area->moveCamera(0, -1);});
-    QShortcut* zoomin = new QShortcut(Qt::CTRL + Qt::Key_Equal, this);
+    QShortcut* zoomin = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Equal), this);
     QObject::connect(zoomin, &QShortcut::activated, plot_area, &PlotArea::cameraZoomIn);
-    QShortcut* zoomout = new QShortcut(Qt::CTRL + Qt::Key_Minus, this);
+    QShortcut* zoomout = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_Minus), this);
     QObject::connect(zoomout, &QShortcut::activated, plot_area, &PlotArea::cameraZoomOut);
+
+    QShortcut *fullscreen = new QShortcut(Qt::Key_F11, this);
+    QObject::connect(fullscreen, &QShortcut::activated,
+                     this, &Window::toggleVisualizationFullscreen);
+    QShortcut *exit_fullscreen = new QShortcut(Qt::Key_Escape, this);
+    QObject::connect(exit_fullscreen, &QShortcut::activated, [this]() {
+        if (visualization_fullscreen)
+            toggleVisualizationFullscreen();
+    });
+}
+
+
+void Window::toggleVisualizationFullscreen(){
+    visualization_fullscreen = !visualization_fullscreen;
+    control_group->setVisible(!visualization_fullscreen);
+    settings_scroll_area->setVisible(!visualization_fullscreen);
+    workspace_tabs->tabBar()->setVisible(!visualization_fullscreen);
+
+    if (visualization_fullscreen) {
+        previous_window_state = windowState();
+        showFullScreen();
+        graph_container->setFocus();
+    } else if (previous_window_state.testFlag(Qt::WindowMaximized)) {
+        showMaximized();
+    } else {
+        showNormal();
+    }
 }
 
 
 QGroupBox *Window::createControlGroup(){
     QGroupBox *groupBox = new QGroupBox();
-    QHBoxLayout *layout= new QHBoxLayout;
+    QGridLayout *layout = new QGridLayout;
     groupBox->setLayout(layout);
 
-    layout->addWidget(createToggleAnimationButton());
-    layout->addWidget(createRestartAnimationButton());
-    layout->addWidget(new QLabel(QStringLiteral("Playback speed:")));
-    layout->addWidget(createPlaybackSpeedBox());
-    layout->addWidget(createZoomButton(1));
-    layout->addWidget(createZoomButton(0));
+    layout->addWidget(createToggleAnimationButton(), 0, 0);
+    layout->addWidget(createRestartAnimationButton(), 0, 1);
+    layout->addWidget(createFullscreenButton(), 0, 2, 1, 2);
+    layout->addWidget(new QLabel(QStringLiteral("Playback speed:")), 1, 0);
+    layout->addWidget(createPlaybackSpeedBox(), 1, 1);
+    layout->addWidget(createZoomButton(1), 1, 2);
+    layout->addWidget(createZoomButton(0), 1, 3);
 
     layout->setAlignment(Qt::AlignHCenter);
     groupBox->setFocusPolicy(Qt::NoFocus);
     return groupBox;
+}
+
+
+QPushButton *Window::createFullscreenButton(){
+    QPushButton *fullscreen = new QPushButton(QStringLiteral("Fullscreen"));
+    fullscreen->setToolTip(QStringLiteral("Show only the visualization (F11)"));
+    QObject::connect(fullscreen, &QPushButton::clicked,
+                     this, &Window::toggleVisualizationFullscreen);
+    return fullscreen;
 }
 
 
@@ -158,8 +230,8 @@ QComboBox *Window::createFunctionSelector(){
     box->addItem("Hills");
     box->addItem("Plateau");
 
-    QObject::connect(box, SIGNAL(currentIndexChanged(QString)),
-                     plot_area, SLOT(changeSurface(QString)));
+    QObject::connect(box, &QComboBox::currentTextChanged,
+                     plot_area, &PlotArea::changeSurface);
     return box;
 }
 
@@ -272,6 +344,38 @@ QGroupBox *Window::createAdamGroup(){
 }
 
 
+QGroupBox *Window::createAdamWGroup(){
+    AdamW *descent = dynamic_cast<AdamW *>(plot_area->adamw->descent.get());
+
+    QFormLayout *form = new QFormLayout;
+    form->addRow(new QLabel(QStringLiteral("Learning Rate:")),
+                 createLearningRateBox(descent));
+    form->addRow(new QLabel(QStringLiteral("Beta1:")),
+                 createDecayBox(descent->beta1));
+    form->addRow(new QLabel(QStringLiteral("Beta2:")),
+                 createDecayBox(descent->beta2));
+
+    QDoubleSpinBox *weight_decay = new QDoubleSpinBox(this);
+    weight_decay->setDecimals(4);
+    weight_decay->setRange(0.0, 10.0);
+    weight_decay->setSingleStep(0.01);
+    weight_decay->setValue(descent->weight_decay);
+    QObject::connect(weight_decay,
+                     QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                     [descent](double value) { descent->weight_decay = value; });
+    form->addRow(new QLabel(QStringLiteral("Weight Decay:")), weight_decay);
+
+    QCheckBox *scaled = new QCheckBox("Use Bias Correction");
+    scaled->setChecked(descent->use_bias_correction);
+    QObject::connect(scaled, &QCheckBox::clicked, [descent](bool clicked) {
+        descent->use_bias_correction = clicked;
+    });
+    form->addRow(scaled);
+
+    return createDescentGroup(plot_area->adamw.get(), form);
+}
+
+
 QGroupBox *Window::createQHAdamGroup()
 {
     QHAdam *descent = dynamic_cast<QHAdam *>( plot_area->qhadam->descent.get() );
@@ -377,8 +481,8 @@ QTabWidget *Window::createViewTabs(){
     descentPicker->addItem("Choose a method");
     for (auto animation : plot_area->all_animations)
         descentPicker->addItem(animation->name);
-    QObject::connect(descentPicker, SIGNAL(currentIndexChanged(QString)),
-                     plot_area, SLOT(setDetailedAnimation(QString)));
+    QObject::connect(descentPicker, &QComboBox::currentTextChanged,
+                     plot_area, &PlotArea::setDetailedAnimation);
 
     QLabel* messageBox = new QLabel;
     messageBox->setWordWrap(true);

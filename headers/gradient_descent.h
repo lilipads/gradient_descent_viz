@@ -17,6 +17,8 @@ enum FunctionName {local_minimum, global_minimum, saddle_point, ecliptic_bowl,
 
 class GradientDescent {
 public:
+    using ObjectiveFunction = double (*)(double, double);
+
     GradientDescent();
     virtual ~GradientDescent() {}
 
@@ -30,6 +32,7 @@ public:
     double gradX() {return grad.x;};
     double gradZ() {return grad.z;};
     Point delta() {return m_delta;}
+    void setObjective(ObjectiveFunction objective);
 
 
     // core methods
@@ -43,8 +46,10 @@ protected:
     Point m_delta; // movement in each direction after a gradient step
     Point grad; // gradient at the current position
     bool is_converged = false;
+    ObjectiveFunction objective_function = nullptr;
 
     void setPositionAndComputeGradient(double x, double z);
+    double evaluateObjective(double x, double z) const;
     void computeGradient();
     virtual void updateGradientDelta() = 0;
     virtual void resetState(){}
@@ -138,6 +143,16 @@ private:
     Point decayed_grad_sum_of_squared;
     double beta1_pow;
     double beta2_pow;
+};
+
+class AdamW : public Adam {
+public:
+    AdamW() {}
+
+    double weight_decay = 0.01;
+
+protected:
+    void updateGradientDelta() override;
 };
 
 class QHAdam : public Adam {
